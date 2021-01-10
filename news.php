@@ -384,7 +384,7 @@ if($smilies)
   }
   </script>
 
-  <div style="width:99%; border:1px solid #000000; padding:5px;">
+  <div class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;">
    <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies))?></strong></span><?=($cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; border:none; float:right;" />' : '')?><br style="clear:left;" />
    <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $value[3] . ' &ndash; ' . date($lang['news']['DATEFORMAT'], $value[1]) . ' &ndash; ' . date($lang['news']['TIMEFORMAT'], $value[1]) . ' ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$value[4]][0]?></span>
    <hr size="1" noshade="noshade" />
@@ -394,7 +394,7 @@ if($smilies)
    <span style="font-size:small;"><?=$lang['news']['sources'] . ' ' . ($value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace('#', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')?></span>
   </div><br />
   <a href="<?=($redir) ? $redir : '.'?>?page=<?=$_GET['page']?>">&laquo; <?=$lang['news']['backtoall']?></a><br /><br />
-  <div style="width:99%; border:1px solid #000000; padding:5px;">
+  <div class="newsscriptcomments" style="width:99%; border:1px solid #000000; padding:5px;">
    <h4>&raquo; <?=$lang['news']['comments']?></h4>
 <?php //Kommentare auslesen
    if(!file_exists($newscomments . $_GET['newsid'] . '.dat')) echo('   ' . $lang['news']['noyet'] ."<br /><br />\n");
@@ -419,7 +419,7 @@ if($smilies)
  $i=0;
  foreach($smilies as $key => $value)
  {
-  if($i>=$smiliesmax) break;
+  if($i >= $smiliesmax) break;
   if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
   echo('    <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
  }
@@ -509,7 +509,7 @@ if($smilies)
  $i=0;
  foreach($smilies as $key => $value)
  {
-  if($i>=$smiliesmax) break;
+  if($i >= $smiliesmax) break;
   if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
   echo('  <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
  }
@@ -532,7 +532,7 @@ if($smilies)
   <?php
  }
 
- if(!$news[1]) echo('<div style="width:99%; text-align:center;">' . $lang['news']['nofound'] . "</div><br />\n");
+ if(!$news[1]) echo('<div class="newsscriptmain" style="width:99%; text-align:center;">' . $lang['news']['nofound'] . "</div><br />\n");
  else
  {
 //News zeigen
@@ -549,7 +549,7 @@ if($smilies)
     continue;
    }*/
    ?>
- <div style="width:99%; border:1px solid #000000; padding:5px;">
+ <div class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;">
   <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies))?></strong></span><?=($cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; float:right;" />' : '')?><br style="clear:left;" />
   <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $value[3] . ' &ndash; ' . date($lang['news']['DATEFORMAT'], $value[1]) . ' &ndash; ' . date($lang['news']['TIMEFORMAT'], $value[1]) . ' ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$value[4]][0]?></span>
   <hr size="1" noshade="noshade" />
@@ -559,7 +559,7 @@ if($smilies)
  </div><br />
  <?php
   }
-  echo('<div style="width:99%; text-align:center; font-size:small;">
+  echo('<div class="newsscriptfooter" style="width:99%; text-align:center; font-size:small;">
   <a href="' . $_SERVER['PHP_SELF'] . '?page=0">&laquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']-1) . '">&lsaquo; ' . $lang['news']['prev'] . '</a> &ndash; ' . $lang['news']['page'] . ' ' . ($_GET['page']+1) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']+1) . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) .'">&raquo;</a><br />
   ' . sprintf($lang['news']['showing'], ($start+1), (($end > $size) ? $size : $end), $size) . "\n </div><br />\n ");
  }

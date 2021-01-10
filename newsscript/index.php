@@ -9,8 +9,8 @@
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
 elseif(!file_exists('style.css')) die('<b>ERROR:</b> Konnte &quot;style.css&quot; nicht finden!');
-elseif(!file_exists('functions.php')) die('<b>ERROR:</b> Konnte &quot;functions.php&quot; nicht finden!');
-else include('functions.php');
+#elseif(!file_exists('functions.php')) die('<b>ERROR:</b> Konnte &quot;functions.php&quot; nicht finden!');
+else require('functions.php');
 
 if(file_exists('settings.dat.php'))
 {
@@ -544,7 +544,7 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   </div>
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
    CHS - Newsscript<br />
-   <?=$lang['help']['version']?> 1.0<br />
+   <?=$lang['help']['version'] . ' ' . getNewsVersion()?><br />
    &copy; 2008 by Chrissyx<br />
    <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a>
   </div>
@@ -601,6 +601,10 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
    if($_POST['smiliepics'] != $_POST['newscatpics']) mkdir('../' . $_POST['smiliepics'], 0775);
   }
   unlink('language_install.php'); //Wird nicht mehr gebraucht
+  unlink('update.php'); //Update wird auch nicht gebraucht
+  $temp = fopen('version.dat.php', 'w');
+  fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . getNewsVersion());
+  fclose($temp);
   echo('  ' . $lang['install']['endinstall'] . '<br /><br />
   ' . $lang['install']['note1'] . '<br /><br />
   <code>&lt;!-- CHS - Newsscript --&gt;&lt;?php include(\'news.php\'); ?&gt;&lt;!-- /CHS - Newsscript --&gt;</code><br /><br />

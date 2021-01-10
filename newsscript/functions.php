@@ -365,4 +365,16 @@ function moveFolder($oldname, $newname, $ext='*')
   rmdir($oldname);
  }
 }*/
+
+/**
+ * Gibt die Version des Newsscript zurück.
+ * 
+ * @author Chrissyx
+ * @copyright Chrissyx
+ * @return string Versionsnummer
+ */
+function getNewsVersion()
+{
+ return '1.0.1';
+}
 ?>

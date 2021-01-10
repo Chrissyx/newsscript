@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0
+Version: 1.0.1
 
 
 ENGLISH - SCROLL DOWN!
@@ -28,6 +28,12 @@ Die Installation ist gewohnt einfach: Lade in dem Ordner, wo deine Webseite ist 
 Einsatz kommen soll), die "news.php" und den Ordner "newsscript" samt Inhalt hoch. Rufe danach die "index.php"
 aus dem Ordner "newsscript" auf und folge dann den Anweisungen. Wenn Du auch den Newsticker nutzen möchtest,
 lade die "newsticker.php" dahin hoch, wo die "news.php" schon ist.
+
+
+Update auf neue Version
+Lade, wie schon zur Installation auch, alle Dateien hoch und ersetze so jede Datei durch ihre neue Version.
+Rufe danach die "update.php" aus dem Ordner "newsscript" auf und folge den Anweisungen. WICHTIG: Nach dem Update
+die "update.php" wieder löschen!
 
 
 FAQ
@@ -86,6 +92,16 @@ Füge ganz am Anfang deiner Seite (also noch vor "<html>" bzw. "<!DOCTYPE..."), a
 eingesetzt hast, das ein:
 <?php session_start(); ?>
 
+-Kann ich das Design vom Newsscript anpassen?
+Das Newsscript selber sollte sich schon weitestgehend deinem Seitendesign anpassen. Wenn Du aber weitere Feinheiten
+an der Darstellung der News vornehmen möchtest, stehen dir seit Version 1.0.1 vordefinierte CSS Klassen zur
+Verfügung, deren Inhalt Du selber bestimmen kannst:
+newsscriptmain: Für alle Newseinträge inkl. Einzelansicht
+newsscriptfooter: Für die Seitennavigation unter den News
+newsscriptcomments: Für den kompletten Kommentarbereich
+Diese Klassen kannst Du dann bei Bedarf im <head>...</head> Bereich oder in deiner eigenen CSS Datei einbinden.
+Mehr zum Thema CSS findest Du hier: http://de.selfhtml.org/css/formate/einbinden.htm
+
 -Meine Frage wurde nicht beantwortet!
 Dann besuch mein Forum unter http://www.chrissyx-forum.de.vu/ oder schreib mir eine E-Mail: chris@chrissyx.com
 
@@ -128,6 +144,12 @@ the Newsscript), the "news.php" file and the folder "newsscript" including its c
 upload the "newsticker.php" to the same location you've uploaded the "news.php" before.
 
 
+Update to new version
+Upload, just like the installation, all files by replacing every file with its newer version. Point your browser to
+the "update.php" in the "newsscript" folder and follow the instructions. IMPORTANT: Delete the "update.php" after
+updating the script!
+
+
 FAQ
 -How to manage my news script?
 Just point your browser to the "index.php" file in the "newsscript" folder, as you did during the installation and
@@ -149,7 +171,7 @@ the hints at the beginning of the file. By having a complete translation, upload
 choose it from the language menu in the administration. Also please send it to me for providing it for other user! :)
 
 -What about the news ticker?
-Just a quick overview for now: Include this code for internal listing of headlines on your homepage:
+Just a quick overview for now: Use this code for internal listing of headlines on your homepage:
 <!-- CHS - Newsscript - Ticker --><?php include('newsticker.php'); ?><!-- /CHS - Newsscript - Ticker -->
 This example link will provide a RSS Newsfeed:
 http://www.mysite.tld/newsticker.php?type=rss
@@ -174,6 +196,15 @@ Paste at the very beginning of your homepage (even before "<html>" or "<!DOCTYPE
 news script, this code:
 <?php session_start(); ?>
 
+-Is it possible to change the design of the news script?
+The news script itself should already fit as far as possible to your own page design. If you would like to adjust
+more details of the news layout, you can use and fill out some predefined CSS classes, available since version 1.0.1:
+newsscriptmain: For all news entries incl. single news viewing
+newsscriptfooter: For the page navigation under the news listing
+newsscriptcomments: For the whole comments area
+You can define those classes in the <head>...</head> section or include them in your own CSS file. For more
+information about CSS, see here: http://en.wikibooks.org/wiki/CSS_Programming
+
 -My question isn't answered here!
 Sorry, no more FAQ entries for now. Please visit my board at http://www.chrissyx.com/forum/ for more help.
 Or write me an e-mail: chris@chrissyx.com
@@ -183,7 +214,7 @@ BBCode reference
 -[b]Bolded text[/b]
 -[i]Italicized text[/i]
 -[u]Underlined text[/u]
--[s]Strikethrough Text[/s]
+-[s]Strikethrough text[/s]
 -[center]Centered paragraph[/center]
 -[quote]Quotation[/quote]
 -[url]Link[/url]
