@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.3.5
+ * @version 1.0.4
  */
 
 //Caching
@@ -267,7 +267,7 @@ elseif($action == 'newsout') unset($_SESSION['newsname'], $_SESSION['newspw'], $
 include_once('newsscript/language_news.php');
 $newsTemplate = '  <div %s>
    <strong style="float:left; font-size:medium;">%s</strong>%s<br style="clear:left;" />
-   <span style="font-size:small;">' . $lang['news']['postedby'] . ' %s &ndash; %s &ndash; %s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' %s</span>
+   <span style="font-size:small;">' . $lang['news']['postedby'] . ' %s &ndash; %s &ndash; %s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%s">%s</a></span>
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
    %s
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
@@ -299,7 +299,7 @@ if(isset($_GET['newsid']))
    unset($news[$key]);
    saveNews();
    if(file_exists($newscomments . $_GET['newsid'] . '.dat')) unlink($newscomments . $_GET['newsid'] . '.dat');
-   echo('<div style="width:99%; text-align:center;"><p style="color:#008000; font-size:large;">' . $lang['news']['deletenews'] . "</p>\n<p><a href=\"" . $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'] . '">' . $lang['news']['backtopage'] . "</a></p></div><br />\n");
+   echo('<div style="width:99%; text-align:center;"><p style="color:#008000; font-size:large;">' . $lang['news']['deletenews'] . "</p>\n<p><a href=\"" . $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['backtopage'] . "</a></p></div><br />\n");
   }
 //News editieren
   elseif($action == 'edit')
@@ -317,7 +317,7 @@ if(isset($_GET['newsid']))
    $_POST['srcarray'] = explode("\t", $_POST['srcarray']);
    showJS();
    ?>
-<form name="newsform" id="newsform" action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$value[0]?>&amp;page=<?=$_GET['page']?>&amp;action=edit" method="post" onsubmit="addSource();">
+<form name="newsform" id="newsform" action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$value[0]?>&amp;page=<?=$_GET['page']?>&amp;catid=<?=$_GET['catid']?>&amp;action=edit" method="post" onsubmit="addSource();">
 <div style="background-color:#99CCFF; font-family:Arial,sans-serif; width:99%; border:1px solid #000000; padding:5px;">
  <h4>&raquo; <?=$lang['news']['editnews']?></h4>
 <?php
@@ -330,6 +330,7 @@ if(isset($_GET['newsid']))
                 $value[3], //Autor
                 date($lang['news']['DATEFORMAT'], $value[1]), //Datum
                 date($lang['news']['TIMEFORMAT'], $value[1]), //Uhrzeit
+                '?catid=' . $value[4], //Katlink
                 $cats[$_POST['cat']][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox']))), $smilies)), //News
                 $_POST['newsbox2'] ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox2']))), $smilies)) . "<hr noshade=\"noshade\" style=\"height:0; border-width:0 0 1px 0;\" />\n" : null, //Weiterlesen
@@ -344,7 +345,7 @@ if(isset($_GET['newsid']))
     #id - timestamp - ip - usrid?name? - catid - headline - quellen - text - weiterlesen
     $news[$key] = $value[0] . "\t" . $value[1] . "\t" . $value[2] . "\t" . $value[3] . "\t" . $_POST['cat'] . "\t" . stripEscape($_POST['headline']) . "\t" . str_replace('&', '&amp;', implode(' ', array_slice($_POST['srcarray'], 1))) . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(stripEscape(trim($_POST['newsbox']) . "\t" . trim($_POST['newsbox2']))));
     saveNews();
-    $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newsup'] . '</span> <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '">' . $lang['news']['back'] . '</a><br /><br />';
+    $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newsup'] . '</span> <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['back'] . '</a><br /><br />';
    }
   }
   else $temp = '';
@@ -352,7 +353,7 @@ if(isset($_GET['newsid']))
   echo($temp . $lang['news']['headline']);
   ?>
  <input type="text" name="headline" id="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
- <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:60px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:50px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:63px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:47px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
   <option><?=$lang['news']['color']?></option>
   <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
   <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
@@ -412,7 +413,7 @@ if($smilies)
  <?=$lang['news']['sources']?> <input type="text" name="sources" id="sources" size="25" /> <a href="javascript:doSource(true);"><?=$lang['news']['add']?></a> &ndash; <a href="javascript:doSource(false);"><?=$lang['news']['remove']?></a><br />
  <input type="submit" value="<?=$lang['news']['update']?>" /> <input type="submit" name="preview" value="<?=$lang['news']['preview']?>" style="font-weight:bold;" /> <?=$lang['news']['cat']?> <select name="cat" style="width:125px;">
 <?php foreach($cats as $key => $value) echo '  <option value="' . $key . '"' . ($key == $_POST['cat'] ? ' selected="selected"' : '') . '>' . $value[0] . '</option>'; ?>
- </select> <input type="button" value="<?=$lang['news']['cancel']?>" onclick="document.location='<?=$_SERVER['PHP_SELF'].'?page='.$_GET['page']?>'" />
+ </select> <input type="button" value="<?=$lang['news']['cancel']?>" onclick="document.location='<?=$_SERVER['PHP_SELF'].'?page='.$_GET['page'].'&amp;catid='.$_GET['catid']?>'" />
  <input type="hidden" name="update" value="true" />
  <input type="hidden" name="srcarray" id="srcarray" value="" />
 </div>
@@ -431,7 +432,7 @@ if($smilies)
     elseif($_POST['newsbox'])
     {
      #todo: still buggy regex?
-     $_POST['newsbox'] = preg_replace_callback("/([^ ^\n^\r^\]]+?:\/\/|www\.)[^ \[\.]+(\.[^ ^\r^\n\[\.]+)+/si", create_function('$arr', "return (\$arr[2]) ? '[url]' . ((\$arr[1] == 'www.') ? 'http://' : '') . \$arr[0] . '[/url]' : \$arr[0];"), $_POST['newsbox']);
+     $_POST['newsbox'] = preg_replace_callback("/([^ ^\n^\r^\]]+?:\/\/|www\.)[^ \[\.]+(\.[^ ^\n^\r\[\.]+)+/si", create_function('$arr', "return (\$arr[2]) ? '[url]' . ((\$arr[1] == 'www.') ? 'http://' : '') . \$arr[0] . '[/url]' : \$arr[0];"), $_POST['newsbox']);
      $temp = fopen($newscomments . $_GET['newsid'] . '.dat', 'a');
      fwrite($temp, time() . "\t" . $_SERVER['REMOTE_ADDR'] . "\t" . $_POST['name'] . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES))) . "\n");
      fclose($temp);
@@ -468,17 +469,18 @@ if($smilies)
 <?=sprintf($newsTemplate,
            'style="width:99%; border:1px solid #000000; padding:5px;"', //Style
            preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Überschrift
-           $cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; border:none; float:right;" />' : '', //Katbild
+           $cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; float:right;" />' : '', //Katbild
            $value[3], //Autor
            date($lang['news']['DATEFORMAT'], $value[1]), //Datum
            date($lang['news']['TIMEFORMAT'], $value[1]), //Uhrzeit
+           '?catid=' . $value[4], //Katlink
            $cats[$value[4]][0], //Kategorie
            preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies)), //News
            isset($value[8]) && $value[8] != '' ? preg_replace($bbcode1, $bbcode2, strtr($value[8], $smilies)) . '<hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />' . "\n" : null, //Weiterlesen
-           (isset($value[6][1]) && $value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
+           (isset($value[6][1]) && $value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
           )?>
 
-  <p><a href="<?=$redir ? $redir : '.'?>?page=<?=$_GET['page']?>">&laquo; <?=$lang['news']['backtoall']?></a></p>
+  <p><a href="<?=$redir ? $redir : $_SERVER['PHP_SELF']?>?page=<?=$_GET['page']?>&amp;catid=<?=$_GET['catid']?>">&laquo; <?=$lang['news']['backtoall']?></a></p>
   <div class="newsscriptcomments" style="width:99%; border:1px solid #000000; padding:5px;">
    <h4>&raquo; <?=$lang['news']['comments']?></h4>
 <?php //Kommentare auslesen
@@ -490,7 +492,7 @@ if($smilies)
         }
    echo($temp . "\n");
 ?>
-   <form action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$_GET['newsid']?>&amp;page=<?=$_GET['page']?>&amp;action=comment#box" method="post">
+   <form action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$_GET['newsid']?>&amp;page=<?=$_GET['page']?>&amp;catid=<?=$_GET['catid']?>&amp;action=comment#box" method="post">
    <div id="box" style="float:left;"> 
     <?=$lang['news']['name']?> <input type="text" name="name" value="<?=!$_POST['name'] ? (!$_SERVER['newsname'] ? $_SESSION['shoutName'] : $_SERVER['newsname']) : $_POST['name']?>" size="30" /><br />
     <textarea name="newsbox" id="newsbox" rows="5" cols="30"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea><br />
@@ -541,10 +543,11 @@ else
    echo(sprintf($newsTemplate,
                 'style="border:medium double #000000; padding:5px;"', //Style
                 preg_replace($bbcode1, $bbcode2, strtr(stripEscape($_POST['headline']), $smilies)), //Überschrift
-                $cats[$_POST['cat']][1] ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="margin-left:5px; border:none; float:right;" />' : '', //Katbild
+                $cats[$_POST['cat']][1] ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="margin-left:5px; float:right;" />' : '', //Katbild
                 $_SESSION['newsname'], //Autor
                 date($lang['news']['DATEFORMAT']), //Datum
                 date($lang['news']['TIMEFORMAT']), //Uhrzeit
+                '?catid=' . $_POST['cat'], //Katlink
                 $cats[$_POST['cat']][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox']))), $smilies)), //News
                 $_POST['newsbox2'] ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox2']))), $smilies)) . '<hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />' . "\n" : null, //Weiterlesen
@@ -568,7 +571,7 @@ else
 //News erstellen
   echo($temp . $lang['news']['headline']);
   ?> <input type="text" name="headline" id="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
- <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:60px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:50px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:63px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:47px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
   <option><?=$lang['news']['color']?></option>
   <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
   <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
@@ -645,7 +648,7 @@ if($smilies)
  <?=$lang['news']['readontext']?> <input type="button" id="toggler" value="<?=$_POST['newsbox2'] ? $lang['news']['discard'] . ' &l' : $lang['news']['expand'] . ' &r'?>aquo;" onclick="toggleFullStory();" /><br />
  <textarea name="newsbox2" id="newsbox2" rows="10" cols="60" style="margin-bottom:5px; display:<?=$_POST['newsbox2'] ? 'inline' : 'none'?>;" onclick="activeNewsbox = this.name;"><?=stripslashes(trim($_POST['newsbox2']))?></textarea><br />
  <?=$lang['news']['sources']?> <input type="text" name="sources" id="sources" size="25" /> <a href="javascript:doSource(true);"><?=$lang['news']['add']?></a> &ndash; <a href="javascript:doSource(false);"><?=$lang['news']['remove']?></a><br />
- <input type="submit" value="<?=$lang['news']['postnews']?>" /> <input type="submit" name="preview" value="<?=$lang['news']['preview']?>" style="font-weight:bold;" /> <!--<input type="reset" value="Reset" />--> <?=$lang['news']['cat']?> <select name="cat" style="width:125px;">
+ <input type="submit" value="<?=$lang['news']['postnews']?>" /> <input type="submit" name="preview" value="<?=$lang['news']['preview']?>" style="font-weight:bold;" /> <!--<input type="reset" value="<?=$lang['news']['reset']?>" />--> <?=$lang['news']['cat']?> <select name="cat" style="width:125px;">
 <?php foreach($cats as $key => $value) echo('  <option value="' . $key . '"' . ($key == $_POST['cat'] ? ' selected="selected"' : '') . '>' . $value[0] . '</option>'); ?>
  </select> <input type="button" value="<?=$lang['news']['logout']?>" onclick="document.location='<?=$_SERVER['PHP_SELF']?>?action=newsout'" />
  <input type="hidden" name="update" value="true" />
@@ -660,18 +663,13 @@ if($smilies)
  else
  {
 //News zeigen
-  $size = count($news = array_slice($news, 1));
-  $_GET['page'] = !isset($_GET['page']) ? '' : ($_GET['page'] < 0 ? 0 : (($_GET['page']*$newsmax >= $size) ? $_GET['page']-1 : $_GET['page']));
+  $size = count($news = ($_GET['catid'] = isset($_GET['catid']) ? $_GET['catid'] : '') ? array_values(array_filter($news, create_function('$cur', 'return strpos($cur, "\t' . $_GET['catid'] . '\t", 1) > 0 ? true : false;'))) : array_slice($news, 1));
+  $_GET['page'] = !isset($_GET['page']) ? '' : ($_GET['page'] < 0 ? 0 : (($_GET['page']*$newsmax >= $size) ? abs($_GET['page']-1) : $_GET['page']));
   $start = $_GET['page']*$newsmax;
   $end = (($size-$start) > $newsmax) ? $start+$newsmax : $size;
   for($i=$start; $i<$end; $i++)
   {
    $value = explode("\t", $news[$i]);
-   /*if($_GET['catid'] && $_GET['catid'] != $value[4])
-   {
-    $end++;
-    continue;
-   }*/
    echo(sprintf($newsTemplate,
                 'class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;"', //Style
                 preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Überschrift
@@ -679,18 +677,19 @@ if($smilies)
                 $value[3], //Autor
                 date($lang['news']['DATEFORMAT'], $value[1]), //Datum
                 date($lang['news']['TIMEFORMAT'], $value[1]), //Uhrzeit
+                '?catid=' . $value[4], //Katlink
                 $cats[$value[4]][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies)), //News
                 null, //Weiterlesen
-                ($value[6] ? '<select style="font-size:x-small; width:100px;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '">' . ($value[8] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>' . (isset($_SESSION['dispall']) && $_SESSION['dispall'] === true ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
+                ($value[6] ? '<select style="font-size:x-small; width:100px;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . ($value[8] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>' . (isset($_SESSION['dispall']) && $_SESSION['dispall'] === true ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
                ));
   }
   echo('  <div class="newsscriptfooter" style="width:99%; text-align:center; font-size:small;">
-  <a href="' . $_SERVER['PHP_SELF'] . '?page=0">&laquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']-1) . '">&lsaquo; ' . $lang['news']['prev'] . '</a> &ndash; <select onchange="document.location=\'' . $_SERVER['PHP_SELF'] . '?page=\' + this.options[this.options.selectedIndex].value;" style="font-size:x-small; vertical-align:middle;">
+  <a href="' . $_SERVER['PHP_SELF'] . '?page=0&amp;catid=' . $_GET['catid'] . '">&laquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']-1) . '&amp;catid=' . $_GET['catid'] . '">&lsaquo; ' . $lang['news']['prev'] . '</a> &ndash; <select onchange="document.location=\'' . $_SERVER['PHP_SELF'] . '?page=\' + this.options[this.options.selectedIndex].value + \'&amp;catid=' . $_GET['catid'] . '\';" style="font-size:x-small; vertical-align:middle;">
 ');
   for($i=0; $i<ceil($size/$newsmax); $i++) echo('   <option value="' . $i . '"' . ($i == $_GET['page'] ? ' selected="selected"' : '') . '>' . $lang['news']['page'] . ' ' . ($i+1) . "</option>\n");
-  echo('  </select> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']+1) . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) .'">&raquo;</a><br />
-  ' . sprintf($lang['news']['showing'], ($start+1), (($end > $size) ? $size : $end), $size) . "\n </div><br />\n ");
+  echo('  </select> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']+1) . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) . '&amp;catid=' . $_GET['catid'] . '">&raquo;</a><br />
+  ' . ($_GET['catid'] ? sprintf($lang['news']['showingpart'], ($start+1), (($end > $size) ? $size : $end), $size, $cats[$_GET['catid']][0], '<a href="' . $_SERVER['PHP_SELF'] . '">') . '</a>' : sprintf($lang['news']['showing'], ($start+1), (($end > $size) ? $size : $end), $size)) . "\n </div><br />\n ");
  }
 }
 #PLEASE DON'T REMOVE THIS!

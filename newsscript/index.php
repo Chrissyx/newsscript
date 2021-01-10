@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.3
+ * @version 1.0.4
  */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
@@ -43,7 +43,7 @@ if(!file_exists('language_index.php'))
  else
  {
   newsHead('CHS - Newsscript: Choose language', 'Newsscript, CHS, choose, language, Chrissyx', 'Choose the language for the Newsscript from CHS', 'UTF-8', 'en');
-  echo('  <div class="center" style="width:99%; border:1px solid #000000; padding:5px; margin-bottom:1%;">' . "\n" . '   <h3>Choose a language:</h3>' . "\n");
+  echo('  <div class="center" style="width:99%; border:1px solid #000000; padding:5px; margin-bottom:1%;">' . "\n" . '   <h3>W&auml;hle eine Sprache / Choose a language:</h3>' . "\n");
   foreach(glob('*.ini') as $value) echo('   <a href="' . $_SERVER['PHP_SELF'] . '?inifile=' . $value . '">' . $value . '</a><br />' . "\n");
   echo("  </div>\n  ");
   newsTail();
@@ -116,7 +116,7 @@ switch($action)
       {
        rename('../' . $settings[6], '../' . $_POST['newssmilies']) or $_POST['newssmilies'] = $settings[6];
        rename('../' . $settings[7], '../' . $_POST['smiliepics']) or $_POST['smiliepics'] = $settings[7]; #todo: verschieben in existierenden ordner?
-	  }
+      }
      }
      elseif((!$_POST['newssmilies'] || (substr($_POST['newssmilies'], -4) == '.var')) && $settings[6] && (substr($settings[6], -4) != '.var')) //Keine .dat
      {
@@ -184,9 +184,9 @@ switch($action)
     {
      $value = explode("\t", $user[$key]);
      $user[$key] = $_POST['name'] . "\t" . $value[1] . "\t" . (isset($_POST['isadmin']) && $_POST['isadmin'] == 'on' ? '1' :'0') . "\t" . $_POST['email'] . (isset($value[4]) ? "\t" . $value[4] : '');
-	}
-	saveUser('../' . $settings[2]);
-	unset($_POST['name'], $_POST['email']);
+    }
+    saveUser('../' . $settings[2]);
+    unset($_POST['name'], $_POST['email']);
     $temp = '   <p class="green">&raquo; ' . $lang['user']['edit'] . "</p>\n";
    }
    elseif($_POST['name'] && (unifyUser($_POST['name']) === false)) //Neuer User
@@ -259,21 +259,29 @@ foreach($user as $key => $value)
    list($_POST['catname'], $_POST['cat']) = stripEscape($_POST['catname'], $_POST['cat']);
    if(!$_POST['catname']) $_POST['catname'] .= '" style="border-color:#FF0000;';
    elseif($_FILES['uploadpic']['name'] && !preg_match("/(.*)\.(jpg|jpeg|gif|png|bmp)/i", $_FILES['uploadpic']['name'])) $_FILES['uploadpic']['name'] .= '" style="border-color:#FF0000;';
+   elseif(isset($_POST['resize']) && !$_POST['width']) $_POST['width'] .= '" style="border-color:#FF0000;';
+   elseif(isset($_POST['resize']) && !$_POST['height']) $_POST['height'] .= '" style="border-color:#FF0000;';
    else
    {
     switch($_FILES['uploadpic']['error'])
     {
      case 0: //Mit Upload
-     if(move_uploaded_file($_FILES['uploadpic']['tmp_name'], '../' . $settings[5] . $_FILES['uploadpic']['name']))
+     if(move_uploaded_file($_FILES['uploadpic']['tmp_name'], $temp = '../' . $settings[5] . $_FILES['uploadpic']['name']))
      {
-      chmod('../' . $settings[5] . $_FILES['uploadpic']['name'], 0775);
+      chmod($temp, 0775);
+      if(isset($_POST['resize']))
+      {
+       if(!newsCreateThumbnail($temp, $temp, $_POST['width'], $_POST['height'], getimagesize($temp))) $lang['cats']['resize'] = '<span style="color:#FFFF00; font-weight:bold;">' . $lang['cats']['warning'] . '</span></td><td style="color:#FFFF00; font-weight:bold;">' . $lang['cats']['scalefail'] . '</td></tr>
+    <tr><td>' . $lang['cats']['resize'];
+       unset($_POST['resize'], $_POST['width'], $_POST['height']);
+      }
       $_POST['catpic'] = /*current(array_slice(explode('/', $settings[5]), -2)) . '/' .*/ $_FILES['uploadpic']['name']; 
-	 }
+     }
      else
      {
       $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</p>\n";
       break;
-	 }
+     }
 
      case 4: //Kein Upload
      if($_POST['cat'] && $_POST['catname']) //Vorhandene Kategorie
@@ -284,7 +292,7 @@ foreach($user as $key => $value)
       {
        if(isset($value[2]) && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
        unset($cats[$key]);
-	  }
+      }
       else
       {
        if(isset($value[2]) && ($_POST['catpic'] != $value[2]) && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
@@ -293,7 +301,7 @@ foreach($user as $key => $value)
       $temp = fopen('../' . $settings[4], 'w');
       fwrite($temp, implode("\n", $cats));
       fclose($temp);
-	  unset($_POST['catname'], $_POST['catpic']);
+      unset($_POST['catname'], $_POST['catpic']);
       $temp = '   <p class="green">&raquo; ' . $lang['cats']['edit'] . "</p>\n";
      }
      elseif($_POST['catname'] && !unifyCat($_POST['catname'])) //Neue Kategorie
@@ -302,8 +310,8 @@ foreach($user as $key => $value)
       $temp = fopen('../' . $settings[4], 'w');
       fwrite($temp, implode("\n", $cats));
       fclose($temp);
-	  unset($_POST['catname'], $_POST['catpic']);
-	  $temp = '   <p class="green">&raquo; ' . $lang['cats']['new'] . "</p>\n";
+      unset($_POST['catname'], $_POST['catpic']);
+      $temp = '   <p class="green">&raquo; ' . $lang['cats']['new'] . "</p>\n";
      }
      else $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['cats']['exist'], $_POST['catname']) . "</p>\n";
      break;
@@ -354,7 +362,8 @@ foreach($user as $key => $value)
     <tr><td><?=$lang['cats']['name']?></td><td><input type="text" name="catname" id="catname" value="<?=isset($_POST['catname']) ? $_POST['catname'] : ''?>" size="45" /></td><td rowspan="5"><img src="frage.jpg" alt="CatPic" id="pic" /></td></tr>
     <tr><td><?=$lang['cats']['pic']?></td><td><input type="text" name="catpic" id="catpic" value="<?=isset($_POST['catpic']) ? $_POST['catpic'] : ''?>" size="45" /></td></tr>
     <tr><td colspan="2"><?=$lang['cats']['hint1']?></td></tr>
-    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=isset($_FILES['uploadpic']['name']) ? $_FILES['uploadpic']['name'] : ''?>" size="25" /></td></tr>
+    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=isset($_FILES['uploadpic']['name']) ? $_FILES['uploadpic']['name'] : ''?>" size="25" onchange="document.getElementById('resize').disabled=this.value != '' ? false : true;" /></td></tr>
+    <tr><td><?=$lang['cats']['resize']?></td><td><input type="checkbox" name="resize" id="resize"<?=isset($_POST['resize']) ? ' checked="checked"' : ''?> disabled="disabled" /> <?=$lang['cats']['scaleto']?> <input type="text" name="width" id="width" size="2" value="<?=isset($_POST['width']) ? $_POST['width'] : '64'?>" />x<input type="text" name="height" id="height" size="2" value="<?=isset($_POST['height']) ? $_POST['height'] : '64'?>" /></td></tr>
     <tr><td><?=$lang['cats']['delete']?></td><td><span style="background-color:#FF0000;"><input type="checkbox" name="delete" id="delete" disabled="disabled" /></span></td></tr>
    </table>
    <div style="border:1px solid #000000; margin-left:10px; padding:5px; float:left;">
@@ -368,7 +377,7 @@ foreach($cats as $key => $value)
 ?>   </div>
    <br style="clear:both;" />
    <?=newsFont(2) . $lang['cats']['hint2']?></span><br /><br />
-   <input type="submit" value="<?=$lang['index']['update']?>" /> <input type="reset" value="<?=$lang['index']['reset']?>" onmouseup="document.getElementById('delete').disabled=true; document.getElementById('pic').src='frage.jpg'; document.getElementById('cat').value='';" />
+   <input type="submit" value="<?=$lang['index']['update']?>" /> <input type="reset" value="<?=$lang['index']['reset']?>" onmouseup="document.getElementById('delete').disabled=document.getElementById('resize').disabled=true; document.getElementById('pic').src='frage.jpg'; document.getElementById('cat').value='';" />
    <input type="hidden" name="update" value="true" />
    <input type="hidden" name="cat" id="cat" />
    </form>
@@ -409,12 +418,12 @@ foreach($cats as $key => $value)
      {
       chmod('../' . $settings[7] . $_FILES['uploadpic']['name'], 0775);
       $_POST['address'] = $_FILES['uploadpic']['name']; 
-	 }
+     }
      else
      {
       $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</p>\n";
       break;
-	 }
+     }
 
      case 4: //Kein Upload
      if($_POST['smilie'] && $_POST['synonym']) //Vorhandener Smilie
@@ -425,7 +434,7 @@ foreach($cats as $key => $value)
       {
        if(file_exists('../' . $settings[7] . $value[2])) unlink('../' . $settings[7] . $value[2]);
        unset($smilies[$key]);
-	  }
+      }
       else
       {
        if(($_POST['address'] != $value[2]) && $value[2] && file_exists('../' . $settings[7] . $value[2])) unlink('../' . $settings[7] . $value[2]);
@@ -434,7 +443,7 @@ foreach($cats as $key => $value)
       $temp = fopen('../' . $settings[6], 'w');
       fwrite($temp, implode("\n", $smilies));
       fclose($temp);
-	  unset($_POST['synonym'], $_POST['address']);
+      unset($_POST['synonym'], $_POST['address']);
       $temp = '   <p class="green">&raquo; ' . $lang['smilies']['edit'] . "</p>\n";
      }
      elseif($_POST['synonym'] && !unifySmilie($_POST['synonym'])) //Neuer Smilie
@@ -443,8 +452,8 @@ foreach($cats as $key => $value)
       $temp = fopen('../' . $settings[6], 'w');
       fwrite($temp, implode("\n", $smilies));
       fclose($temp);
-	  unset($_POST['synonym'], $_POST['address']);
-	  $temp = '   <p class="green">&raquo; ' . $lang['smilies']['new'] . "</p>\n";
+      unset($_POST['synonym'], $_POST['address']);
+      $temp = '   <p class="green">&raquo; ' . $lang['smilies']['new'] . "</p>\n";
      }
      else $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['smilies']['exist'], $_POST['synonym']) . "</p>\n";
      break;

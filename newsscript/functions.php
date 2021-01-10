@@ -362,11 +362,11 @@ function setNewsTag(openingTag, closingTag)
  * 
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.3.1
+ * @version 1.0.4
  */
 function getNewsVersion()
 {
- return '1.0.3.5';
+ return '1.0.4';
 }
 
 /**
@@ -380,5 +380,50 @@ function getNewsVersion()
 function stripEscape($string)
 {
  return count($strings = func_get_args()) > 1 ? array_map(create_function('$string', 'return htmlspecialchars(stripslashes($string), ENT_QUOTES);'), $strings) : htmlspecialchars(stripslashes($string), ENT_QUOTES);
+}
+
+/**
+ * Erzeugt ein Thumbnail aus GIF, JPEG oder PNG Bildern.
+ * 
+ * @access protected
+ * @package Chrissyx_Homepage
+ * @param string $image Speicherort des Originalbilds
+ * @param string $thumb Speicherort des Thumbnails
+ * @param int $width Breite des Thumbnails
+ * @param int $height Höhe des Thumbnails
+ * @param mixed $imageOld getimagesize() von $image
+ * @return bool Ob ein Thumbnail erstellt wurde
+ * @see thumb()
+ * @since 4.0
+ * @version 4.0
+ */
+function newsCreateThumbnail($image, $thumb, $width, $height, $imageOld)
+{
+ $imageNew = imagecreatetruecolor($width, $height);
+ switch($imageOld[2])
+ {
+  case IMAGETYPE_GIF:
+  if(!imagetypes() & IMG_GIF) return false;
+  $imageNew = imagecreate($width, $height);
+  imagecopyresampled($imageNew, imagecreatefromgif($image), 0, 0, 0, 0, $width, $height, $imageOld[0], $imageOld[1]);
+  imagegif($imageNew, $thumb);
+  break;
+
+  case IMAGETYPE_JPEG:
+  imagecopyresampled($imageNew, imagecreatefromjpeg($image), 0, 0, 0, 0, $width, $height, $imageOld[0], $imageOld[1]);
+  imagejpeg($imageNew, $thumb);
+  break;
+
+  case IMAGETYPE_PNG:
+  imagecopyresampled($imageNew, imagecreatefrompng($image), 0, 0, 0, 0, $width, $height, $imageOld[0], $imageOld[1]);
+  imagepng($imageNew, $thumb);
+  break;
+
+  default:
+  return false;
+  break;
+ }
+ imagedestroy($imageNew);
+ return true;
 }
 ?>

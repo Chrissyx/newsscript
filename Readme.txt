@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.3.5
+Version: 1.0.4
 
 
 ENGLISH - SCROLL DOWN!
@@ -101,6 +101,11 @@ newsscriptfooter: Für die Seitennavigation unter den News
 newsscriptcomments: Für den kompletten Kommentarbereich
 Diese Klassen kannst Du dann bei Bedarf im <head>...</head> Bereich oder in deiner eigenen CSS Datei einbinden.
 Mehr zum Thema CSS findest Du hier: http://de.selfhtml.org/css/formate/einbinden.htm
+
+-Beim Hochladen eines Bilders kommt die Meldung "Fatal error: Call to undefined function imagecreatetruecolor()"?!?
+Für das automatische Skalieren eines Kategoriebildes muss die GD Bibliothek als PHP Erweiterung vorhanden sein.
+Wenn Du keine Möglichkeit hast, diese in der php.ini zu aktivieren, musst Du die Bildgröße vor dem Upload von Hand
+anpassen.
 
 -Meine Frage wurde nicht beantwortet!
 Dann besuch mein Forum unter http://www.chrissyx-forum.de.vu/ oder schreib mir eine E-Mail: chris@chrissyx.com
@@ -208,6 +213,10 @@ newsscriptfooter: For the page navigation under the news listing
 newsscriptcomments: For the whole comments area
 You can define those classes in the <head>...</head> section or include them in your own CSS file. For more
 information about CSS, see here: http://en.wikibooks.org/wiki/CSS_Programming
+
+-I'm getting a message "Fatal error: Call to undefined function imagecreatetruecolor()" while uploading a pic?!?
+Automatic scaling of a category image needs the GD library loaded as PHP extension. If you don't have any access
+to the php.ini file to activate it, you have to adjust the image size manually before uploading.
 
 -My question isn't answered here!
 Sorry, no more FAQ entries for now. Please visit my board at http://www.chrissyx.com/forum/ for more help.

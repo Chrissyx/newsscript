@@ -18,7 +18,7 @@
  </head>
  <body>
   <h1>Chrissyx Homepage Scripts - Newsscript</h1>
-  <h2>Version: 1.0.3.5</h2>
+  <h2>Version: 1.0.4</h2>
   <h3><a href="#ENGLISH">ENGLISH - CLICK HERE!</a></h3>
 
   <h4>Inhalt</h4>
@@ -85,6 +85,8 @@
        </ul>
        Diese Klassen kannst Du dann bei Bedarf im <code>&lt;head&gt;...&lt;/head&gt;</code> Bereich oder in deiner eigenen CSS Datei einbinden.<br />
        Mehr zum Thema CSS findest Du hier: <a href="http://de.selfhtml.org/css/formate/einbinden.htm" target="_blank">http://de.selfhtml.org/css/formate/einbinden.htm</a></li>
+   <li style="margin-bottom:10px;">Beim Hochladen eines Bilders kommt die Meldung &quot;Fatal error: Call to undefined function imagecreatetruecolor()&quot;?!?<br />
+       F&uuml;r das automatische Skalieren eines Kategoriebildes muss die <a href="http://www.libgd.org/" target="_blank">GD Bibliothek</a> als PHP Erweiterung vorhanden sein. Wenn Du keine M&ouml;glichkeit hast, diese in der php.ini zu aktivieren, musst Du die Bildgr&ouml;&szlig;e vor dem Upload von Hand anpassen.</li>
    <li>Meine Frage wurde nicht beantwortet!<br />
        Dann besuch mein Forum unter <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a> oder schreib mir eine E-Mail: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
   </ul><br />
@@ -179,7 +181,10 @@
         <li>newsscriptfooter: For the page navigation under the news listing</li>
         <li>newsscriptcomments: For the whole comments area</li>
        </ul>
-       You can define those classes in the <code>&lt;head&gt;...&lt;/head&gt;</code> section or include them in your own CSS file. For more information about CSS, see here: <a href="http://en.wikibooks.org/wiki/CSS_Programming" target="_blank">http://en.wikibooks.org/wiki/CSS_Programming</a></li>
+       You can define those classes in the <code>&lt;head&gt;...&lt;/head&gt;</code> section or include them in your own CSS file.<br />
+       For more information about CSS, see here: <a href="http://en.wikibooks.org/wiki/CSS_Programming" target="_blank">http://en.wikibooks.org/wiki/CSS_Programming</a></li>
+   <li style="margin-bottom:10px;">I'm getting a message &quot;Fatal error: Call to undefined function imagecreatetruecolor()&quot; while uploading a pic?!?<br />
+       Automatic scaling of a category image needs the <a href="http://www.libgd.org/" target="_blank">GD library</a> loaded as PHP extension. If you don't have any access to the php.ini file to activate it, you have to adjust the image size manually before uploading.</li>
    <li style="margin-bottom:10px;">My question isn't answered here!<br />
        Sorry, no more FAQ entries for now. Please visit my board at <a href="http://www.chrissyx.com/forum/" target="_blank">http://www.chrissyx.com/forum/</a> for more help.<br />
        Or write me an e-mail: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
