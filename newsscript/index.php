@@ -1,27 +1,28 @@
 <?php
-
-#####################################################################
-#Script written by Chrissyx                                         #
-#You may use and edit this script, if you don't remove this comment!#
-#http://www.chrissyx.de(.vu)/                                       #
-#####################################################################
-
+/**
+ * Adminmodul zum Installieren und Verwalten des Newsscripts.
+ * 
+ * @author Chrissyx
+ * @copyright (c) 2001 - 2009 by Chrissyx
+ * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @package CHS_Newsscript
+ * @version 1.0.2
+ */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
 elseif(!file_exists('style.css')) die('<b>ERROR:</b> Konnte &quot;style.css&quot; nicht finden!');
-#elseif(!file_exists('functions.php')) die('<b>ERROR:</b> Konnte &quot;functions.php&quot; nicht finden!');
 else require('functions.php');
 
 if(file_exists('settings.dat.php'))
 {
- if(!$_SESSION['newspw'] || !$_SESSION['newsname'] || !$_SESSION['newsadmin'])
+ if(!isset($_SESSION['newspw'], $_SESSION['newsname'], $_SESSION['newsadmin']))
  {
   header('Location: ../news.php?action=admin');
   exit();
  }
  else
  {
-  $settings = array_map('trim', array_slice(file('settings.dat.php'), 1));
+  $settings = array_map('trim', array_slice(explode("\n", file_get_contents('settings.dat.php')), 1));
   $user = @array_map('trim', array_slice(file('../' . $settings[2]), 1)) or die('<b>ERROR:</b> Benutzer nicht gefunden!');
   $value = getUser($_SESSION['newsname']) or die('<b>ERROR:</b> Admin nicht gefunden!');
   if($_SESSION['dispall'] || $value[2] != $_SESSION['newsadmin'] || $value[1] != $_SESSION['newspw']) die('<b>ERROR:</b> Keine Adminrechte!');
@@ -30,8 +31,7 @@ if(file_exists('settings.dat.php'))
 }
 else
 {
- $temp = basename($_SERVER['PHP_SELF']);
- if(decoct(fileperms($temp)) != '100775') chmod($temp, 0775) or die('<b>ERROR:</b> Konnte für &quot;' . $temp . '&quot; keine Rechte setzen!');
+ if(decoct(fileperms($temp = basename($_SERVER['PHP_SELF']))) != '100775') chmod($temp, 0775) or die('<b>ERROR:</b> Konnte für &quot;' . $temp . '&quot; keine Rechte setzen!');
  elseif(decoct(fileperms('../news.php')) != '100775') chmod('../news.php', 0775) or die('<b>ERROR:</b> Konnte für &quot;news.php&quot; keine Rechte setzen!');
  elseif(decoct(fileperms('../newsscript/')) != '40775') chmod('../newsscript/', 0775) or die('<b>ERROR:</b> Konnte für den Ordner &quot;newsscript&quot; keine Rechte setzen!');
  clearstatcache();
@@ -39,7 +39,7 @@ else
 
 if(!file_exists('language_index.php'))
 {
- if($_GET['inifile']) parseLanguage($_GET['inifile']);
+ if(isset($_GET['inifile'])) parseLanguage($_GET['inifile']);
  else
  {
   newsHead('CHS - Newsscript: Choose language', 'Newsscript, CHS, choose, language, Chrissyx', 'Choose the language for the Newsscript from CHS', 'UTF-8', 'en');
@@ -68,20 +68,22 @@ switch($action)
     <li><a href="' . $_SERVER['PHP_SELF'] . '?page=smilies">' . $lang['index']['smilies'] . '</a></li>
     <li><a href="' . $_SERVER['PHP_SELF'] . '?page=lang">' . $lang['index']['lang'] . '</a></li>
     <li><a href="' . $_SERVER['PHP_SELF'] . '?page=help">' . $lang['index']['help'] . '</a></li>
-    <li><a href="' . (($settings[11]) ? $settings[11] : '../news.php') . '?action=newsout">' . $lang['index']['logout'] . ', ' . $_SESSION['newsname'] . '</a></li>
+    <li><a href="' . ($settings[11] != '' ? $settings[11] : '../news.php') . '?action=newsout">' . $lang['index']['logout'] . ', ' . $_SESSION['newsname'] . '</a></li>
    </ul>
   </div>
   <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;">
 ');
- switch($_GET['page'])
+ //Wow, dieses krank-leetige Kontrukt wird benötigt, damit der Nutzer am Ende keine Entitäten in Textfeldern vorfindet, und trotzdem valide zu bleiben. Was proggt man nicht alles für maximalen Komfort und Idiotensicherheit...
+ $htmlJSDecode = array_combine(array_keys($temp = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")), array_map(create_function('$string', 'return \'\u00\' . bin2hex($string);'), array_values($temp)));
+ switch(isset($_GET['page']) ? $_GET['page'] : '')
  {
 
 # Administration: Einstellungen #
   case 'settings':
   include('language_settings.php');
-  if($_POST['update'])
+  if(isset($_POST['update']))
   {
-   $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</span><br /><br />\n";
+   $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</p>\n";
    if(!$_POST['newsdat']) $settings[0] .= '" style="border-color:#FF0000;';
    elseif(!$_POST['newsmax']) $settings[1] .= '" style="border-color:#FF0000;';
    elseif(!$_POST['newspwsdat'] || (substr($_POST['newspwsdat'], -4) != '.php')) $settings[2] .= '" style="border-color:#FF0000;';
@@ -104,6 +106,7 @@ switch($action)
      {
       if(!$settings[6] || (substr($settings[6], -4) == '.var')) //Neu .dat
       {
+       if(!file_exists('../' . dirname($_POST['newssmilies']))) mkdir('../' . dirname($_POST['newssmilies']), 0755);
        $temp = fopen('../' . $_POST['newssmilies'], 'w');
        fwrite($temp, '0');
        fclose($temp);
@@ -128,22 +131,23 @@ switch($action)
      }
     }
     $temp = fopen('settings.dat.php', 'w');
-    fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . $_POST['newsdat'] . "\n" . $_POST['newsmax'] . "\n" . $_POST['newspwsdat'] . "\n" . $_POST['newscomments'] . "\n" . $_POST['newscatsdat'] . "\n" . $_POST['newscatpics'] . "\n" . $_POST['newssmilies'] . "\n" . $_POST['smiliepics'] . "\n" . $_POST['smiliesmax']. "\n" . $_POST['smiliesmaxrow'] . "\n" . $_POST['tickermax'] . "\n" .  $_POST['redir']);
+    fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . $_POST['newsdat'] . "\n" . $_POST['newsmax'] . "\n" . $_POST['newspwsdat'] . "\n" . $_POST['newscomments'] . "\n" . $_POST['newscatsdat'] . "\n" . $_POST['newscatpics'] . "\n" . $_POST['newssmilies'] . "\n" . $_POST['smiliepics'] . "\n" . $_POST['smiliesmax']. "\n" . $_POST['smiliesmaxrow'] . "\n" . $_POST['tickermax'] . "\n" .  $_POST['redir'] . "\n" . (isset($_POST['captcha']) ? 'checked="checked" ' : ''));
     fclose($temp);
-    $settings = array_map('trim', array_slice(file('settings.dat.php'), 1));
-    $temp = '   <span class="green">&raquo; ' . $lang['settings']['new'] . "</span><br /><br />\n";
+    $settings = array_map('trim', array_slice(explode("\n", file_get_contents('settings.dat.php')), 1));
+    $temp = '   <p class="green">&raquo; ' . $lang['settings']['new'] . "</p>\n";
    }
   }
-  else unset($temp);
+  else $temp = '';
   ?>
   <h4><?=$lang['settings']['title']?></h4>
-   <?=$lang['settings']['intro']?><br /><br />
+   <p><?=$lang['settings']['intro']?></p>
 <?=$temp?>   <form id="form" action="<?=$_SERVER['PHP_SELF']?>?page=settings" method="post">
    <table>
     <tr><td><?=$lang['settings']['numofnews']?></td><td><input type="text" name="newsmax" value="<?=$settings[1]?>" size="25" /></td></tr>
     <tr><td><?=$lang['settings']['locnews']?></td><td><input type="text" name="newsdat" value="<?=$settings[0]?>" size="25" /></td></tr>
     <tr><td><?=$lang['settings']['locpws']?></td><td><input type="text" name="newspwsdat" value="<?=$settings[2]?>" size="25" /></td></tr>
     <tr><td><?=$lang['settings']['foldcomments']?></td><td><input type="text" name="newscomments" value="<?=$settings[3]?>" size="25" /></td></tr>
+    <tr><td><?=$lang['settings']['capcomments']?></td><td><input type="checkbox" name="captcha" <?=$settings[12]?>/></td></tr>
     <tr><td><?=$lang['settings']['loccats']?></td><td><input type="text" name="newscatsdat" value="<?=$settings[4]?>" size="25" /></td></tr>
     <tr><td><?=$lang['settings']['foldpics']?></td><td><input type="text" name="newscatpics" value="<?=$settings[5]?>" size="25" /></td></tr>
     <tr><td colspan="2"></td></tr>
@@ -166,43 +170,44 @@ switch($action)
 # Administration: Benutzerverwaltung #
   case 'user':
   include('language_user.php');
-  if($_POST['update'])
+  if(isset($_POST['update']))
   {
-   $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</span><br /><br />\n";
+   $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</p>\n";
+   list($_POST['name'], $_POST['user']) = stripEscape($_POST['name'], $_POST['user']);
    if(!$_POST['name']) $_POST['name'] .= '" style="border-color:#FF0000;';
    elseif(!preg_match('/[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+/si', $_POST['email'])) $_POST['email'] .= '" style="border-color:#FF0000;';
    elseif($_POST['user'] && $_POST['name']) //Vorhandener User
    {
     $key = unifyUser($_POST['user']);
-    if($_POST['delete']) unset($user[$key]);
+    if(isset($_POST['delete'])) unset($user[$key]);
     else
     {
      $value = explode("\t", $user[$key]);
-     $user[$key] = $_POST['name'] . "\t" . $value[1] . "\t" . (($_POST['isadmin'] == 'on') ? '1' :'0') . "\t" . $_POST['email'] . (($value[4]) ? "\t" . $value[4] : '');
+     $user[$key] = $_POST['name'] . "\t" . $value[1] . "\t" . (isset($_POST['isadmin']) && $_POST['isadmin'] == 'on' ? '1' :'0') . "\t" . $_POST['email'] . (isset($value[4]) ? "\t" . $value[4] : '');
 	}
 	saveUser('../' . $settings[2]);
 	unset($_POST['name'], $_POST['email']);
-    $temp = '   <span class="green">&raquo; ' . $lang['user']['edit'] . "</span><br /><br />\n";
+    $temp = '   <p class="green">&raquo; ' . $lang['user']['edit'] . "</p>\n";
    }
    elseif($_POST['name'] && (unifyUser($_POST['name']) === false)) //Neuer User
    {
-    for($i=0; $i<10; $i++) $newpw .= chr(mt_rand(33, 126));
-    $user[] = $_POST['name'] . "\t" . md5($newpw) . "\t" . (($_POST['isadmin'] == 'on') ? '1' :'0') . "\t" . $_POST['email'];
+    for($i=0,$newpw=''; $i<10; $i++) $newpw .= chr(mt_rand(33, 126));
+    $user[] = $_POST['name'] . "\t" . md5($newpw) . "\t" . (isset($_POST['isadmin']) && $_POST['isadmin'] == 'on' ? '1' :'0') . "\t" . $_POST['email'];
     $temp = fopen('../' . $settings[2], 'a');
     fwrite($temp, "\n" . end($user));
     fclose($temp);
-    $temp = '   <span class="green">&raquo; ' . $lang['user']['new'] . ((mail($_POST['email'], $_SERVER['SERVER_NAME'] . ' Newsscript: ' . $lang['user']['subject'], sprintf($lang['user']['text'], $_POST['name'], $_SERVER['SERVER_NAME'], (($_POST['isadmin'] == 'on') ? $lang['user']['admin'] : $lang['user']['poster']), $newpw), 'From: newsscript@' . $_SERVER['SERVER_NAME'] . "\n" . 'Reply-To: ' . $_POST['email'] . "\n" . 'X-Mailer: PHP/' . phpversion() . "\n" . 'Content-Type: text/plain; charset=' . $lang['index']['charset'])) ? ' ' . $lang['user']['send'] : '</span> <span style="color:#FF0000; font-weight:bold;">' . $lang['user']['nosend']) . "</span><br /><br />\n"; #\r\n ???
+    $temp = '   <p><span class="green">&raquo; ' . $lang['user']['new'] . ((mail($_POST['email'], $_SERVER['SERVER_NAME'] . ' Newsscript: ' . $lang['user']['subject'], sprintf($lang['user']['text'], $_POST['name'], $_SERVER['SERVER_NAME'], (isset($_POST['isadmin']) ? $lang['user']['admin'] : $lang['user']['poster']), $newpw), 'From: newsscript@' . $_SERVER['SERVER_NAME'] . "\n" . 'Reply-To: ' . $_POST['email'] . "\n" . 'X-Mailer: PHP/' . phpversion() . "\n" . 'Content-Type: text/plain; charset=' . $lang['index']['charset'])) ? ' ' . $lang['user']['send'] : '</span> <span style="color:#FF0000; font-weight:bold;">' . $lang['user']['nosend']) . "</span></p>\n"; #\r\n ???
     unset($newpw, $_POST['name'], $_POST['email']);
    }
-   else $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['user']['exist'], $_POST['name']) . "</span><br /><br />\n";
+   else $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['user']['exist'], $_POST['name']) . "</p>\n";
   }
-  else unset($temp);
+  else $temp = '';
   echo("\n" . '   <script type="text/javascript">' . "\n");
   $temp2 = '   var user = new Array(';
   foreach($user as $key => $value)
   {
-   $value = explode("\t", $value);
-   $temp2 .= 'new Array(\'' . $value[0] . '\', ' . $value[2] . ', \'' . $value[3] . '\'), ';
+   $value = explode("\t", $value); //Entitäten zu Unicode-hex, siehe oben
+   $temp2 .= 'new Array(\'' . strtr($value[0], $htmlJSDecode) . '\', ' . $value[2] . ', \'' . $value[3] . '\'), ';
   }
   echo($temp2 . "'Windows 98SE rulez');\n");
   ?>
@@ -218,11 +223,11 @@ switch($action)
    </script>
 
    <h4><?=$lang['user']['title']?></h4>
-   <?=$lang['user']['intro']?><br /><br />
+   <p><?=$lang['user']['intro']?></p>
 <?=$temp?>   <form action="<?=$_SERVER['PHP_SELF']?>?page=user" method="post">
    <table style="float:left;">
-    <tr><td><?=$lang['user']['name']?></td><td><input type="text" name="name" id="name" value="<?=$_POST['name']?>" size="25" /></td></tr>
-    <tr><td><?=$lang['user']['email']?></td><td><input type="text" name="email" id="email" value="<?=$_POST['email']?>" size="25" /></td></tr>
+    <tr><td><?=$lang['user']['name']?></td><td><input type="text" name="name" id="name" value="<?=isset($_POST['name']) ? $_POST['name'] : ''?>" size="25" /></td></tr>
+    <tr><td><?=$lang['user']['email']?></td><td><input type="text" name="email" id="email" value="<?=isset($_POST['email']) ? $_POST['email'] : ''?>" size="25" /></td></tr>
     <tr><td><?=$lang['user']['isadmin']?></td><td><input type="checkbox" name="isadmin" id="isadmin" /></td></tr>
     <tr><td><?=$lang['user']['delete']?></td><td><span style="background-color:#FF0000;"><input type="checkbox" name="delete" id="delete" disabled="disabled" /></span></td></tr>
    </table>
@@ -248,9 +253,10 @@ foreach($user as $key => $value)
   case 'cats':
   include('language_cats.php');
   $cats = array_map('trim', file('../' . $settings[4]));
-  if($_POST['update'])
+  if(isset($_POST['update']))
   {
-   $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</span><br /><br />\n";
+   $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</p>\n";
+   list($_POST['catname'], $_POST['cat']) = stripEscape($_POST['catname'], $_POST['cat']);
    if(!$_POST['catname']) $_POST['catname'] .= '" style="border-color:#FF0000;';
    elseif($_FILES['uploadpic']['name'] && !preg_match("/(.*)\.(jpg|jpeg|gif|png|bmp)/i", $_FILES['uploadpic']['name'])) $_FILES['uploadpic']['name'] .= '" style="border-color:#FF0000;';
    else
@@ -265,7 +271,7 @@ foreach($user as $key => $value)
 	 }
      else
      {
-      $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</span><br /><br />\n";
+      $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</p>\n";
       break;
 	 }
 
@@ -274,59 +280,59 @@ foreach($user as $key => $value)
      {
       $key = unifyCat($_POST['cat']);
       $value = explode("\t", $cats[$key]);
-      if($_POST['delete'])
+      if(isset($_POST['delete']))
       {
-       if($value[2] && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
+       if(isset($value[2]) && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
        unset($cats[$key]);
 	  }
       else
       {
-       if(($_POST['catpic'] != $value[2]) && $value[2] && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
+       if(isset($value[2]) && ($_POST['catpic'] != $value[2]) && file_exists('../' . $settings[5] . $value[2])) unlink('../' . $settings[5] . $value[2]);
        $cats[$key] = $value[0] . "\t" . $_POST['catname'] . "\t" . $_POST['catpic'];
       }
       $temp = fopen('../' . $settings[4], 'w');
       fwrite($temp, implode("\n", $cats));
       fclose($temp);
 	  unset($_POST['catname'], $_POST['catpic']);
-      $temp = '   <span class="green">&raquo; ' . $lang['cats']['edit'] . "</span><br /><br />\n";
+      $temp = '   <p class="green">&raquo; ' . $lang['cats']['edit'] . "</p>\n";
      }
      elseif($_POST['catname'] && !unifyCat($_POST['catname'])) //Neue Kategorie
      {
-      $cats[] = $cats[0]++ . "\t" . htmlspecialchars($_POST['catname']) . "\t" . $_POST['catpic'];
+      $cats[] = $cats[0]++ . "\t" . $_POST['catname'] . "\t" . $_POST['catpic'];
       $temp = fopen('../' . $settings[4], 'w');
       fwrite($temp, implode("\n", $cats));
       fclose($temp);
 	  unset($_POST['catname'], $_POST['catpic']);
-	  $temp = '   <span class="green">&raquo; ' . $lang['cats']['new'] . "</span><br /><br />\n";
+	  $temp = '   <p class="green">&raquo; ' . $lang['cats']['new'] . "</p>\n";
      }
-     else $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['cats']['exist'], $_POST['catname']) . "</span><br /><br />\n";
+     else $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['cats']['exist'], $_POST['catname']) . "</p>\n";
      break;
 
      case 3:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picpartial'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picpartial'] . "</p>\n";
      $_FILES['uploadpic']['name'] .= '" style="border-color:#FF0000;';
      break;
 
      case 2:
      case 1:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picbigsize'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picbigsize'] . "</p>\n";
      $_FILES['uploadpic']['name'].= '" style="border-color:#FF0000;';
      break;
 
      default:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picunknown'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picunknown'] . "</p>\n";
      break;
     }
    }
   }
-  else unset($temp);
+  else $temp = '';
   array_shift($cats); //Last CatID raus
   echo("\n" . '   <script type="text/javascript">' . "\n");
   $temp2 = '   var cats = new Array(';
   foreach($cats as $key => $value)
   {
-   $value = explode("\t", $value);
-   $temp2 .= 'new Array(\'' . $value[1] . '\', \'' . $value[2] . '\'), ';
+   $value = explode("\t", $value); //Entitäten zu Unicode-hex, siehe oben
+   $temp2 .= 'new Array(\'' . strtr($value[1], $htmlJSDecode) . '\', \'' . (isset($value[2]) ? $value[2] : '') . '\'), ';
   }
   echo($temp2 . "'Windows 98SE rulez');\n");
   ?>
@@ -338,17 +344,17 @@ foreach($user as $key => $value)
     document.getElementById('pic').src = (cats[key][1] == '') ? 'frage.jpg' : ((cats[key][1].indexOf('/') == -1) ? '<?='../'.$settings[5]?>' : ((cats[key][1].substr(0, 3) == '../') ? '../' : '')) + cats[key][1];
     document.getElementById('delete').disabled = false;
     document.getElementById('cat').value = cats[key][0];
-   };
+   }
    </script>
 
    <h4><?=$lang['cats']['title']?></h4>
-   <?=$lang['cats']['intro']?><br /><br />
+   <p><?=$lang['cats']['intro']?></p>
 <?=$temp?>   <form action="<?=$_SERVER['PHP_SELF']?>?page=cats" method="post" enctype="multipart/form-data">
    <table style="float:left;">
-    <tr><td><?=$lang['cats']['name']?></td><td><input type="text" name="catname" id="catname" value="<?=$_POST['catname']?>" size="45" /></td><td rowspan="5"><img src="frage.jpg" alt="CatPic" id="pic" /></td></tr>
-    <tr><td><?=$lang['cats']['pic']?></td><td><input type="text" name="catpic" id="catpic" value="<?=$_POST['catpic']?>" size="45" /></td></tr>
+    <tr><td><?=$lang['cats']['name']?></td><td><input type="text" name="catname" id="catname" value="<?=isset($_POST['catname']) ? $_POST['catname'] : ''?>" size="45" /></td><td rowspan="5"><img src="frage.jpg" alt="CatPic" id="pic" /></td></tr>
+    <tr><td><?=$lang['cats']['pic']?></td><td><input type="text" name="catpic" id="catpic" value="<?=isset($_POST['catpic']) ? $_POST['catpic'] : ''?>" size="45" /></td></tr>
     <tr><td colspan="2"><?=$lang['cats']['hint1']?></td></tr>
-    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=$_FILES['uploadpic']['name']?>" size="25" /></td></tr>
+    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=isset($_FILES['uploadpic']['name']) ? $_FILES['uploadpic']['name'] : ''?>" size="25" /></td></tr>
     <tr><td><?=$lang['cats']['delete']?></td><td><span style="background-color:#FF0000;"><input type="checkbox" name="delete" id="delete" disabled="disabled" /></span></td></tr>
    </table>
    <div style="border:1px solid #000000; margin-left:10px; padding:5px; float:left;">
@@ -361,7 +367,7 @@ foreach($cats as $key => $value)
 }
 ?>   </div>
    <br style="clear:both;" />
-   <?php newsFont(2); echo($lang['cats']['hint2']); ?></span><br /><br />
+   <?=newsFont(2) . $lang['cats']['hint2']?></span><br /><br />
    <input type="submit" value="<?=$lang['index']['update']?>" /> <input type="reset" value="<?=$lang['index']['reset']?>" onmouseup="document.getElementById('delete').disabled=true; document.getElementById('pic').src='frage.jpg'; document.getElementById('cat').value='';" />
    <input type="hidden" name="update" value="true" />
    <input type="hidden" name="cat" id="cat" />
@@ -369,6 +375,7 @@ foreach($cats as $key => $value)
   <?php
   break;
 
+# Administration: Smilies #
   case 'smilies':
   include('language_smilies.php');
   if(!$settings[6])
@@ -382,9 +389,10 @@ foreach($cats as $key => $value)
    break;
   }
   else $smilies = array_map('trim', file('../' . $settings[6]));
-  if($_POST['update'])
+  if(isset($_POST['update']))
   {
-   $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</span><br /><br />\n";
+   $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['fillout'] . "</p>\n";
+   list($_POST['synonym'], $_POST['smilie']) = stripEscape($_POST['synonym'], $_POST['smilie']);
    if(!$_POST['synonym']) $_POST['synonym'] .= '" style="border-color:#FF0000;';
    elseif(!$_POST['address'] && !$_FILES['uploadpic']['name'])
    {
@@ -404,7 +412,7 @@ foreach($cats as $key => $value)
 	 }
      else
      {
-      $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</span><br /><br />\n";
+      $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picprocess'] . "</p>\n";
       break;
 	 }
 
@@ -413,7 +421,7 @@ foreach($cats as $key => $value)
      {
       $key = unifySmilie($_POST['smilie']);
       $value = explode("\t", $smilies[$key]);
-      if($_POST['delete'])
+      if(isset($_POST['delete']))
       {
        if(file_exists('../' . $settings[7] . $value[2])) unlink('../' . $settings[7] . $value[2]);
        unset($smilies[$key]);
@@ -427,7 +435,7 @@ foreach($cats as $key => $value)
       fwrite($temp, implode("\n", $smilies));
       fclose($temp);
 	  unset($_POST['synonym'], $_POST['address']);
-      $temp = '   <span class="green">&raquo; ' . $lang['smilies']['edit'] . "</span><br /><br />\n";
+      $temp = '   <p class="green">&raquo; ' . $lang['smilies']['edit'] . "</p>\n";
      }
      elseif($_POST['synonym'] && !unifySmilie($_POST['synonym'])) //Neuer Smilie
      {
@@ -436,36 +444,36 @@ foreach($cats as $key => $value)
       fwrite($temp, implode("\n", $smilies));
       fclose($temp);
 	  unset($_POST['synonym'], $_POST['address']);
-	  $temp = '   <span class="green">&raquo; ' . $lang['smilies']['new'] . "</span><br /><br />\n";
+	  $temp = '   <p class="green">&raquo; ' . $lang['smilies']['new'] . "</p>\n";
      }
-     else $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['smilies']['exist'], $_POST['synonym']) . "</span><br /><br />\n";
+     else $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . sprintf($lang['smilies']['exist'], $_POST['synonym']) . "</p>\n";
      break;
 
      case 3:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picpartial'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picpartial'] . "</p>\n";
      $_FILES['uploadpic']['name'] .= '" style="border-color:#FF0000;';
      break;
 
      case 2:
      case 1:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picbigsize'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picbigsize'] . "</p>\n";
      $_FILES['uploadpic']['name'] .= '" style="border-color:#FF0000;';
      break;
 
      default:
-     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picunknown'] . "</span><br /><br />\n";
+     $temp = '   <p style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['index']['picunknown'] . "</p>\n";
      break;
     }
    }
   }
-  else unset($temp);
+  else $temp = '';
   array_shift($smilies); //Last SmilieID raus
   echo("\n" . '   <script type="text/javascript">' . "\n");
   $temp2 = '   var smilies = new Array(';
   foreach($smilies as $key => $value)
   {
    $value = explode("\t", $value);
-   $temp2 .= 'new Array(\'' . $value[1] . '\', \'' . $value[2] . '\'), ';
+   $temp2 .= 'new Array(\'' . strtr($value[1], $htmlJSDecode) . '\', \'' . $value[2] . '\'), ';
   }
   echo($temp2 . "'Windows 98SE rulez');\n");
   ?>
@@ -480,13 +488,13 @@ foreach($cats as $key => $value)
    </script>
 
    <h4><?=$lang['smilies']['title']?></h4>
-   <?=$lang['smilies']['intro']?><br /><br />
+   <p><?=$lang['smilies']['intro']?></p>
 <?=$temp?>   <form action="<?=$_SERVER['PHP_SELF']?>?page=smilies" method="post" enctype="multipart/form-data">
    <table style="float:left;">
-    <tr><td><?=$lang['smilies']['synoym']?></td><td><input type="text" name="synonym" id="synonym" value="<?=$_POST['synonym']?>" size="45" /></td></tr>
-    <tr><td><?=$lang['smilies']['adress']?></td><td><input type="text" name="address" id="address" value="<?=$_POST['address']?>" size="45" /></td></tr>
+    <tr><td><?=$lang['smilies']['synoym']?></td><td><input type="text" name="synonym" id="synonym" value="<?=isset($_POST['synonym']) ? $_POST['synonym'] : ''?>" size="45" /></td></tr>
+    <tr><td><?=$lang['smilies']['adress']?></td><td><input type="text" name="address" id="address" value="<?=isset($_POST['address']) ? $_POST['address'] : ''?>" size="45" /></td></tr>
     <tr><td colspan="2"><?=$lang['smilies']['hint1']?></td></tr>
-    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=$_FILES['uploadpic']['name']?>" size="25" /></td></tr>
+    <tr><td><?=$lang['index']['upload']?></td><td><input type="file" name="uploadpic" value="<?=isset($_FILES['uploadpic']['name']) ? $_FILES['uploadpic']['name'] : ''?>" size="25" /></td></tr>
     <tr><td><?=$lang['smilies']['delete']?></td><td><span style="background-color:#FF0000;"><input type="checkbox" name="delete" id="delete" disabled="disabled" /></span></td></tr>
    </table>
    <div style="border:1px solid #000000; margin-left:10px; padding:5px; float:left;">
@@ -501,7 +509,7 @@ foreach($smilies as $value)
 }
 ?>   </div>
    <br style="clear:both;" />
-   <?php newsFont(2); echo($lang['smilies']['hint2']); ?></span><br /><br />
+   <?=newsFont(2) . $lang['smilies']['hint2']?></span><br /><br />
    <input type="submit" value="<?=$lang['index']['update']?>" /> <input type="reset" value="<?=$lang['index']['reset']?>" onmouseup="document.getElementById('delete').disabled=true; document.getElementById('smilie').value='';" />
    <input type="hidden" name="update" value="true" />
    <input type="hidden" name="smilie" id="smilie" />
@@ -512,13 +520,13 @@ foreach($smilies as $value)
 # Administration: Sprache änden #
   case 'lang':
   include('language_lang.php');
-  if($_POST['inifile'])
+  if(isset($_POST['inifile']))
   {
    parseLanguage($_POST['inifile']);
    include('language_lang.php');
-   $temp = '   <span class="green">&raquo; ' . $lang['lang']['new'] . "</span><br /><br />\n";
+   $temp = '   <p class="green">&raquo; ' . $lang['lang']['new'] . "</p>\n";
   }
-  else unset($temp);
+  else $temp = '';
   echo('   <h4>' . $lang['lang']['title'] . '</h4>
 ' . $temp . '   <form action="' . $_SERVER['PHP_SELF'] . '?page=lang" method="post">
    ' . $lang['lang']['intro'] . ' <select name="inifile">
@@ -533,20 +541,22 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
 # Administration: Hilfe & Infos #
   case 'help':
   include('language_help.php');
+  ini_set('default_socket_timeout', 3); //Timeout für Updatecheck #stream_context_create() ab PHP5
   ?>
   <h4><?=$lang['help']['title']?></h4>
   <div style="padding-right:5px; float:left;">
-   <?=$lang['help']['hint1']?><br />
-   <a href="http://www.chrissyx.com/scripts.php" target="_blank">http://www.chrissyx.com/scripts.php</a><br /><br />
-   <?=$lang['help']['hint2']?><br />
-   <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a><br /><br />
-   <a href="http://validator.w3.org/check?uri=referer" target="_blank"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" /></a> &oline; <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="CSS ist valide!" /></a> &oline; <a href="http://www.validome.org/referer" target="_blank"><img src="http://www.validome.org/images/set2/valid_xhtml_1_0.gif" alt="Valid XHTML 1.0" /></a><?=(file_exists('../newsticker.php') ? ' &oline; <a href="http://feedvalidator.org/check.cgi?url=http://' . $_SERVER['SERVER_NAME'] . substr(dirname($_SERVER['PHP_SELF']), 0, strrpos(dirname($_SERVER['PHP_SELF']), '/')) . '/newsticker.php?type=rss" target="_blank"><img src="valid-rss.png" alt="[Valid RSS]" title="Validate my RSS feed" /></a>' : '')?>
+   <p><?=$lang['help']['check'] . ' ' . (@file_get_contents('http://www.chrissyx.com/update.php?nsversion=' . getNewsVersion()) == 'true' ? $lang['help']['newer'] : $lang['help']['latest'])?></p>
+   <p><?=$lang['help']['hint1']?><br />
+      <a href="http://www.chrissyx.com/scripts.php" target="_blank">http://www.chrissyx.com/scripts.php</a></p>
+   <p><?=$lang['help']['hint2']?><br />
+      <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a></p>
+   <p><a href="http://validator.w3.org/check?uri=referer" target="_blank"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" style="vertical-align:middle;" /></a> &ndash; <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="CSS ist valide!" style="vertical-align:middle;" /></a> &ndash; <a href="http://www.validome.org/referer" target="_blank"><img src="http://www.validome.org/images/set2/valid_xhtml_1_0.gif" alt="Valid XHTML 1.0" style="vertical-align:middle;" /></a><?=(file_exists('../newsticker.php') ? ' &ndash; <a href="http://feedvalidator.org/check.cgi?url=http://' . $_SERVER['SERVER_NAME'] . substr(dirname($_SERVER['PHP_SELF']), 0, strrpos(dirname($_SERVER['PHP_SELF']), '/')) . '/newsticker.php?type=rss" target="_blank"><img src="valid-rss.png" alt="[Valid RSS]" title="Validate my RSS feed" style="vertical-align:middle;" /></a>' : '')?></p>
   </div>
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
-   CHS - Newsscript<br />
-   <?=$lang['help']['version'] . ' ' . getNewsVersion()?><br />
-   &copy; 2008 by Chrissyx<br />
-   <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a>
+   <p>CHS - Newsscript<br />
+      <?=$lang['help']['version'] . ' ' . getNewsVersion()?><br />
+      &copy; 2008, 2009 by Chrissyx<br />
+      <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a></p>
   </div>
   <?php
   break;
@@ -555,7 +565,7 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   default:
   include('language_homepage.php');
   echo('  <h4>' . $lang['homepage']['title'] . '</h4>
-   ' . $lang['homepage']['intro'] . '<br /><br />
+   <p>' . $lang['homepage']['intro'] . '</p>
    <h5>' . $lang['homepage']['overview'] . '</h5>
    <ul style="list-style-type:square;">
     <li>' . $lang['homepage']['numofnews'] . ' ' . (count(file('../' . $settings[0]))-1) . '</li>
@@ -580,40 +590,43 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
  if(($_POST['newsdat'] && $_POST['newsmax'] && $_POST['newspwsdat'] && $_POST['newscomments'] && $_POST['newscatsdat'] && $_POST['newscatpics'] && $_POST['name'] && preg_match('/[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+/si', $_POST['email']) && $_POST['newspw']) && $_POST['tickermax'] && (substr($_POST['newspwsdat'], -4) == '.php') && ($_POST['newspw'] == $_POST['newspw2']))
  {
   $temp = fopen('settings.dat.php', 'w');
-  fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . $_POST['newsdat'] . "\n" . $_POST['newsmax'] . "\n" . $_POST['newspwsdat'] . "\n" . $_POST['newscomments'] . "\n" . $_POST['newscatsdat'] . "\n" . $_POST['newscatpics'] . "\n" . $_POST['newssmilies'] . "\n" . $_POST['smiliepics'] . "\n" . $_POST['smiliesmax'] . "\n" . $_POST['smiliesmaxrow'] . "\n" . $_POST['tickermax'] . "\n" .  $_POST['redir']);
+  fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . $_POST['newsdat'] . "\n" . $_POST['newsmax'] . "\n" . $_POST['newspwsdat'] . "\n" . $_POST['newscomments'] . "\n" . $_POST['newscatsdat'] . "\n" . $_POST['newscatpics'] . "\n" . $_POST['newssmilies'] . "\n" . $_POST['smiliepics'] . "\n" . $_POST['smiliesmax'] . "\n" . $_POST['smiliesmaxrow'] . "\n" . $_POST['tickermax'] . "\n" .  $_POST['redir'] . "\n" . (isset($_POST['captcha']) ? 'checked="checked" ' : ''));
   fclose($temp);
+  if(!file_exists('../' . dirname($_POST['newsdat']))) mkdir('../' . dirname($_POST['newsdat']), 0775);
   $temp = fopen('../' . $_POST['newsdat'], 'w');
   fwrite($temp, '1');
   fclose($temp);
+  if(!file_exists('../' . dirname($_POST['newspwsdat']))) mkdir('../' . dirname($_POST['newspwsdat']), 0775);
   $temp = fopen('../' . $_POST['newspwsdat'], 'w');
-  fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . $_POST['name'] . "\t" . md5($_POST['newspw']) . "\t1\t" . $_POST['email']);
+  fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . stripEscape($_POST['name']) . "\t" . md5($_POST['newspw']) . "\t1\t" . $_POST['email']);
   fclose($temp);
-  mkdir('../' . $_POST['newscomments'], 0775);
+  if(!file_exists('../' . $_POST['newscomments'])) mkdir('../' . $_POST['newscomments'], 0775);
+  if(!file_exists('../' . dirname($_POST['newscatsdat']))) mkdir('../' . dirname($_POST['newscatsdat']), 0775);
   $temp = fopen('../' . $_POST['newscatsdat'], 'w');
   fwrite($temp, '1');
   fclose($temp);
-  mkdir('../' . $_POST['newscatpics'], 0775);
-  if($_POST['newssmilies'] && (substr($_POST['newssmilies'], -4) != '.var'))
+  if(!file_exists('../' . $_POST['newscatpics'])) mkdir('../' . $_POST['newscatpics'], 0775);
+  if($_POST['newssmilies'] != '' && substr($_POST['newssmilies'], -4) != '.var')
   {
    $temp = fopen('../' . $_POST['newssmilies'], 'w');
    fwrite($temp, '1');
    fclose($temp);
    if($_POST['smiliepics'] != $_POST['newscatpics']) mkdir('../' . $_POST['smiliepics'], 0775);
   }
-  unlink('language_install.php'); //Wird nicht mehr gebraucht
-  unlink('update.php'); //Update wird auch nicht gebraucht
   $temp = fopen('version.dat.php', 'w');
   fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . getNewsVersion());
   fclose($temp);
+  unlink('language_install.php'); //Wird nicht mehr gebraucht
+  unlink('update.php'); //Update wird auch nicht gebraucht
   echo('  ' . $lang['install']['endinstall'] . '<br /><br />
-  ' . $lang['install']['note1'] . '<br /><br />
-  <code>&lt;!-- CHS - Newsscript --&gt;&lt;?php include(\'news.php\'); ?&gt;&lt;!-- /CHS - Newsscript --&gt;</code><br /><br />
-  ' . $lang['install']['note2'] . '<br /><br />
-  <code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include(\'newsticker.php\'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code><br /><br />
-  ' . sprintf($lang['install']['note3'], '<a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a>') . '<br /><br />
-  <a href="../news.php">' . $lang['install']['goto1'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '">' . $lang['install']['goto2'] . '</a> &ndash; <a href="' . (($_POST['redir']) ? $_POST['redir'] : 'http://' . $_SERVER['SERVER_NAME'] . '/') . '">' . $lang['install']['goto3'] . "</a>\n  ");
+  <p>' . $lang['install']['note1'] . '</p>
+  <p><code>&lt;!-- CHS - Newsscript --&gt;&lt;?php include(\'news.php\'); ?&gt;&lt;!-- /CHS - Newsscript --&gt;</code></p>
+  <p>' . $lang['install']['note2'] . '</p>
+  <p><code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include(\'newsticker.php\'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code></p>
+  <p>' . sprintf($lang['install']['note3'], '<a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a>') . '</p>
+  <p><a href="../news.php">' . $lang['install']['goto1'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '"><span class="b">' . $lang['install']['goto2'] . '</span></a> &ndash; <a href="' . ($_POST['redir'] ? $_POST['redir'] : 'http://' . $_SERVER['SERVER_NAME'] . '/') . '">' . $lang['install']['goto3'] . "</a></p>\n  ");
  }
- else echo('  <span class="b">ERROR:</span> ' . sprintf($lang['install']['error'], '<a href="' . $_SERVER['PHP_SELF'] . '">') . "</a>\n  ");
+ else echo('  <p><span class="b">ERROR:</span> ' . sprintf($lang['install']['error'], '<a href="' . $_SERVER['PHP_SELF'] . '">') . "</a></p>\n  ");
  newsTail();
  break;
 
@@ -625,41 +638,35 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   <script type="text/javascript">
   function help(data)
   {
-
-  /*******************************************************************\
-  *Script written by Chrissyx                                         *
-  *You may use and edit this script, if you don't remove this comment!*
-  *http://www.chrissyx.de(.vu)/                                       *
-  \*******************************************************************/
-
    document.getElementById('help').firstChild.nodeValue = data;
-  };
+  }
   </script>
 
   <h3>CHS - Newsscript: <?=$lang['install']['title']?></h3>
-  <?=$lang['install']['intro']?><br /><br />
+  <p><?=$lang['install']['intro']?></p>
   <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
   <table onmouseout="help('<?=$lang['install']['help']?>');">
-   <tr><td colspan="2"></td><td rowspan="21" style="background-color:yellow; width:200px;"><div id="help"><?=$lang['install']['help']?></div></td></tr>
+   <tr><td colspan="2"></td><td rowspan="21" style="background-color:#FFFF00; width:200px;"><div class="center" id="help"><?=$lang['install']['help']?></div></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help1']?>');"><td><?=$lang['install']['numofnews']?></td><td><input type="text" name="newsmax" value="20" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help2']?>');"><td><?=$lang['install']['locnews']?></td><td><input type="text" name="newsdat" value="newsscript/news.dat" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help3']?>');"><td><?=$lang['install']['locpws']?></td><td><input type="text" name="newspwsdat" value="newsscript/newspws.dat.php" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help17']?>');"><td><?=$lang['install']['foldcomments']?></td><td><input type="text" name="newscomments" value="newsscript/comments/" size="25" /></td></tr>
+   <tr onmouseover="help('<?=$lang['install']['help19']?>');"><td><?=$lang['install']['capcomments']?></td><td><input type="checkbox" name="captcha" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help4']?>');"><td><?=$lang['install']['loccats']?></td><td><input type="text" name="newscatsdat" value="newsscript/newscats.dat" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help5']?>');"><td><?=$lang['install']['foldpics']?></td><td><input type="text" name="newscatpics" value="newsscript/catpics/" size="25" /></td></tr>
-   <tr><td colspan="2"></td></tr>
+   <tr><td colspan="2" style="height:5px;"></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help6']?>');"><td><?=$lang['install']['name']?></td><td><input type="text" name="name" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help7']?>');"><td><?=$lang['install']['email']?></td><td><input type="text" name="email" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help8']?>');"><td><?=$lang['install']['pass']?></td><td><input type="password" name="newspw" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help9']?>');"><td><?=$lang['install']['passrepeat']?></td><td><input type="password" name="newspw2" size="25" /></td></tr>
-   <tr><td colspan="2"></td></tr>
+   <tr><td colspan="2" style="height:5px;"></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help10']?>');"><td><?=$lang['install']['locsmilies']?></td><td><input type="text" name="newssmilies" size="25" onclick="this.value=(confirm('<?=$lang['install']['question']?>') ? 'forum/vars/smilies.var' : 'newsscript/newssmilies.dat');" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help11']?>');"><td><?=$lang['install']['foldsmilies']?></td><td><input type="text" name="smiliepics" id="smiliepics" onfocus="this.value='newsscript/smiliepics/';" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help12']?>');"><td><?=$lang['install']['numofsmilies']?></td><td><input type="text" name="smiliesmax" value="22" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help13']?>');"><td><?=$lang['install']['rowofsmilies']?></td><td><input type="text" name="smiliesmaxrow" value="11" size="25" /></td></tr>
-   <tr><td colspan="2"></td></tr>
+   <tr><td colspan="2" style="height:5px;"></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help18']?>');"><td><?=$lang['install']['numofticks']?></td><td><input type="text" name="tickermax" value="5" size="25" /></td></tr>
-   <tr><td colspan="2"></td></tr>
+   <tr><td colspan="2" style="height:5px;"></td></tr>
    <tr onmouseover="help('<?=sprintf($lang['install']['help14'], $_SERVER['SERVER_NAME'])?>');"><td><?=$lang['install']['redir']?></td><td><input type="text" name="redir" size="25" onfocus="this.value='http://';" /></td></tr>
   </table>
   <input type="submit" value="<?=$lang['install']['install']?>" onmouseover="help('<?=$lang['install']['help15']?>');" /> <input type="reset" value="<?=$lang['install']['reset']?>" onmouseover="help('<?=$lang['install']['help16']?>');" />

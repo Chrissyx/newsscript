@@ -1,13 +1,23 @@
 <?php
-(file_exists('newsscript/settings.php')) ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(file('newsscript/settings.dat.php'), 1), array('d.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+/**
+ * Newsticker für interne, externe und RSS Anbindung.
+ * 
+ * @author Chrissyx
+ * @copyright (c) 2001 - 2009 by Chrissyx
+ * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @link http://www.rssboard.org/
+ * @package CHS_Newsscript
+ * @version 1.0.2
+ */
+file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('d.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
 $news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
 $size = count($news = array_slice($news, 1));
-$size = intval(($_GET['anz'] > $size) ? $size : ((!$_GET['anz']) ? (($tickermax > $size) ? $size : $tickermax) : $_GET['anz']));
+$size = intval(isset($_GET['anz']) && $_GET['anz'] > $size ? $size : (!isset($_GET['anz']) ? ($tickermax > $size ? $size : $tickermax) : $_GET['anz']));
 $link = 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/');
 if(file_exists('newsscript/smilies.php')) include('newsscript/smilies.php');
 include('newsscript/language_news.php');
 
-switch($_GET['type'])
+switch(isset($_GET['type']) ? $_GET['type'] : '')
 {
  case 'rss': //RSS V2.0.10
  include('newsscript/cats.php');
@@ -35,9 +45,9 @@ switch($_GET['type'])
    <pubDate>' . date('r', $value[1]) . '</pubDate>
    <dc:creator>' . $value[3] . '</dc:creator>
    <category>' . $cats[$value[4]][0] . '</category>
-   <description>' . ($cats[$value[4]][1] ? '&lt;img src=&quot;' . $cats[$value[4]][1] . '&quot; alt=&quot;' . $cats[$value[4]][0] . '&quot; style=&quot;float:right;&quot;&gt;'  : '') . htmlspecialchars(preg_replace($bbcode1, $bbcode2, (is_array($smilies)) ? strtr($value[7], $smilies) : $value[7])) . '</description>
+   <description>' . ($cats[$value[4]][1] ? '&lt;img src=&quot;' . $cats[$value[4]][1] . '&quot; alt=&quot;' . $cats[$value[4]][0] . '&quot; style=&quot;float:right;&quot;&gt;'  : '') . htmlspecialchars(preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[7], $smilies) : $value[7])) . '</description>
    <comments>' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '#box</comments>
-   <slash:comments>' . ((file_exists($newscomments . $value[0] . '.dat')) ? count(file($newscomments . $value[0] . '.dat')) : '0') . '</slash:comments>
+   <slash:comments>' . (file_exists($newscomments . $value[0] . '.dat') ? count(file($newscomments . $value[0] . '.dat')) : '0') . '</slash:comments>
   </item>
 ');
  }
@@ -59,7 +69,7 @@ switch($_GET['type'])
  for($i=0; $i<$size; $i++)
  {
   $value = explode("\t", $news[$i]);
-  echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace($bbcode1, $bbcode2, (is_array($smilies)) ? strtr($value[5], $smilies) : $value[5]) . "</a><br />\n");
+  echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[5], $smilies) : $value[5]) . "</a><br />\n");
  }          
  break;
 }
