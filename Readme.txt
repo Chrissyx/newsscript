@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.4.1
+Version: 1.0.5
 
 
 ENGLISH - SCROLL DOWN!
@@ -131,6 +131,7 @@ BBCode Referenz
 -[size=Größe]Um Größe skalierter Text[/size]
 -[sup]Hochgestellter Text[/sup]
 -[sub]Tiefgestellter Text[/sub]
+-[list][*]Listeneintrag[/list]
 
 
 Credits
@@ -243,6 +244,7 @@ BBCode reference
 -[size=Size]With size scaled text[/size]
 -[sup]Superscript text[/sup]
 -[sub]Subscript text[/sub]
+-[list][*]List entry[/list]
 
 
 Credits

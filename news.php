@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.4
+ * @version 1.0.5
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php'))) include_once('newsscript/settings.php');
@@ -38,8 +38,10 @@ else
                   "/\[size=\+4\](.*?)\[\/size\]/si",
                   "/\[quote\](.*?)\[\/quote\]/si",
                   "/\[flash\](.*?)\[\/flash\]/si",
-                  "/\[flash=(\d+),(\d+)\](.*?)\[\/flash\]/si");
-                  //"/\[spoiler\](.*?)\[\/spoiler\]/si");
+                  "/\[flash=(\d+),(\d+)\](.*?)\[\/flash\]/si",
+                  //"/\[spoiler\](.*?)\[\/spoiler\]/si",
+                  "/\[list\][<br \/>\r\n]*(.*?)\[\/list\]/si",
+                  "/\[\*\](.*?)(<br \/>|[\r\n])/si");
  $bbcode2 = array('<span style="font-weight:bold;">\1</span>',
                   '<span style="font-style:italic;">\1</span>',
                   '<span style="text-decoration:underline;">\1</span>',
@@ -75,12 +77,16 @@ else
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
  <p>No flash installed! Please update your browser.</p>
-</object>');
+</object>',
                   /*"<div>
  <div style=\"font-weight:bold; padding:3px;\">' . \$lang['news']['spoiler'] . ': <input type=\"button\" value=\"Aufdecken\" onclick=\"(s = this.parentNode.parentNode.getElementsByTagName(\'div\')[1].style).display = s.display == \'none\' ? \'\' : \'none\'; (s = this.parentNode.style).backgroundColor = s.backgroundColor == \'\' ? \'#000000\' : \'\'; s.color = s.color == \'\' ? \'#FFFFFF\' : \'\'; this.value = s.color == \'\' ? \'Aufdecken\' : \'Verstecken\';\" /></div>
  <div style=\"background-color:#FFFFFF; border:1px #000000 solid; display:none; padding:10px;\">\\1</div>
 </div>");*/
- $bbcode3 = array('\1', '\1', '\1', '\1', '\1', '\1', '\2', '\1', '\2', '\1', '\2', '\2', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\3');
+                  '<ul>
+\1</ul>',
+                  ' <li>\1</li>
+');
+ $bbcode3 = array('\1', '\1', '\1', '\1', '\1', '\1', '\2', '\1', '\2', '\1', '\2', '\2', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\3', '\1', '\1');
  $temp = fopen('newsscript/settings.php', 'w');
  fwrite($temp, "<?php\n//Auto-generated config!\n\$newsdat = '$newsdat';\n\$newsmax = $newsmax;\n\$newspwsdat = '$newspwsdat';\n\$newscomments = '$newscomments';\n\$newscatsdat = '$newscatsdat';\n\$newscatpics = '$newscatpics';\n\$smilies = '$smilies';\n\$smiliepics = '$smiliepics';\n\$smiliesmax = " . ($smiliesmax ? $smiliesmax : "''") . ";\n\$smiliesmaxrow = " . ($smiliesmaxrow ? $smiliesmaxrow : "''") . ";\n\$tickermax = $tickermax;\n\$redir = '$redir';\n\$captcha = " . ($captcha != '' ? 'true' : 'false') . ";\n\$forum = '$forum';\n\$bbcode1 = array(\"" . implode('", "', $bbcode1) . "\");\n\$bbcode2 = array('" . implode('\', \'', $bbcode2) . "');\n\$bbcode3 = array('" . implode('\', \'', $bbcode3) . "');\n?>"); #array_map('trim', " . ((substr($smilies, -4) != '.var') ? "array_slice(file('$smilies'), 1)" : "file('$smilies')") . ")
  fclose($temp);
@@ -264,13 +270,17 @@ elseif($action == 'newsout') unset($_SESSION['newsname'], $_SESSION['newspw'], $
 
 //News lesen ----------------------------------------------------------------------------------------------------------------------------------------
 include_once('newsscript/language_news.php');
-$newsTemplate = '  <div %s>
-   <strong style="float:left; font-size:medium;">%s</strong>%s<br style="clear:left;" />
-   <span style="font-size:small;">' . $lang['news']['postedby'] . ' %s &ndash; %s &ndash; %s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%s">%s</a></span>
+echo('  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?pub=' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '"></script>' . "\n"); //Fire up AddThis, set publisher to domain name
+//An attribute-based configuration for each AddThis button is not possible due to validation problems
+#<a class="addthis_button" style="float:right;" addthis:url="' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%s" addthis:title="%s"></a><br style="clear:left;" />
+$newsTemplate = '  <div %1$s>
+   <strong style="float:left; font-size:medium;">%2$s</strong>%3$s<br style="clear:left;" />
+   <span style="font-size:small;">' . $lang['news']['postedby'] . ' %4$s &ndash; %5$s &ndash; %6$s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%7$s">%8$s</a></span>
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
-   %s
+   %9$s
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
-   %s<span style="font-size:small;">' . $lang['news']['sources'] . ' %s</span>
+   %10$s<span style="float:left; font-size:small;">' . $lang['news']['sources'] . ' %11$s</span> <a id="news-%12$s" style="float:right;"></a><br style="clear:left;" />
+   <script type="text/javascript">addthis.button(\'#news-%12$s\', {}, {url: "' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%12$s", title: "%13$s"});</script>
   </div><br />
 ';
 $news = array_map('trim', file($newsdat)) or die($lang['news']['nonews']); #fgets()?
@@ -333,7 +343,9 @@ if(isset($_GET['newsid']))
                 $cats[$_POST['cat']][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox']))), $smilies)), //News
                 $_POST['newsbox2'] ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox2']))), $smilies)) . "<hr noshade=\"noshade\" style=\"height:0; border-width:0 0 1px 0;\" />\n" : null, //Weiterlesen
-                (isset($_POST['srcarray'][1]) ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . str_replace('&', '&amp;', implode('</option><option>', $_POST['srcarray'])) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . ($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>'
+                (isset($_POST['srcarray'][1]) ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . str_replace('&', '&amp;', implode('</option><option>', $_POST['srcarray'])) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . ($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>',
+                $value[0], //News ID
+                preg_replace($bbcode1, $bbcode3, stripEscape($_POST['headline'])) //Titel
                ));
 //Editieren posten
   elseif($_POST['update'])
@@ -379,7 +391,7 @@ if(isset($_GET['newsid']))
   <option value="+3"><?=$lang['news']['size_up3']?></option>
   <option value="+4"><?=$lang['news']['size_up4']?></option>
  </select><br />
- <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <select style="width:173px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
+ <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <input type="button" value="&bull;" style="width:25px;" onclick="setNewsTag('[list]\n[*]', '\n[/list]');" /> <select style="width:144px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
   <option style="font-weight:bold;"><?=$lang['news']['linkoldnews']?></option>
 <?php
 $size = ($size = count($news)) > 20 ? 21 : $size;
@@ -476,7 +488,9 @@ if($smilies)
            $cats[$value[4]][0], //Kategorie
            preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies)), //News
            isset($value[8]) && $value[8] != '' ? preg_replace($bbcode1, $bbcode2, strtr($value[8], $smilies)) . '<hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />' . "\n" : null, //Weiterlesen
-           (isset($value[6][1]) && $value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
+           (isset($value[6][1]) && $value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : ''),
+           $value[0], //News ID
+           preg_replace($bbcode1, $bbcode3, $value[5]) //Titel
           )?>
 
   <p><a href="<?=$redir ? $redir : $_SERVER['PHP_SELF']?>?page=<?=$_GET['page']?>&amp;catid=<?=$_GET['catid']?>">&laquo; <?=$lang['news']['backtoall']?></a></p>
@@ -550,7 +564,9 @@ else
                 $cats[$_POST['cat']][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox']))), $smilies)), //News
                 $_POST['newsbox2'] ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(stripEscape(trim($_POST['newsbox2']))), $smilies)) . '<hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />' . "\n" : null, //Weiterlesen
-                (isset($_POST['srcarray'][1]) ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . str_replace('&', '&amp;', implode('</option><option>', $_POST['srcarray']/*array_map('substr', $_POST['srcarray'], array_fill(0, $size, 0), array_fill(0, $size, 20))*/)) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="#">' . ($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . $lang['news']['writecomment'] . '</a>'
+                (isset($_POST['srcarray'][1]) ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . str_replace('&', '&amp;', implode('</option><option>', $_POST['srcarray']/*array_map('substr', $_POST['srcarray'], array_fill(0, $size, 0), array_fill(0, $size, 20))*/)) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="#">' . ($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . $lang['news']['writecomment'] . '</a>',
+                $news[0], //News ID
+                preg_replace($bbcode1, $bbcode3, stripEscape($_POST['headline'])) //Titel
                ));
 //News posten
   elseif(isset($_POST['update']))
@@ -597,7 +613,7 @@ else
   <option value="+3"><?=$lang['news']['size_up3']?></option>
   <option value="+4"><?=$lang['news']['size_up4']?></option>
  </select><br />
- <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <select style="width:173px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
+ <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <input type="button" value="&bull;" style="width:25px;" onclick="setNewsTag('[list]\n[*]', '\n[/list]');" /> <select style="width:144px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
   <option style="font-weight:bold;"><?=$lang['news']['linkoldnews']?></option>
 <?php
 $size = ($size = count($news)) > 20 ? 21 : $size;
@@ -680,7 +696,9 @@ if($smilies)
                 $cats[$value[4]][0], //Kategorie
                 preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies)), //News
                 null, //Weiterlesen
-                ($value[6] ? '<select style="font-size:x-small; width:100px;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . ($value[8] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>' . (isset($_SESSION['dispall']) && $_SESSION['dispall'] === true ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')
+                ($value[6] ? '<select style="font-size:x-small; width:100px;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace(' ', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . ($value[8] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>' . (isset($_SESSION['dispall']) && $_SESSION['dispall'] === true ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : ''),
+                $value[0], //News ID
+                preg_replace($bbcode1, $bbcode3, $value[5]) //Titel
                ));
   }
   echo('  <div class="newsscriptfooter" style="width:99%; text-align:center; font-size:small;">

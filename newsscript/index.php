@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.4
+ * @version 1.0.5
  */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
@@ -655,7 +655,8 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   <p><?=$lang['install']['intro']?></p>
   <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
   <table onmouseout="help('<?=$lang['install']['help']?>');">
-   <tr><td colspan="2"></td><td rowspan="22" style="background-color:#FFFF00; width:200px;"><div class="center" id="help"><?=$lang['install']['help']?></div></td></tr>
+   <tr><td colspan="2"></td><td rowspan="23" style="background-color:#FFFF00; width:200px;"><div class="center" id="help"><?=$lang['install']['help']?></div></td></tr>
+   <tr><th colspan="2"><?=$lang['install']['general']?></th></tr>
    <tr onmouseover="help('<?=$lang['install']['help1']?>');"><td><?=$lang['install']['numofnews']?></td><td><input type="text" name="newsmax" value="20" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help2']?>');"><td><?=$lang['install']['locnews']?></td><td><input type="text" name="newsdat" value="newsscript/news.dat" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help3']?>');"><td><?=$lang['install']['locpws']?></td><td><input type="text" name="newspwsdat" value="newsscript/newspws.dat.php" size="25" /></td></tr>
@@ -663,19 +664,19 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
    <tr onmouseover="help('<?=$lang['install']['help19']?>');"><td><?=$lang['install']['capcomments']?></td><td><input type="checkbox" name="captcha" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help4']?>');"><td><?=$lang['install']['loccats']?></td><td><input type="text" name="newscatsdat" value="newsscript/newscats.dat" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help5']?>');"><td><?=$lang['install']['foldpics']?></td><td><input type="text" name="newscatpics" value="newsscript/catpics/" size="25" /></td></tr>
-   <tr><td colspan="2" style="height:5px;"></td></tr>
+   <tr><th colspan="2"><?=$lang['install']['youracc']?></th></tr>
    <tr onmouseover="help('<?=$lang['install']['help6']?>');"><td><?=$lang['install']['name']?></td><td><input type="text" name="name" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help7']?>');"><td><?=$lang['install']['email']?></td><td><input type="text" name="email" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help8']?>');"><td><?=$lang['install']['pass']?></td><td><input type="password" name="newspw" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help9']?>');"><td><?=$lang['install']['passrepeat']?></td><td><input type="password" name="newspw2" size="25" /></td></tr>
-   <tr><td colspan="2" style="height:5px;"></td></tr>
+   <tr><th colspan="2"><?=$lang['install']['smilies']?></th></tr>
    <tr onmouseover="help('<?=$lang['install']['help10']?>');"><td><?=$lang['install']['locsmilies']?></td><td><input type="text" name="newssmilies" size="25" onclick="this.value=(confirm('<?=$lang['install']['question']?>') ? 'forum/vars/smilies.var' : 'newsscript/newssmilies.dat');" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help11']?>');"><td><?=$lang['install']['foldsmilies']?></td><td><input type="text" name="smiliepics" id="smiliepics" onfocus="this.value='newsscript/smiliepics/';" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help12']?>');"><td><?=$lang['install']['numofsmilies']?></td><td><input type="text" name="smiliesmax" value="22" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help13']?>');"><td><?=$lang['install']['rowofsmilies']?></td><td><input type="text" name="smiliesmaxrow" value="11" size="25" /></td></tr>
-   <tr><td colspan="2" style="height:5px;"></td></tr>
+   <tr><th colspan="2"><?=$lang['install']['newsticker']?></th></tr>
    <tr onmouseover="help('<?=$lang['install']['help18']?>');"><td><?=$lang['install']['numofticks']?></td><td><input type="text" name="tickermax" value="5" size="25" /></td></tr>
-   <tr><td colspan="2" style="height:5px;"></td></tr>
+   <tr><th colspan="2"><?=$lang['install']['misc']?></th></tr>
    <tr onmouseover="help('<?=sprintf($lang['install']['help14'], $_SERVER['SERVER_NAME'])?>');"><td><?=$lang['install']['redir']?></td><td><input type="text" name="redir" size="25" onfocus="this.value='http://';" /></td></tr>
   </table>
   <input type="submit" value="<?=$lang['install']['install']?>" onmouseover="help('<?=$lang['install']['help15']?>');" /> <input type="reset" value="<?=$lang['install']['reset']?>" onmouseover="help('<?=$lang['install']['help16']?>');" />
