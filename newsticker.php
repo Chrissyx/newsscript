@@ -7,9 +7,9 @@
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @link http://www.rssboard.org/
  * @package CHS_Newsscript
- * @version 1.0.3
+ * @version 1.0.4.1
  */
-file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('d.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $bbcode1, $bbcode2, $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('/(.*)/', '\1', 'd.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
 $news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
 $size = count($news = array_slice($news, 1));
 $size = intval(isset($_GET['anz']) && $_GET['anz'] > $size ? $size : (!isset($_GET['anz']) ? ($tickermax > $size ? $size : $tickermax) : $_GET['anz']));
@@ -69,7 +69,7 @@ switch(isset($_GET['type']) ? $_GET['type'] : '')
  for($i=0; $i<$size; $i++)
  {
   $value = explode("\t", $news[$i]);
-  echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[5], $smilies) : $value[5]) . "</a><br />\n");
+  echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace("/<a .*?>(.*?)<\/a>/si", '\1', preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[5], $smilies) : $value[5])) . "</a><br />\n");
  }          
  break;
 }

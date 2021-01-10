@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.4
+Version: 1.0.4.1
 
 
 ENGLISH - SCROLL DOWN!
@@ -155,8 +155,8 @@ upload the "newsticker.php" to the same location you've uploaded the "news.php" 
 
 Update to new version
 Upload, just like the installation, all files by replacing every file with its newer version. Point your browser to
-the "update.php" in the "newsscript" folder and follow the instructions. IMPORTANT: Delete the "update.php" after
-updating the script!
+the "update.php" in the "newsscript" folder and follow the instructions.
+IMPORTANT: Delete the "update.php" after updating the script!
 
 
 FAQ

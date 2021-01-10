@@ -655,7 +655,7 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   <p><?=$lang['install']['intro']?></p>
   <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
   <table onmouseout="help('<?=$lang['install']['help']?>');">
-   <tr><td colspan="2"></td><td rowspan="21" style="background-color:#FFFF00; width:200px;"><div class="center" id="help"><?=$lang['install']['help']?></div></td></tr>
+   <tr><td colspan="2"></td><td rowspan="22" style="background-color:#FFFF00; width:200px;"><div class="center" id="help"><?=$lang['install']['help']?></div></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help1']?>');"><td><?=$lang['install']['numofnews']?></td><td><input type="text" name="newsmax" value="20" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help2']?>');"><td><?=$lang['install']['locnews']?></td><td><input type="text" name="newsdat" value="newsscript/news.dat" size="25" /></td></tr>
    <tr onmouseover="help('<?=$lang['install']['help3']?>');"><td><?=$lang['install']['locpws']?></td><td><input type="text" name="newspwsdat" value="newsscript/newspws.dat.php" size="25" /></td></tr>
