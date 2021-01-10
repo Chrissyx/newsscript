@@ -121,7 +121,7 @@ switch($action)
      elseif((!$_POST['newssmilies'] || (substr($_POST['newssmilies'], -4) == '.var')) && $settings[6] && (substr($settings[6], -4) != '.var')) //Keine .dat
      {
       unlink('../' . $settings[6]);
-      if (!@rmdir('../' . $settings[7]))
+      if(!@rmdir('../' . $settings[7]))
       {
        foreach(glob('../' . $settings[7] . '*.*') as $value) unlink($value);
        rmdir('../' . $settings[7]);

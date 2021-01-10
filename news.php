@@ -3,10 +3,10 @@
  * Newsmodul zum Anzeigen und Verwalten der News. Verarbeitet auch Login und Passwörter.
  * 
  * @author Chrissyx
- * @copyright (c) 2001 - 2009 by Chrissyx
+ * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.5
+ * @version 1.0.5.1
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php'))) include_once('newsscript/settings.php');
@@ -65,14 +65,16 @@ else
                   '<span style="font-size:300%;">\1</span>',
                   '<blockquote><p style="font-style:italic;">\1</p></blockquote>',
                   '<object data="\1" type="application/x-shockwave-flash" width="425" height="355">
- <param name="allowscriptaccess" value="samedomain" />
+ <param name="allowFullScreen" value="true" />
+ <param name="allowScriptAccess" value="sameDomain" />
  <param name="movie" value="\1" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
  <p>No flash installed! Please update your browser.</p>
 </object>',
                   '<object data="\3" type="application/x-shockwave-flash" width="\1" height="\2">
- <param name="allowscriptaccess" value="samedomain" />
+ <param name="allowFullScreen" value="true" />
+ <param name="allowScriptAccess" value="sameDomain" />
  <param name="movie" value="\3" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
@@ -710,4 +712,4 @@ if($smilies)
  }
 }
 #PLEASE DON'T REMOVE THIS!
-?><div style="width:99%; text-align:center; font-size:xx-small;">Powered by CHS - Newsscript<br />&copy; 2008, 2009 by Chrissyx</div>
+?><div style="width:99%; text-align:center; font-size:xx-small;">Powered by CHS - Newsscript<br />&copy; 2008 - 2010 by Chrissyx</div>

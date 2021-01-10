@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.5
+Version: 1.0.5.1
 
 
 ENGLISH - SCROLL DOWN!
@@ -135,7 +135,7 @@ BBCode Referenz
 
 
 Credits
-© 2008, 2009 by Chrissyx
+© 2008 - 2010 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
 http://www.chrissyx.com/
@@ -248,7 +248,7 @@ BBCode reference
 
 
 Credits
-© 2008, 2009 by Chrissyx
+© 2008 - 2010 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
 http://www.chrissyx.com/

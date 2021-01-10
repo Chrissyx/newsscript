@@ -3,7 +3,7 @@
  * Benötigte Funktionen und initiale Anweisungen.
  * 
  * @author Chrissyx
- * @copyright (c) 2001 - 2009 by Chrissyx
+ * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
  */
@@ -252,7 +252,7 @@ function saveNews()
 /**
  * Zeigt benötigte JavaScripts an.
  * 
- * @version 1.0.3.5
+ * @version 1.0.5.1
  */
 function showJS()
 {
@@ -260,7 +260,7 @@ function showJS()
 ?>
 
 <script type="text/javascript">
-var sources = new Array('<?=implode('\', \'', $_POST['srcarray'])?>');
+var sources = new Array('<?=implode('\', \'', !isset($_POST['update']) || $_POST['preview'] ? $_POST['srcarray'] : array())?>');
 var activeNewsbox = 'newsbox';
 var openendTags = new Object();
 
@@ -362,11 +362,11 @@ function setNewsTag(openingTag, closingTag)
  * 
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.5
+ * @version 1.0.5.1
  */
 function getNewsVersion()
 {
- return '1.0.5';
+ return '1.0.5.1';
 }
 
 /**
