@@ -1,0 +1,67 @@
+body
+{
+ background-color:#99CCFF;
+ font-family:Arial,sans-serif;
+ color:#000000;
+}
+
+input, textarea
+{
+ border:2px solid #000000;
+}
+
+input:hover, textarea:hover
+{
+ border:2px dotted #000000;
+}
+
+img, input[type=radio], input[type=checkbox]
+{
+ border:none;
+}
+
+a:link
+{
+ color: #0000FF;
+ text-decoration:underline;
+}
+
+a:visited
+{
+ color: #800080;
+ text-decoration:underline;
+}
+
+a:hover
+{
+ text-decoration:underline;
+ background-color:#FFFF00;
+}
+
+a:active
+{
+ text-decoration:underline;
+ font-weight:bold;
+ background-color:#FFFF00;
+}
+
+a:focus
+{
+ text-decoration:underline;
+ background-color:#FFFF00;
+}
+
+.green
+{
+ color:#008000;
+}
+
+.b
+{
+ font-weight:bold;
+}
+
+.center
+{
+ text-align:center;
+}

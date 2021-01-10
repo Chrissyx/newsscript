@@ -1,109 +1,66 @@
 <?php
- $_GET['anz'] = (!$_GET['anz']) ? 6 : $_GET['anz'];  //Standardanzahl der Newslinks hier ändern
- $suche = file("news.dat");
- $tag = date("d");
- $monat = date("m");
- $jahr = date("Y");
- $j = 0;
+(file_exists('newsscript/settings.php')) ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(file('newsscript/settings.dat.php'), 1), array('d.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+$news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
+$size = count($news = array_slice($news, 1));
+$size = intval(($_GET['anz'] > $size) ? $size : ((!$_GET['anz']) ? (($tickermax > $size) ? $size : $tickermax) : $_GET['anz']));
+$link = 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/');
+if(file_exists('newsscript/smilies.php')) include('newsscript/smilies.php');
+include('newsscript/language_news.php');
 
- switch ($_GET['type'])
- {
-  case "rss":
-  header("Content-type: application/rss+xml");
-  echo("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>
-<rss version=\"2.0\">
+switch($_GET['type'])
+{
+ case 'rss': //RSS V2.0.10
+ include('newsscript/cats.php');
+ header('Content-Type: application/rss+xml');
+ echo('<?xml version="1.0" encoding="' . $lang['news']['charset'] .'" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
  <channel>
-  <title>Chrissyx Homepage RSS Newsfeed</title>
-  <link>http://" . $_SERVER['SERVER_NAME'] . "/</link>
-  <description>Aktuellste News von Chrissyx Homepage</description>
-  <pubDate>Tue, 24 May 2005 20:00:00 +0200</pubDate>
-  <language>de-de</language>
-  <copyright>Copyright 2005 by Chrissyx</copyright>
-  <docs>http://www.w3.org/TR/REC-xml-names</docs>
-  <image>
-   <url>http://" . $_SERVER['SERVER_NAME'] . "/images/avatar.jpg</url>
-   <title>Chrissyx Homepage</title>
-   <link>http://" . $_SERVER['SERVER_NAME'] . "/</link>
-   <width>64</width>
-   <height>64</height>
-  </image>\n");
-
-  while ($j < $_GET['anz'])
-  {
-   if (in_array("\t<center><b>$tag.$monat.$jahr</b></center>\r\n", $suche) or in_array("\t<center><b>$tag.$monat.$jahr</b></center>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\r\n", $suche))
-   {
-    echo ("  <item>\n   <title>$tag.$monat.$jahr</title>\n   <pubDate>" . strftime("%a, %d %b %Y %X", gmmktime(0, 0, 0, $monat, $tag, $jahr, -1)) . " +0200</pubDate>\n   <link>http://" . $_SERVER['SERVER_NAME'] . "/index.php#$tag.$monat.$jahr</link>\n   <description>News vom $tag.$monat.$jahr! Link anklicken, um sie zu lesen!</description>\n  </item>\n");
-    $j++;
-   }
-   $tag--;
-   if ($tag < 10) $tag = "0" . $tag;
-   if ($tag <= 0)
-   {
-    $tag = 31;
-    $monat--;
-    if ($monat < 10) $monat = "0" . $monat;
-    if ($monat <= 0)
-    {
-     $monat = 12;
-     $jahr--;
-     if ($jahr == 2001) break;
-    }
-   }
-  }
-
-  echo(" </channel>\n</rss>");
-  break;
-
-  case "extern":
-  echo ("document.write('<!-- CHS Newsticker - Anfang -->');\n");
-  while ($j < $_GET['anz'])
-  {
-   if (in_array("\t<center><b>$tag.$monat.$jahr</b></center>\r\n", $suche) or in_array("\t<center><b>$tag.$monat.$jahr</b></center>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\r\n", $suche))
-   {
-    echo ("document.write('<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/index.php#$tag.$monat.$jahr\" target=\"_blank\">$tag.$monat.$jahr</a>');\n");
-    $j++;
-   }
-   $tag--;
-   if ($tag < 10) $tag = "0" . $tag;
-   if ($tag <= 0)
-   {
-    $tag = 31;
-    $monat--;
-    if ($monat < 10) $monat = "0" . $monat;
-    if ($monat <= 0)
-    {
-     $monat = 12;
-     $jahr--;
-     if ($jahr == 2001) break;
-    }
-   }
-  }
-  echo ("document.write('<!-- /CHS Newsticker - Ende -->');\n");
-  break;
-
-  default:
-  while ($j < $_GET['anz'])
-  {
-   if (in_array("\t<center><b>$tag.$monat.$jahr</b></center>\r\n", $suche) or in_array("\t<center><b>$tag.$monat.$jahr</b></center>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\n", $suche) or in_array("\t<div class=\"center\"><span class=\"b\"><a name=\"$tag.$monat.$jahr\">$tag.$monat.$jahr</a></span></div>\r\n", $suche))
-   {
-    echo ("     <a href=\"#$tag.$monat.$jahr\">$tag.$monat.$jahr</a><br />\n");
-    $j++;
-   }
-   $tag--;
-   if ($tag < 10) $tag = "0" . $tag;
-   if ($tag <= 0)
-   {
-    $tag = 31;
-    $monat--;
-    if ($monat < 10) $monat = "0" . $monat;
-    if ($monat <= 0)
-    {
-     $monat = 12;
-     $jahr--;
-     if ($jahr == 2001) break;
-    }
-   }
-  }
-  break;
+  <title>' . $_SERVER['SERVER_NAME'] . ' RSS Newsfeed</title>
+  <link>' . ($redir ? $redir : $link) . '</link>
+  <description>' . $lang['news']['newsfrom'] .' http://' . $_SERVER['SERVER_NAME'] . '/</description>
+  <language>' . $lang['news']['code'] .'</language>
+  <lastBuildDate>' . date('r', current(sscanf(current($news), "%*d\t%d"))) . '</lastBuildDate>
+  <pubDate>' . date('r', current(sscanf(end($news), "%*d\t%d"))) . '</pubDate>
+  <docs>http://www.rssboard.org/rss-specification</docs>
+  <generator>CHS - Newsscript</generator>
+  <atom:link href="' . $link . 'newsticker.php?type=rss" rel="self" type="application/rss+xml" />
+');
+ for($i=0; $i<$size; $i++)
+ {
+  $value = explode("\t", $news[$i]);
+  echo('  <item>
+   <title>' . $value[5] . '</title>
+   <link>' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '</link>
+   <guid isPermaLink="true">' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '</guid>
+   <pubDate>' . date('r', $value[1]) . '</pubDate>
+   <dc:creator>' . $value[3] . '</dc:creator>
+   <category>' . $cats[$value[4]][0] . '</category>
+   <description>' . ($cats[$value[4]][1] ? '&lt;img src=&quot;' . $cats[$value[4]][1] . '&quot; alt=&quot;' . $cats[$value[4]][0] . '&quot; style=&quot;float:right;&quot;&gt;'  : '') . htmlspecialchars(preg_replace($bbcode1, $bbcode2, (is_array($smilies)) ? strtr($value[7], $smilies) : $value[7])) . '</description>
+   <comments>' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '#box</comments>
+   <slash:comments>' . ((file_exists($newscomments . $value[0] . '.dat')) ? count(file($newscomments . $value[0] . '.dat')) : '0') . '</slash:comments>
+  </item>
+');
  }
+ echo(' </channel>
+</rss>');
+ break;
+
+ case 'extern':
+ echo("document.write('<!-- CHS - Newsscript - Ticker Start -->');\n");
+ for($i=0; $i<$size; $i++)
+ {
+  $value = explode("\t", $news[$i]);
+  echo('document.write(\'' . date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '" target="_blank">' . $value[5] . "</a><br />');\n");
+ }
+ echo("document.write('<!-- /CHS - Newsscript - Ticker Ende -->');\n");
+ break;
+ 
+ default:
+ for($i=0; $i<$size; $i++)
+ {
+  $value = explode("\t", $news[$i]);
+  echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace($bbcode1, $bbcode2, (is_array($smilies)) ? strtr($value[5], $smilies) : $value[5]) . "</a><br />\n");
+ }          
+ break;
+}
 ?>

@@ -1,4 +1,5 @@
 <?php
+#todo: <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
 
 #####################################################################
 #Script written by Chrissyx                                         #
@@ -6,278 +7,562 @@
 #http://www.chrissyx.de(.vu)/                                       #
 #####################################################################
 
-#
-###---AB GEHT'S!---###
-#
- $action = (!$_POST['action']) ? $_GET['action'] : $_POST['action'];
- $mode = $_POST['mode'];
-
-#
-###---THREADING---###
-#
- if ($action == "threading")
- {
-  $topics_file = file("forum/foren/" . $_GET['foren_id'] . "-threads.xbb");
-  $topics_file_size = sizeof($topics_file);
-  $topics_file = array_reverse($topics_file);
-  echo("<form name=\"thisform\"><select name=\"threadchoice\" size=\"" . $topics_file_size . "\" onClick=\"opener.document.newsform.thread_id.value=document.thisform.threadchoice.options[document.thisform.threadchoice.options.selectedIndex].value; window.close();\">\n");
-  for ($i=0; $i<count($topics_file); $i++)
-  {
-   $thread = file("forum/foren/" . $_GET['foren_id'] . "-" . str_replace("\n", "", str_replace("\r\n", "", $topics_file[$i])) . ".xbb");
-   $thread = explode("\t", $thread[0]);
-   echo("<option value=\"" . trim($topics_file[$i]) . "\">" . $thread[1] . "</option>\n");
-  }
-  echo("</select></form>");
- }
-
-#
-###---ADMIN---###
-#
- elseif ($action == "admin")
- {
-  include("functions.php");
-  if ($mode == "login")
-  {
-   if (!file_exists("dats/pw.dat"))
-   {
-    $temp = fopen("dats/pw.dat", "w");
-    fwrite($temp, md5($_POST['pw']));
-    fclose($temp);
-    head("", "Chrissyx Homepage: Administration - News", "", "", "style.css", "", "");
-    echo("Passwort gespeichert - bitte damit <a href=\"" . $_SERVER['PHP_SELF'] . "?action=admin\">einloggen!</a>");
-    tail();
-   }
-   else
-   {
-    $pw = file("dats/pw.dat");
-    if ((md5($_POST['pw']) == $pw[0]) or ($_POST['pw2'] == $pw[0]))
-    {
-     unset($pw);
-     if ($_POST['news'])
-     {
-      $array = explode("\n", stripslashes($_POST['news']));
-      $news = "\t";
-      if ($_POST['red'] == "true") $news .= "<span class=\"red\">";
-      $news .= "<span class=\"b\">" . trim($array[0]) . "</span><br />\n";
-      if ($_POST['zitat'] == "true") $news .= "\t<span class=\"i\">" . trim(nl2br($array[1])) . "\n";
-      else $news .= "\t" . trim(nl2br($array[1])) . "\n";
-      for ($i=2; $i<=count($array); $i++) $news .= "\t" . trim(nl2br($array[$i])) . "\n";
-      if ($_POST['zitat'] == "true") $news = "\t" . trim($news) . "</span>";
-      if ($_POST['red'] == "true") $news = "\t" . trim($news) . "</span>";
-      $news = "\t" . trim($news) . "<br />";
-      if ($_POST['foren_id'] and $_POST['thread_id']) $news .= "\n\t<a href=\"forum/index.php?mode=viewthread&forum_id=" . $_POST['foren_id'] . "&thread=" . $_POST['thread_id'] . "\">Link zum Thema im Forum</a><br />";
-      $news .= "<br />\n";
-      if (!file_exists("temp.dat"))
-      {
-       $temp = fopen("temp.dat", "w");
-       fwrite($temp, $news);
-       fclose($temp);
-      }
-      else
-      {
-       $temp = fopen("temp.dat", "r");
-       $temp2 = fread($temp, filesize("temp.dat"));
-       fclose($temp);
-       $temp2 .= $news;
-       $temp = fopen("temp.dat", "w");
-       fwrite($temp, $temp2);
-       fclose($temp);
-      }
-      $msg = "News geaddet! Noch eine? Ansonsten posten!<br /><br />\n";
-     }
-     head("", "Chrissyx Homepage: Administration - News", "", "", "style.css", "", "");
-     echo($msg);
-     ?>
-
-  <span class="u">CHS - News - Administration</span><br /><br />
-
-  <form name="newsform" action="<?=$_SERVER['PHP_SELF']?>" method="post">
-  News:<br />
-  <input type="button" value="URL" onClick="url()"> <input type="button" value="IMG" onClick="img()"> <input type="button" value="URL+IMG" onClick="urlimg()"> <a href="javascript:smilie('forum/images/smilies/1.gif');"><img src="forum/images/smilies/1.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/2.gif');"><img src="forum/images/smilies/2.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/4.gif');"><img src="forum/images/smilies/4.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/5.gif');"><img src="forum/images/smilies/5.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/8.gif');"><img src="forum/images/smilies/8.gif" border="0"></a><br />
-  <textarea name="news" cols="50" rows="10"></textarea><br />
-  Link zum Forumthema: <select name="foren_id" onChange="threading(this.form.foren_id.options[this.form.foren_id.selectedIndex].value);">
-  <option value="">Bitte auswählen...</option>
-<?php
-$foren = file("forum/vars/foren.var");
-$foren_anzahl = sizeof($foren);
-$kg = file("forum/vars/kg.var");
-$kg_anzahl = sizeof($kg);
-for ($j=0; $j<$kg_anzahl; $j++)
+//Caching
+if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php'))) include_once('newsscript/settings.php');
+else
 {
- $ak_kg = explode("\t", $kg[$j]);
- echo "<option value=\"\">--" . $ak_kg[1] . "</option>\n";
- for ($i=0; $i<$foren_anzahl; $i++)
- {
-  $ak_forum = explode("\t", $foren[$i]);
-  if ($ak_forum[5] == $ak_kg[0] && $ak_forum[0] != $forum_id) echo "<option value=\"" . $ak_forum[0] . "\">" . $ak_forum[1] . "</option>\n";
- }
- echo "<option value=\"\"></option>\n";
+ //Config: News, Anzahl, Passwörter, Kommntare, Kategorien, Bilder Ordner, Smilies, Smilie Ordner, Smilies Anzahl, Smilies Anzahl Reihe, Newsticker Anzahl, Redir nach Login
+ list($newsdat, $newsmax, $newspwsdat, $newscomments, $newscatsdat, $newscatpics, $smilies, $smiliepics, $smiliesmax, $smiliesmaxrow, $tickermax, $redir) = @array_map('trim', array_slice(file('newsscript/settings.dat.php'), 1)) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+ if(($forum = implode('/', array_slice(explode('/', $smilies), 0, -2))) != '') $forum .= '/';
+ $bbcode1 = array("/\[b\](.*?)\[\/b\]/si",
+                  "/\[i\](.*?)\[\/i\]/si",
+                  "/\[u\](.*?)\[\/u\]/si",
+                  "/\[s\](.*?)\[\/s\]/si",
+                  "/\[center\](.*?)\[\/center\]/si",
+                  "/\[email\](.*?)\[\/email\]/si",
+                  "/\[img\](.*?)\[\/img\]/si",
+                  "/\[img=(.*?)\](.*?)\[\/img\]/si",
+                  "/\[url\](.*?)\[\/url\]/si",
+                  "/\[url=(.*?)\](.*?)\[\/url\]/si",
+                  "/\[color=(\#[a-fA-F0-9]{6}|[a-zA-Z]+)\](.*?)\[\/color\]/si",
+                  "/\[code\](.*?)\[\/code\]/si",
+                  "/\[quote\](.*?)\[\/quote\]/si",
+                  "/\[flash\](.*?)\[\/flash\]/si",
+                  "/\[flash=(\d+),(\d+)\](.*?)\[\/flash\]/si");
+ $bbcode2 = array('<span style="font-weight:bold;">\1</span>',
+                  '<span style="font-style:italic;">\1</span>',
+                  '<span style="text-decoration:underline;">\1</span>',
+                  '<span style="text-decoration:line-through;">\1</span>',
+                  '<p style="text-align:center;">\1</p>',
+                  '<a href="mailto:\1">\1</a>',
+                  '<img src="\1" alt="" />',
+                  '<img src="\1" alt="\2" />',
+                  '<a href="\1" target="_blank">\1</a>',
+                  '<a href="\1" target="_blank">\2</a>',
+                  '<span style="color:\1;">\2</span>',
+                  '<code>\1</code>',
+                  '<blockquote><p style="font-style:italic;">\1</p></blockquote>',
+                  '<object data="\1" type="application/x-shockwave-flash" width="425" height="355">
+ <param name="allowscriptaccess" value="samedomain" />
+ <param name="movie" value="\1" />
+ <param name="quality" value="autohigh" />
+ <param name="wmode" value="transparent" />
+ <noscript>No flash installed! Please update your browser</noscript>
+</object>',
+                  '<object data="\3" type="application/x-shockwave-flash" width="\1" height="\2">
+ <param name="allowscriptaccess" value="samedomain" />
+ <param name="movie" value="\3" />
+ <param name="quality" value="autohigh" />
+ <param name="wmode" value="transparent" />
+ <noscript>No flash installed! Please update your browser</noscript>
+</object>');
+ $temp = fopen('newsscript/settings.php', 'w');
+ fwrite($temp, "<?php\n//Auto-generated config!\n\$newsdat = '$newsdat';\n\$newsmax = $newsmax;\n\$newspwsdat = '$newspwsdat';\n\$newscomments = '$newscomments';\n\$newscatsdat = '$newscatsdat';\n\$newscatpics = '$newscatpics';\n\$smilies = '$smilies';\n\$smiliepics = '$smiliepics';\n\$smiliesmax = " . (($smiliesmax) ? $smiliesmax : "''") . ";\n\$smiliesmaxrow = " . (($smiliesmaxrow) ? $smiliesmaxrow : "''") . ";\n\$tickermax = $tickermax;\n\$redir = '$redir';\n\$forum = '$forum';\n\$bbcode1 = array(\"" . implode('", "', $bbcode1) . "\");\n\$bbcode2 = array('" . implode('\', \'', $bbcode2) . "');\n?>"); #array_map('trim', " . ((substr($smilies, -4) != '.var') ? "array_slice(file('$smilies'), 1)" : "file('$smilies')") . ")
+ fclose($temp);
 }
-?>
-  </select> <input type="text" name="thread_id" size="3"><br />
-  <input type="checkbox" name="zitat" value="true">Zitat?
-  <input type="checkbox" name="red" value="true">Wichtig?
-  <input type="submit" value="News adden!">
-  <input type="hidden" name="action" value="admin">
-  <input type="hidden" name="mode" value="login">
-  <input type="hidden" name="pw2" value="<?php ($_POST['pw']) ? print(md5($_POST['pw'])) : print($_POST['pw2']); ?>">
-  </form><br /><br />
-
-  <form action="<?=$_SERVER['PHP_SELF']?>" method="post" name="restform">
-  Datum: <input type="text" name="datum" value="<?=date("d.m.Y")?>"><br /><br />
-  Updates:<br />
-  <table>
-   <tr>
-    <td><textarea name="updates" cols="50" rows="5"></textarea></td>
-    <td>
-     <a href="javascript:document.restform.updates.value += '-Update in der C&amp;C-Sektion.\n'; document.restform.updates.focus();">-Update in der C&amp;C-Sektion.</a><br>
-     <a href="javascript:document.restform.updates.value += '-Update in der Download-Sektion.\n'; document.restform.updates.focus();">-Update in der Download-Sektion.</a><br>
-     <a href="javascript:document.restform.updates.value += '-Versionsupdate in der Download-Sektion.\n'; document.restform.updates.focus();">-Versionsupdate in der Download-Sektion.</a><br>
-    </td>
-    <td>
-     <a href="javascript:document.restform.updates.value += '-Update in der \n'; document.restform.updates.focus();">-Update in der</a><br>
-     <a href="javascript:document.restform.updates.value += '-Update in der Link-Sektion.\n'; document.restform.updates.focus();">-Update in der Link-Sektion.</a><br>
-     <a href="javascript:document.restform.updates.value += '-Update in der Scripts-Sektion.\n'; document.restform.updates.focus();">-Update in der Scripts-Sektion.</a><br>
-    </td>
-   </tr>
-  </table><br /><br />
-
-  Internes:<br />
-  <textarea name="intern" cols="50" rows="5"></textarea><br /><br />
-  <input type="submit" value="News posten">
-  <input type="hidden" name="action" value="post">
-  </form>
-
-  <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-  <input type="submit" value="News editieren">
-  <input type="hidden" name="action" value="edit">
-  </form>
-
-     <?php
-     tail();
-    }
-    else die("Falsches Passwort!");
-   }
-  }
-  else
-  {
-   head("", "Chrissyx Homepage: Administration - News - LogIn", "", "", "style.css", "", "");
-   ?>
-
-  CHS - News - LogIn<br />
-  <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-  Bitte Passwort angeben: <input type="password" name="pw"><br />
-  <input type="submit" value="Einloggen">
-  <input type="hidden" name="mode" value="login">
-  <input type="hidden" name="action" value="admin">
-  </form>
-
-   <?php
-   tail();
-  }
- }
-
-#
-###---NEWS POSTEN---###
-#
- elseif ($action == "post")
+if(file_exists('newsscript/cats.php') && (filemtime('newsscript/cats.php') > filemtime($newscatsdat))) include('newsscript/cats.php');
+else
+{
+ //Kats: ID, Name, Bild
+ $cats = array_map('trim', array_slice(file($newscatsdat), 1));
+ $towrite = "<?php\n//Auto-generated config!\n\$cats = array();\n";
+ foreach($cats as $value)
  {
-  include("functions.php");
-  $towrite = (!$_POST['datum']) ? "\t<div class=\"center\"><span class=\"b\"><a name=\"" . date("d.m.Y") . "\">" . date("d.m.Y") . "</a></span></div>\n" : "\t<div class=\"center\"><span class=\"b\"><a name=\"" . $_POST['datum'] . "\">" . $_POST['datum'] . "</a></span></div>\n";
-  if ($_POST['updates'])
-  {
-   $array = explode("\n", $_POST['updates']);
-   for ($i=0; $i<=count($array); $i++) $towrite .= "\t" . trim(nl2br($array[$i])) . "\n";
-   $towrite = "\t" . trim($towrite) . "<br /><br />\n";
-  }
-  if (file_exists("temp.dat"))
-  {
-   $temp = fopen("temp.dat", "r");
-   $news = fread($temp, filesize("temp.dat"));
-   fclose($temp);
-   $towrite .= $news;
-   unlink("temp.dat");
-  }
-  if ($_POST['intern'])
-  {
-   $array = explode("\n", $_POST['intern']);
-   $towrite .= "\t<span class=\"red\">Intern:</span> " . trim(nl2br($array[0])) . "\n";
-   for ($i=1; $i<=count($array); $i++) $towrite .= "\t" . trim(nl2br($array[$i])) . "\n";
-   $towrite = "\t" . trim($towrite) . "<br /><br />\n";
-  }
-  head("", "Chrissyx Homepage: Administration - News", "", "", "style.css", "", "");
-  echo("Diese News wird gepostet:<br /><hr>\n$towrite\n<br><hr><a href=\"http://" . $_SERVER['SERVER_NAME'] . "\">Zurück nach Home</a>");
-  tail();
-  if (file_exists("news.dat"))
-  {
-   $temp = fopen("news.dat", "r");
-   $temp2 = fread($temp, filesize("news.dat"));
-   fclose($temp);
-   $towrite .= $temp2;
-   $temp = fopen("news.dat", "w");
-   fwrite($temp, $towrite);
-   fclose($temp);
-  }
-  else
-  {
-   $temp = fopen("news.dat", "w");
-   fwrite($temp, $towrite);
-   fclose($temp);
-  }
+  $value = explode("\t", $value);
+  $towrite .= '$cats[' . $value[0] . '][] = \'' . $value[1] . "';\n";
+  $towrite .= '$cats[' . $value[0] . '][] = \'' . (((strpos($value[2], '/') === false) && $value[2]) ? $newscatpics : '') . $value[2] . "';\n";
  }
-
-#
-###---NEWS EDIT---###
-#
- elseif ($action == "edit")
- {
-  include("functions.php");
-  if (file_exists("news.dat"))
-  {
-   if ($mode == "save")
-   {
-    $temp = fopen("news.dat", "w");
-    fwrite($temp, stripslashes($_POST['news']));
-    fclose($temp);
-    head("", "Chrissyx Homepage: Administration - News", "", "", "style.css", "", "");
-    echo("News editiert! <a href=\"http://" . $_SERVER['SERVER_NAME'] . "\">Zurück nach Home</a>");
-    tail();
-   }
-   else
-   {
-    $temp = fopen("news.dat", "r");
-    $temp2 = fread($temp, filesize("news.dat"));
-    fclose($temp);
-    head("", "Chrissyx Homepage: Administration - News - Edit", "", "", "style.css", "", "");
-    ?>
-
-  <form action="<?=$_SERVER['PHP_SELF']?>" method="post" name="newsform">
-  <input type="button" value="URL" onClick="url()"> <input type="button" value="IMG" onClick="img()"> <input type="button" value="URL+IMG" onClick="urlimg()"> <a href="javascript:smilie('forum/images/smilies/1.gif');"><img src="forum/images/smilies/1.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/2.gif');"><img src="forum/images/smilies/2.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/4.gif');"><img src="forum/images/smilies/4.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/5.gif');"><img src="forum/images/smilies/5.gif" border="0"></a> <a href="javascript:smilie('forum/images/smilies/8.gif');"><img src="forum/images/smilies/8.gif" border="0"></a><br />
-  <textarea name="news" cols="100" rows="30"><?=stripslashes($temp2)?></textarea><br />
-  <input type="submit" value="Posten"> <input type="button" value="Abbrechen" onClick="javascript:document.location.href='http://<?=$_SERVER['SERVER_NAME']?>';">
-  <input type="hidden" name="action" value="edit">
-  <input type="hidden" name="mode" value="save">
-  </form>
-
-   <?php
-   tail();
-   }
-  }
-  else echo("Keine News gefunden!");
- }
-
-#
-###---NEWS ZEIGEN---###
-#
+ $temp = fopen('newsscript/cats.php', 'w');
+ fwrite($temp, $towrite . '?>');
+ fclose($temp);
+ unset($cats);
+ include('newsscript/cats.php');
+}
+if(is_array($smilies)); //Falls Smilies bereits durch den Newsticker gesetzt sind
+elseif($smilies)
+{
+ if(file_exists('newsscript/smilies.php') && (filemtime('newsscript/smilies.php') > filemtime($smilies))) include('newsscript/smilies.php');
  else
  {
-  if (file_exists("news.dat"))
+  //Smilies: ID, Synonym, Bild
+  $smilies = array_map('trim', ((substr($smilies, -4) != '.var') ? array_slice(file($smilies), 1) : file($smilies)));
+  $towrite = "<?php\n//Auto-generated config!\n\$smilies = array();\n";
+  foreach($smilies as $value)
   {
-   $temp = fopen("news.dat", "r");
-   $temp2 = fread($temp, filesize("news.dat"));
-   fclose($temp);
-   echo("$temp2\n  <div class=\"center\"><a href=\"archiv2005.php\">Hier geht's zum Newsarchiv!</a></div>");
+   $value = explode("\t", $value);
+   $towrite .= '$smilies[\'' . $value[1] . '\'] = \'<img src="' . $forum . ((strpos($value[2], '/') === false) ? $smiliepics : '') . $value[2] . '" alt="' . $value[1] . "\" style=\"border:none;\" />';\n";
   }
-  else echo("Keine News gefunden!");
+  $temp = fopen('newsscript/smilies.php', 'w');
+  fwrite($temp, $towrite . '?>');
+  fclose($temp);
+  unset($smilies);
+  include('newsscript/smilies.php');
  }
+}
+else $smilies = array();
+
+//$action laden
+$action = (!$_GET['action']) ? $_POST['action'] : $_GET['action'];
+session_start();
+
+//Mehr Smilies
+if($action == 'smilies')
+{
+ include('newsscript/functions.php');
+ newsHead('CHS - Newsscript: Mehr Smilies', 'Newsscript, CHS, Mehr Smilies, Chrissyx', 'Mehr Smilies des Newsscript von CHS');
+ $i=0;
+ foreach($smilies as $key => $value)
+ {
+  if((++$i % $smiliesmaxrow) == 0) echo("<br />\n");
+  echo('  <a href="javascript:opener.document.getElementById(\'newsbox\').value += \' ' . $key . '\'; opener.document.getElementById(\'newsbox\').focus();">' . $value . "</a>\n");
+ }
+ newsTail();
+ exit();
+}
+
+//Admin Login
+elseif($action == 'admin')
+{
+ include('newsscript/functions.php');
+ include('newsscript/language_login.php');
+ $_SESSION['dispall'] = false;
+ $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['login']['nouser']);
+ if(($key = unifyUser($_POST['name'])) !== false) //Nutzer holen
+ {
+  unset($_POST['name']);
+  $value = explode("\t", $user[$key]);
+  $_SESSION['newsname'] = $value[0];
+  if($value[2] >= ($_POST['edit'] == 'script')) //Rechte checken
+  {
+   if($_POST['edit'] == 'newpw') //Neues PW?
+   {
+    for($i=0; $i<10; $i++) $newpw .= chr(mt_rand(33, 126));
+    $value[4] = md5($newpw);
+    $user[$key] = implode("\t", $value);
+    saveUser($newspwsdat);
+    if(!@mail($value[3], $_SERVER['SERVER_NAME'] . ' Newsscript: ' . $lang['login']['subject'], sprintf($lang['login']['mail'], $_SESSION['newsname'], $_SERVER['REMOTE_ADDR'], $newpw), 'From: newsscript@' . $_SERVER['SERVER_NAME'] . "\n" . 'Reply-To: ' . $value[3] . "\n" . 'X-Mailer: PHP/' . phpversion() . "\n" . 'Content-Type: text/plain; charset=' . $lang['login']['charset'])) $_POST['edit'] = 'nopw';
+   }
+   else //News oder Script
+   {
+    ($_POST['edit'] == 'script') ? $redir = 'newsscript/index.php' : $_SESSION['dispall'] = true;
+    unset($_POST['edit']);
+    $_SESSION['newspw'] = md5($_POST['newspw']);
+    if($value[4] && $value[4] == $_SESSION['newspw']) //Neues PW checken
+    {
+     $value[1] = $_SESSION['newspw'];
+     unset($value[4]);
+     $user[$key] = implode("\t", $value);
+     saveUser($newspwsdat);
+    }
+    if($value[1] == $_SESSION['newspw']) //Passwort checken
+    {
+     unset($_POST['newspw']);
+     $_SESSION['newsadmin'] = $value[2];
+     if($redir)
+     {
+      @header('Location: ' . $redir);
+      die($lang['login']['loggedin'] . ' <a href="' . $redir . '">' . $lang['login']['back'] . '</a>');
+     }
+    }
+    else unset($_SESSION['newspw'], $_SESSION['dispall']);
+   }
+  }
+ }
+ if(!$_SESSION['newspw'])
+ {
+  newsHead('CHS - Newsscript: ' . $lang['login']['title'], 'Newsscript, CHS, ' . $lang['login']['title'] . ', Chrissyx', $lang['login']['title'] . ' des Newsscript von CHS', $lang['login']['charset'], $lang['login']['code'], null, 'newsscript/style.css');
+  ?>
+  <h3>CHS - Newsscript: <?=$lang['login']['title']?></h3>
+  <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+  <table>
+   <tr><td><?=$lang['login']['name']?></td><td><input type="text" name="name" value="<?=(($_POST['name']) ? $_POST['name'] : $_SESSION['newsname'])?>" <?php
+  if($_POST['name']) echo('style="border-color:#FF0000;" /></td></tr>
+   <tr><td colspan="2"><span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['login']['unknown'] . '</span><br ');?>/></td></tr>
+   <tr><td><?=$lang['login']['pass']?></td><td><input type="password" name="newspw" <?php
+  if(isset($_POST['newspw']) && !$_POST['edit']) echo('style="border-color:#FF0000;" /></td></tr>
+   <tr><td colspan="2"><span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['login']['wrongpass'] . '</span><br ');?>/></td></tr>
+  </table>
+  <input type="radio" name="edit" value="newpw" /><?=$lang['login']['reqpass']?>
+<?php
+  if(!$_POST['name'])
+  {
+   if($_POST['edit'] == 'newpw') echo ('<br />
+  <span class="green">&raquo; ' . $lang['login']['sendpass'] . '</span><br />');
+   elseif($_POST['edit'] == 'nopw') echo('<br />
+  <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['login']['sendnopass'] . '</span><br />');
+  }
+?><br />
+  <input type="radio" name="edit" value="news" checked="checked" /><?=$lang['login']['news']?><br />
+  <input type="radio" name="edit" value="script" /><?=$lang['login']['script']?>
+<?php
+  if(($_POST['edit'] == 'script') && !$_POST['name']) echo('<br />
+  <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['login']['norights'] . '</span><br />');
+?><br />
+  <input type="submit" value="<?=$lang['login']['login']?>" />
+  <input type="hidden" name="action" value="admin" />
+  </form>
+  <?php
+  newsTail();
+  exit();
+ }
+}
+
+//Admin Logout
+elseif($action == 'newsout') unset($_SESSION['newsname'], $_SESSION['newspw'], $_SESSION['newsadmin'], $_SESSION['dispall']);
+
+//News lesen ----------------------------------------------------------------------------------------------------------------------------------------
+include_once('newsscript/language_news.php');
+$news = array_map('trim', file($newsdat)) or die($lang['news']['nonews']); #fgets()?
+
+//Einzelnews
+if(isset($_GET['newsid']))
+{
+ //Rechte checken
+ if(in_array($action, array('delete', 'delcomment', 'edit')))
+ {
+  include('newsscript/functions.php');
+  $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['news']['nouser']);
+  if(($user = getUser($_SESSION['newsname'])) == false) die($lang['news']['unknown']);
+  elseif($user[1] != $_SESSION['newspw']) die($lang['news']['wrongpass']);
+  elseif(!$_SESSION['dispall']) die($lang['news']['norights']);
+ }
+
+ foreach($news as $key => $value) if(current(sscanf($value, "%s")) != $_GET['newsid']) continue;
+ else
+ {
+  $value = explode("\t", trim($news[$key]));
+//News löschen
+  if($action == 'delete')
+  {
+   unset($news[$key]);
+   saveNews();
+   if(file_exists($newscomments . $_GET['newsid'] . '.dat')) unlink($newscomments . $_GET['newsid'] . '.dat');
+   echo('<div style="width:99%; text-align:center;"><span style="color:#008000; font-size:large;">' . $lang['news']['deletenews'] . "</span><br /><br />\n<a href=\"" . $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'] . '">' . $lang['news']['backtopage'] . "</a></div><br />\n");
+  }
+//News editieren
+  elseif($action == 'edit')
+  {
+   if(!isset($_POST['headline'], $_POST['srcarray'], $_POST['newsbox'], $_POST['newsbox2']))
+   {
+    list(, , , , $_POST['cat'], $_POST['headline'], $_POST['srcarray'], $_POST['newsbox'], $_POST['newsbox2']) = $value;
+    //Alles wieder dekodieren
+    $_POST['headline'] = strtr($_POST['headline'], array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")); #htmlspecialchars_decode() ab PHP5
+    $_POST['srcarray'] = (($_POST['srcarray']) ? "\t" : '') . str_replace('#', "\t", $_POST['srcarray']);
+    $_POST['newsbox'] = strtr(str_replace(array('<br />', '<br/>', '<br>'), "\n", $_POST['newsbox']), array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")); #htmlspecialchars_decode() ab PHP5
+    $_POST['newsbox2'] = strtr(str_replace(array('<br />', '<br/>', '<br>'), "\n", $_POST['newsbox2']), array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")); #htmlspecialchars_decode() ab PHP5
+    $_POST['preview'] = true;
+   }
+   $_POST['srcarray'] = explode("\t", $_POST['srcarray']);
+   showJS();
+   ?>
+<form name="newsform" id="newsform" action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$value[0]?>&amp;page=<?=$_GET['page']?>&amp;action=edit" method="post" onsubmit="addSource();">
+<div style="background-color:#99CCFF; font-family:Arial,sans-serif; width:99%; border:1px solid #000000; padding:5px;">
+ <h4>&raquo; <?=$lang['news']['editnews']?></h4>
+<?php
+//Editieren Vorschau
+  if($_POST['preview'])
+  {
+   ?>
+ <div style="border:medium double #000000; padding:5px;">
+  <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr(htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES), $smilies))?></strong></span><?=($cats[$_POST['cat']][1]) ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="margin-left:5px; border:none; float:right;" />' : ''?><br style="clear:left;" />
+  <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $value[3] . ' &ndash; ' . date($lang['news']['DATEFORMAT'], $value[1]) . ' &ndash; ' . date($lang['news']['TIMEFORMAT'], $value[1]) . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$_POST['cat']][0]?></span>
+  <hr size="1" noshade="noshade" />
+  <?=preg_replace($bbcode1, $bbcode2, strtr(nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)), $smilies))?>
+  <hr size="1" noshade="noshade" />
+  <?=($_POST['newsbox2']) ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox2'])), ENT_QUOTES)), $smilies)) . "<hr noshade=\"noshade\" style=\"height:1px;\" />\n" : ''?>
+  <span style="font-size:small;"><?=$lang['news']['sources'] . ' ' . ($_POST['srcarray'][1] ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . implode('</option><option>', $_POST['srcarray']) . '</option></select>' : $lang['news']['non'])?> &ndash; <a href="<?=$_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . ($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . (file_exists($newscomments . $value[0] . '.dat') ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment'])?></a></span>
+ </div><br /><?php
+  }
+//Editieren posten
+  elseif($_POST['update'])
+  {
+   $temp = '  <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['news']['fillout'] . '</span><br /><br />';
+   if($_POST['headline'] && $_POST['newsbox'])
+   {
+    #id - timestamp - ip - usrid?name? - catid - headline - quellen - text - weiterlesen
+    $news[$key] = $value[0] . "\t" . $value[1] . "\t" . $value[2] . "\t" . $value[3] . "\t" . $_POST['cat'] . "\t" . htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES) . "\t" . implode('#', array_slice($_POST['srcarray'], 1)) . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox']) . "\t" . trim($_POST['newsbox2'])), ENT_QUOTES)));
+    saveNews();
+    $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newsup'] . '</span> <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '">' . $lang['news']['back'] . '</a><br /><br />';
+   }
+  }
+  else unset($temp);
+//News bearbeiten
+  echo($temp . $lang['news']['headline']);
+  ?>
+ <input type="text" name="headline" value="<?=htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES)?>" size="65" onclick="activeNewsbox = this.name;" /><br />
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="CENTER" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="QUOTE" style="width:65px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="URL" style="width:40px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="IMG" style="width:40px;" onclick="setNewsTag('[img]', '[/img]');" /> <select style="width:85px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+  <option>COLOR</option>
+  <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
+  <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
+  <option value="#800000" style="background-color:#800000; color:#800000;"><?=$lang['news']['dark_red']?></option>
+  <option value="#FF0000" style="background-color:#FF0000; color:#FF0000;"><?=$lang['news']['red']?></option>
+  <option value="#008000" style="background-color:#008000; color:#008000;"><?=$lang['news']['dark_green']?></option>
+  <option value="#00FF00" style="background-color:#00FF00; color:#00FF00;"><?=$lang['news']['light_green']?></option>
+  <option value="#808000" style="background-color:#808000; color:#808000;"><?=$lang['news']['ochre']?></option>
+  <option value="#FFFF00" style="background-color:#FFFF00; color:#FFFF00;"><?=$lang['news']['yellow']?></option>
+  <option value="#000080" style="background-color:#000080; color:#000080;"><?=$lang['news']['dark_blue']?></option>
+  <option value="#0000FF" style="background-color:#0000FF; color:#0000FF;"><?=$lang['news']['blue']?></option>
+  <option value="#800080" style="background-color:#800080; color:#800080;"><?=$lang['news']['dark_purple']?></option>
+  <option value="#FF00FF" style="background-color:#FF00FF; color:#FF00FF;"><?=$lang['news']['purple']?></option>
+  <option value="#008080" style="background-color:#008080; color:#008080;"><?=$lang['news']['dark_turquoise']?></option>
+  <option value="#00FFFF" style="background-color:#00FFFF; color:#00FFFF;"><?=$lang['news']['turquoise']?></option>
+  <option value="#C0C0C0" style="background-color:#C0C0C0; color:#C0C0C0;"><?=$lang['news']['grey']?></option>
+  <option value="#FFFFFF" style="background-color:#FFFFFF; color:#FFFFFF;"><?=$lang['news']['white']?></option>
+ </select> <input type="button" value="FLASH" onclick="setNewsTag('[flash]', '[/flash]');" /><br />
+ <textarea name="newsbox" id="newsbox" rows="10" cols="60" style="margin-bottom:5px; float:left;" onclick="activeNewsbox = this.name;"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea>
+<?php
+if($smilies)
+{
+ echo(' <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;"><strong>' . $lang['news']['smilies'] . '</strong><br />');
+ $i=0;
+ foreach($smilies as $key => $value)
+ {
+  if($i>=$smiliesmax) break;
+  if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
+  echo('  <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
+ }
+ echo('<br /><br />
+  <input type="button" value="' . $lang['news']['moresmilies'] . '" onclick="window.open(\'news.php?action=smilies\', \'_blank\', \'width=250, resizable, scrollbars, status\');" />
+ </div>');
+}
+?><br style="clear:both;" />
+ <?=$lang['news']['readontext']?> <input type="button" id="toggler" value="<?=($_POST['newsbox2']) ? $lang['news']['discard'] . ' &l' : $lang['news']['expand'] . ' &r'?>aquo;" onclick="toggleFullStory();" /><br />
+ <textarea name="newsbox2" id="newsbox2" rows="10" cols="60" style="margin-bottom:5px; display:<?=($_POST['newsbox2']) ? 'inline' : 'none'?>;" onclick="activeNewsbox = this.name;"><?=stripslashes(trim($_POST['newsbox2']))?></textarea><br />
+ <?=$lang['news']['sources']?> <input type="text" name="sources" id="sources" size="25" /> <a href="javascript:doSource(true);"><?=$lang['news']['add']?></a> &ndash; <a href="javascript:doSource(false);"><?=$lang['news']['remove']?></a><br />
+ <input type="submit" value="<?=$lang['news']['update']?>" /> <input type="submit" name="preview" value="<?=$lang['news']['preview']?>" style="font-weight:bold;" /> <?=$lang['news']['cat']?> <select name="cat" style="width:125px;">
+<?php foreach($cats as $key => $value) echo '  <option value="' . $key . '"' . (($key == $_POST['cat']) ? ' selected="selected"' : '') . '>' . $value[0] . '</option>'; ?>
+ </select> <input type="button" value="<?=$lang['news']['cancel']?>" onclick="document.location='<?=$_SERVER['PHP_SELF'].'?page='.$_GET['page']?>'" />
+ <input type="hidden" name="update" value="true" />
+ <input type="hidden" name="srcarray" id="srcarray" value="" />
+</div>
+</form>
+<br />
+   <?php
+  }
+  else
+  {
+//Kommentar schreiben
+   if($action == 'comment')
+   {
+    $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['news']['fillout'] . '</span><br /><br />';
+    if(!$_POST['name']) $_POST['name'] .= '" style="border-color:#FF0000;';
+    elseif($_POST['newsbox'])
+    {
+     #todo: still buggy regex
+     $_POST['newsbox'] = preg_replace_callback("/^([^\]]+?:\/\/|www\.)[^ \[\.]+(\.[^ \[\.]+)+/si", create_function('$arr', "return (\$arr[2]) ? '[url]' . ((\$arr[1] == 'www.') ? 'http://' : '') . \$arr[0] . '[/url]' : \$arr[0];"), $_POST['newsbox']);
+     $temp = fopen($newscomments . $_GET['newsid'] . '.dat', 'a');
+     fwrite($temp, time() . "\t" . $_SERVER['REMOTE_ADDR'] . "\t" . htmlspecialchars(stripslashes($_POST['name']), ENT_QUOTES) . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES))) . "\n");
+     fclose($temp);
+     $_SESSION['shoutName'] = $_POST['name'];
+     unset($_POST['name'], $_POST['newsbox']);
+     $temp = '   <span style="color:#008000;">&raquo; ' . $lang['news']['thxcomment'] . '</span><br /><br />';
+    }
+    else $_POST['name'] = htmlspecialchars(stripslashes($_POST['name']), ENT_QUOTES);
+   }
+//Kommentar löschen
+   elseif($action == 'delcomment')
+   {
+    $towrite = array_map('trim', file($newscomments . $_GET['newsid'] . '.dat')) or die($lang['news']['nocomment']);
+    unset($towrite[$_GET['id']]);
+    if(count($towrite) == 0) unlink($newscomments . $_GET['newsid'] . '.dat');
+    else
+    {
+     $temp = fopen($newscomments . $_GET['newsid'] . '.dat', 'w');
+     fwrite($temp, implode("\n", $towrite) . "\n");
+     fclose($temp);
+	}
+    $temp = '   <span style="color:#008000;">&raquo; ' . $lang['news']['delcomment'] . '</span><br /><br />';
+   }
+   else unset($temp);
+   ?>
+
+  <script type="text/javascript">
+  function setNewsSmilie(smilie)
+  {
+   document.getElementById('newsbox').value += smilie;
+   document.getElementById('newsbox').focus();
+  }
+  </script>
+
+  <div style="width:99%; border:1px solid #000000; padding:5px;">
+   <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies))?></strong></span><?=($cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; border:none; float:right;" />' : '')?><br style="clear:left;" />
+   <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $value[3] . ' &ndash; ' . date($lang['news']['DATEFORMAT'], $value[1]) . ' &ndash; ' . date($lang['news']['TIMEFORMAT'], $value[1]) . ' ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$value[4]][0]?></span>
+   <hr size="1" noshade="noshade" />
+   <?=preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies))?>
+   <hr size="1" noshade="noshade" />
+   <?=($value[8] != '') ? preg_replace($bbcode1, $bbcode2, strtr($value[8], $smilies)) . '<hr size="1" noshade="noshade" />' : ''?>
+   <span style="font-size:small;"><?=$lang['news']['sources'] . ' ' . ($value[6][1] ? ' <select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace('#', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non']) . ($_SESSION['dispall'] ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')?></span>
+  </div><br />
+  <a href="<?=($redir) ? $redir : '.'?>?page=<?=$_GET['page']?>">&laquo; <?=$lang['news']['backtoall']?></a><br /><br />
+  <div style="width:99%; border:1px solid #000000; padding:5px;">
+   <h4>&raquo; <?=$lang['news']['comments']?></h4>
+<?php //Kommentare auslesen
+   if(!file_exists($newscomments . $_GET['newsid'] . '.dat')) echo('   ' . $lang['news']['noyet'] ."<br /><br />\n");
+   else foreach(file($newscomments . $_GET['newsid'] . '.dat') as $key => $value)
+        {
+         $value = explode("\t", $value);
+         echo('<span style="font-style:italic;"><strong>' . $value[2] . '</strong> ' . $lang['news']['onday'] . ' <strong>' . date($lang['news']['DATEFORMAT'], $value[0]) . '</strong> ' . $lang['news']['atclock'] . ' <strong>' . date($lang['news']['TIMEFORMAT'], $value[0]) . "</strong>:</span><br />\n" . preg_replace($bbcode1, $bbcode2, strtr($value[3], $smilies)) . (($_SESSION['dispall']) ? "<br />\nIP: <strong>" . $value[1] . '</strong> &ndash; [ <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $_GET['newsid'] . '&amp;page=' . $_GET['page'] . '&amp;action=delcomment&amp;id=' . $key . '#box">' . $lang['news']['delete'] . '</a> ]' : '') . '<hr size="1" noshade="noshade" />' . "\n");
+        }
+   echo($temp . "\n");
 ?>
+   <form action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$_GET['newsid']?>&amp;page=<?=$_GET['page']?>&amp;action=comment#box" method="post">
+   <div id="box" style="float:left;"> 
+    <?=$lang['news']['name']?> <input type="text" name="name" value="<?=(!$_POST['name']) ? ((!$_SERVER['newsname']) ? $_SESSION['shoutName'] : $_SERVER['newsname']) : $_POST['name']?>" size="30" /><br />
+    <textarea name="newsbox" id="newsbox" rows="5" cols="30"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea><br />
+    <input type="submit" value="<?=$lang['news']['docomment']?>" style="font-weight:bold;" /> <input type="reset" value="<?=$lang['news']['reset']?>" />
+   </div>
+<?php
+if($smilies)
+{
+ echo('   <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;">
+    <strong>' . $lang['news']['smilies'] . '</strong><br />');
+ $i=0;
+ foreach($smilies as $key => $value)
+ {
+  if($i>=$smiliesmax) break;
+  if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
+  echo('    <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
+ }
+ echo('<br /><br />
+    <input type="button" value="' . $lang['news']['moresmilies'] . '" onclick="window.open(\'news.php?action=smilies\', \'_blank\', \'width=250, resizable, scrollbars, status\');" />
+   </div>');
+}?><br style="clear:left;" />
+   </form>
+  </div><br />
+   <?php
+  }
+ }
+ #todo: notfound
+}
+else
+{
+//News
+ if($_SESSION['dispall']) //Formular zeigen
+ {
+  include_once('newsscript/functions.php');
+  $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['news']['nouser']);
+  if(($user = getUser($_SESSION['newsname'])) == false) die($lang['news']['unknown']);
+  elseif($user[1] != $_SESSION['newspw']) die($lang['news']['wrongpass']);
+  else $_POST['srcarray'] = explode("\t", $_POST['srcarray']);
+  showJS();
+  ?>
+<form name="newsform" id="newsform" action="<?=$_SERVER['PHP_SELF']?>" method="post" onsubmit="addSource();">
+<div style="background-color:#99CCFF; font-family:Arial,sans-serif; width:99%; border:1px solid #000000; padding:5px;">
+ <h4>&raquo; <?=$lang['news']['addnews']?></h4>
+<?php
+//News Vorschau
+  if($_POST['preview'])
+  {
+   ?>
+ <div style="border:medium double #000000; padding:5px;">
+  <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr(htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES), $smilies))?></strong></span><?=($cats[$_POST['cat']][1]) ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="margin-left:5px; border:none; float:right;" />' : ''?><br style="clear:left;" />
+  <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $_SESSION['newsname'] . ' &ndash; ' . date($lang['news']['DATEFORMAT']) . ' &ndash; ' . date($lang['news']['TIMEFORMAT']) . ' ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$_POST['cat']][0]?></span>
+  <hr size="1" noshade="noshade" />
+  <?=preg_replace($bbcode1, $bbcode2, strtr(nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)), $smilies))?>
+  <hr size="1" noshade="noshade" />
+  <?=($_POST['newsbox2']) ? preg_replace($bbcode1, $bbcode2, strtr(nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox2'])), ENT_QUOTES)), $smilies)) . "<hr noshade=\"noshade\" style=\"height:1px;\" />\n" : ''?>
+  <span style="font-size:small;"><?=$lang['news']['sources'] . ' ' . ($_POST['srcarray'][1] ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;' . implode('</option><option>', $_POST['srcarray']/*array_map('substr', $_POST['srcarray'], array_fill(0, $size, 0), array_fill(0, $size, 20))*/) . '</option></select>' : $lang['news']['non'])?> &ndash; <a href="#"><?=($_POST['newsbox2'] ? $lang['news']['readon'] . ' / ' : '') . $lang['news']['writecomment']?></a></span>
+ </div><br /><?php
+  }
+//News posten
+  elseif($_POST['update'])
+  {
+   $temp = '  <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['news']['fillout'] . '</span><br /><br />';
+   if($_POST['headline'] && $_POST['newsbox'])
+   {
+    array_unshift($news, ++$news[0]);
+    #id - timestamp - ip - usrid?name? - catid - headline - quellen - text - weiterlesen
+    $news[1] = /*(@current(sscanf($news[0], "%d\t[.*]"))+1)*/ ($news[0]-1) . "\t" . time() . "\t" . $_SERVER['REMOTE_ADDR'] . "\t" . $_SESSION['newsname'] . "\t" . $_POST['cat'] . "\t" . htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES) . "\t" . implode('#', array_slice($_POST['srcarray'], 1)) . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox']) . "\t" . trim($_POST['newsbox2'])), ENT_QUOTES)));
+    saveNews();
+    unset($_POST['cat'], $_POST['headline'], $_POST['srcarray'], $_POST['newsbox'], $_POST['newsbox2']);
+    $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newspost'] . '</span><br /><br />';
+   }
+  }
+  else unset($temp);
+//News erstellen
+  echo($temp . $lang['news']['headline']);
+  ?> <input type="text" name="headline" value="<?=htmlspecialchars(stripslashes($_POST['headline']), ENT_QUOTES)?>" size="65" onclick="activeNewsbox = this.name;" /><br />
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="CENTER" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="QUOTE" style="width:65px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="URL" style="width:40px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="IMG" style="width:40px;" onclick="setNewsTag('[img]', '[/img]');" /> <select style="width:85px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+  <option>COLOR</option>
+  <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
+  <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
+  <option value="#800000" style="background-color:#800000; color:#800000;"><?=$lang['news']['dark_red']?></option>
+  <option value="#FF0000" style="background-color:#FF0000; color:#FF0000;"><?=$lang['news']['red']?></option>
+  <option value="#008000" style="background-color:#008000; color:#008000;"><?=$lang['news']['dark_green']?></option>
+  <option value="#00FF00" style="background-color:#00FF00; color:#00FF00;"><?=$lang['news']['light_green']?></option>
+  <option value="#808000" style="background-color:#808000; color:#808000;"><?=$lang['news']['ochre']?></option>
+  <option value="#FFFF00" style="background-color:#FFFF00; color:#FFFF00;"><?=$lang['news']['yellow']?></option>
+  <option value="#000080" style="background-color:#000080; color:#000080;"><?=$lang['news']['dark_blue']?></option>
+  <option value="#0000FF" style="background-color:#0000FF; color:#0000FF;"><?=$lang['news']['blue']?></option>
+  <option value="#800080" style="background-color:#800080; color:#800080;"><?=$lang['news']['dark_purple']?></option>
+  <option value="#FF00FF" style="background-color:#FF00FF; color:#FF00FF;"><?=$lang['news']['purple']?></option>
+  <option value="#008080" style="background-color:#008080; color:#008080;"><?=$lang['news']['dark_turquoise']?></option>
+  <option value="#00FFFF" style="background-color:#00FFFF; color:#00FFFF;"><?=$lang['news']['turquoise']?></option>
+  <option value="#C0C0C0" style="background-color:#C0C0C0; color:#C0C0C0;"><?=$lang['news']['grey']?></option>
+  <option value="#FFFFFF" style="background-color:#FFFFFF; color:#FFFFFF;"><?=$lang['news']['white']?></option>
+ </select> <input type="button" value="FLASH" onclick="setNewsTag('[flash]', '[/flash]');" /><br />
+ <textarea name="newsbox" id="newsbox" rows="10" cols="60" style="margin-bottom:5px; float:left;" onclick="activeNewsbox = this.name;"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea>
+<?php
+if($smilies)
+{
+ echo(' <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;"><strong>' . $lang['news']['smilies'] . '</strong><br />');
+ $i=0;
+ foreach($smilies as $key => $value)
+ {
+  if($i>=$smiliesmax) break;
+  if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
+  echo('  <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
+ }
+ echo('<br /><br />
+  <input type="button" value="' . $lang['news']['moresmilies'] . '" onclick="window.open(\'news.php?action=smilies\', \'_blank\', \'width=250, resizable, scrollbars, status\');" />
+ </div>');
+}
+?><br style="clear:both;" />
+ <?=$lang['news']['readontext']?> <input type="button" id="toggler" value="<?=($_POST['newsbox2']) ? $lang['news']['discard'] . ' &l' : $lang['news']['expand'] . ' &r'?>aquo;" onclick="toggleFullStory();" /><br />
+ <textarea name="newsbox2" id="newsbox2" rows="10" cols="60" style="margin-bottom:5px; display:<?=($_POST['newsbox2']) ? 'inline' : 'none'?>;" onclick="activeNewsbox = this.name;"><?=stripslashes(trim($_POST['newsbox2']))?></textarea><br />
+ <?=$lang['news']['sources']?> <input type="text" name="sources" id="sources" size="25" /> <a href="javascript:doSource(true);"><?=$lang['news']['add']?></a> &ndash; <a href="javascript:doSource(false);"><?=$lang['news']['remove']?></a><br />
+ <input type="submit" value="<?=$lang['news']['postnews']?>" /> <input type="submit" name="preview" value="<?=$lang['news']['preview']?>" style="font-weight:bold;" /> <!--<input type="reset" value="Reset" />--> <?=$lang['news']['cat']?> <select name="cat" style="width:125px;">
+<?php foreach($cats as $key => $value) echo('  <option value="' . $key . '"' . (($key == $_POST['cat']) ? ' selected="selected"' : '') . '>' . $value[0] . '</option>'); ?>
+ </select> <input type="button" value="<?=$lang['news']['logout']?>" onclick="document.location='<?=$_SERVER['PHP_SELF']?>?action=newsout'" />
+ <input type="hidden" name="update" value="true" />
+ <input type="hidden" name="srcarray" id="srcarray" value="" />
+</div>
+</form>
+<br />
+  <?php
+ }
+
+ if(!$news[1]) echo('<div style="width:99%; text-align:center;">' . $lang['news']['nofound'] . "</div><br />\n");
+ else
+ {
+//News zeigen
+  $size = count($news = array_slice($news, 1));
+  $_GET['page'] = ($_GET['page'] < 0) ? 0 : (($_GET['page']*$newsmax >= $size) ? $_GET['page']-1 : $_GET['page']);
+  $start = $_GET['page']*$newsmax;
+  $end = (($size-$start) > $newsmax) ? $start+$newsmax : $size;
+  for($i=$start; $i<$end; $i++)
+  {
+   $value = explode("\t", $news[$i]);
+   /*if($_GET['catid'] && $_GET['catid'] != $value[4])
+   {
+    $end++;
+    continue;
+   }*/
+   ?>
+ <div style="width:99%; border:1px solid #000000; padding:5px;">
+  <span style="font-size:medium; float:left;"><strong><?=preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies))?></strong></span><?=($cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; float:right;" />' : '')?><br style="clear:left;" />
+  <span style="font-size:small;"><?=$lang['news']['postedby'] . ' ' . $value[3] . ' &ndash; ' . date($lang['news']['DATEFORMAT'], $value[1]) . ' &ndash; ' . date($lang['news']['TIMEFORMAT'], $value[1]) . ' ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' ' . $cats[$value[4]][0]?></span>
+  <hr size="1" noshade="noshade" />
+  <?=preg_replace($bbcode1, $bbcode2, strtr($value[7], $smilies))?>
+  <hr size="1" noshade="noshade" />
+  <span style="font-size:small;"><?=$lang['news']['sources'] . ' ' . ($value[6] ? '<select style="width:100px; font-size:x-small;" onchange="if(this.options.selectedIndex != 0) window.open(this.options[this.options.selectedIndex].text, \'_blank\'); else return false;"><option>&emsp;&emsp;&emsp;&ensp;&darr;</option><option>' . str_replace('#', '</option><option>', $value[6]) . '</option></select>' : $lang['news']['non'])?> &ndash; <a href="<?=$_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '">' . ($value[8] ? $lang['news']['readon'] . ' / ' : '') . ((file_exists($newscomments . $value[0] . '.dat')) ? $lang['news']['comments'] . ' ( <strong>' . count(file($newscomments . $value[0] . '.dat')) . '</strong> )' : $lang['news']['writecomment']) . '</a>' . (($_SESSION['dispall']) ? ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=edit">' . $lang['news']['edit'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;action=delete" onclick="return confirm(\'' . $lang['news']['confirm'] . '\');">' . $lang['news']['delete'] . '</a>' : '')?></span>
+ </div><br />
+ <?php
+  }
+  echo('<div style="width:99%; text-align:center; font-size:small;">
+  <a href="' . $_SERVER['PHP_SELF'] . '?page=0">&laquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']-1) . '">&lsaquo; ' . $lang['news']['prev'] . '</a> &ndash; ' . $lang['news']['page'] . ' ' . ($_GET['page']+1) . ' &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']+1) . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) .'">&raquo;</a><br />
+  ' . sprintf($lang['news']['showing'], ($start+1), (($end > $size) ? $size : $end), $size) . "\n </div><br />\n ");
+ }
+}
+#PLEASE DON'T REMOVE THIS!
+?><div style="width:99%; text-align:center; font-size:xx-small;">Powered by CHS - Newsscript<br />&copy; 2008 by Chrissyx</div>
