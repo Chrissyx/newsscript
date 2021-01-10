@@ -1,7 +1,7 @@
 <?php
 /**
  * Newsticker für interne, externe und RSS Anbindung.
- * 
+ *
  * @author Chrissyx
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
@@ -64,13 +64,13 @@ switch(isset($_GET['type']) ? $_GET['type'] : '')
  }
  echo("document.write('<!-- /CHS - Newsscript - Ticker Ende -->');\n");
  break;
- 
+
  default:
  for($i=0; $i<$size; $i++)
  {
   $value = explode("\t", $news[$i]);
   echo(date($lang['news']['DATEFORMAT'], $value[1]) . ': <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '">' . preg_replace("/<a .*?>(.*?)<\/a>/si", '\1', preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[5], $smilies) : $value[5])) . "</a><br />\n");
- }          
+ }
  break;
 }
 ?>

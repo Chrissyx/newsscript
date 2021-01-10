@@ -1,12 +1,12 @@
 <?php
 /**
  * Newsmodul zum Anzeigen und Verwalten der News. Verarbeitet auch Login und Passwörter.
- * 
+ *
  * @author Chrissyx
  * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.5.2
+ * @version 1.0.5.2c
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php'))) include_once('newsscript/settings.php');
@@ -480,7 +480,7 @@ if($smilies)
   </script>
 
 <?=sprintf($newsTemplate,
-           'style="width:99%; border:1px solid #000000; padding:5px;"', //Style
+           'class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;"', //Style
            preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Überschrift
            $cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; float:right;" />' : '', //Katbild
            $value[3], //Autor
@@ -508,7 +508,7 @@ if($smilies)
    echo($temp . "\n");
 ?>
    <form action="<?=$_SERVER['PHP_SELF']?>?newsid=<?=$_GET['newsid']?>&amp;page=<?=$_GET['page']?>&amp;catid=<?=$_GET['catid']?>&amp;action=comment#box" method="post">
-   <div id="box" style="float:left;"> 
+   <div id="box" style="float:left;">
     <?=$lang['news']['name']?> <input type="text" name="name" value="<?=!$_POST['name'] ? (!$_SERVER['newsname'] ? $_SESSION['shoutName'] : $_SERVER['newsname']) : $_POST['name']?>" size="30" /><br />
     <textarea name="newsbox" id="newsbox" rows="5" cols="30"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea><br />
 <?=$captcha ? '    <input type="text" name="captcha" style="' . $_POST['captcha'] . 'vertical-align:middle; width:110px;" /> &larr; ' . sprintf($lang['news']['captcha_text'], $lang['news']['captcha_word']) . '<img src="news.php?action=captcha" alt="CAPTCHA" style="display:none; vertical-align:middle;" /><br />' . "\n" : null?>
@@ -680,7 +680,7 @@ if($smilies)
  else
  {
 //News zeigen
-  $size = count($news = ($_GET['catid'] = isset($_GET['catid']) ? $_GET['catid'] : '') ? array_values(array_filter($news, create_function('$cur', 'return strpos($cur, "\t' . $_GET['catid'] . '\t", 1) > 0 ? true : false;'))) : array_slice($news, 1));
+  $size = count($news = ($_GET['catid'] = isset($_GET['catid']) ? $_GET['catid'] : '') ? array_values(array_filter($news, create_function('$cur', 'return strpos($cur, "\t' . intval($_GET['catid']) . '\t", 1) > 0 ? true : false;'))) : array_slice($news, 1));
   $_GET['page'] = !isset($_GET['page']) ? '' : ($_GET['page'] < 0 ? 0 : (($_GET['page']*$newsmax >= $size) ? abs($_GET['page']-1) : $_GET['page']));
   $start = $_GET['page']*$newsmax;
   $end = (($size-$start) > $newsmax) ? $start+$newsmax : $size;

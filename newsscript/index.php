@@ -1,12 +1,12 @@
 <?php
 /**
  * Adminmodul zum Installieren und Verwalten des Newsscripts.
- * 
+ *
  * @author Chrissyx
  * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.5.2
+ * @version 1.0.5.2b
  */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
@@ -30,11 +30,11 @@ if(file_exists('settings.dat.php'))
  }
 }
 else
-{
+{/*
  if(decoct(fileperms($temp = basename($_SERVER['PHP_SELF']))) != '100775') chmod($temp, 0775) or die('<b>ERROR:</b> Konnte für &quot;' . $temp . '&quot; keine Rechte setzen!');
  elseif(decoct(fileperms('../news.php')) != '100775') chmod('../news.php', 0775) or die('<b>ERROR:</b> Konnte für &quot;news.php&quot; keine Rechte setzen!');
  elseif(decoct(fileperms('../newsscript/')) != '40775') chmod('../newsscript/', 0775) or die('<b>ERROR:</b> Konnte für den Ordner &quot;newsscript&quot; keine Rechte setzen!');
- clearstatcache();
+ clearstatcache();*/
 }
 
 if(!file_exists('language_index.php'))
@@ -275,7 +275,7 @@ foreach($user as $key => $value)
     <tr><td>' . $lang['cats']['resize'];
        unset($_POST['resize'], $_POST['width'], $_POST['height']);
       }
-      $_POST['catpic'] = /*current(array_slice(explode('/', $settings[5]), -2)) . '/' .*/ $_FILES['uploadpic']['name']; 
+      $_POST['catpic'] = /*current(array_slice(explode('/', $settings[5]), -2)) . '/' .*/ $_FILES['uploadpic']['name'];
      }
      else
      {
@@ -417,7 +417,7 @@ foreach($cats as $key => $value)
      if(move_uploaded_file($_FILES['uploadpic']['tmp_name'], '../' . $settings[7] . $_FILES['uploadpic']['name']))
      {
       chmod('../' . $settings[7] . $_FILES['uploadpic']['name'], 0775);
-      $_POST['address'] = $_FILES['uploadpic']['name']; 
+      $_POST['address'] = $_FILES['uploadpic']['name'];
      }
      else
      {
