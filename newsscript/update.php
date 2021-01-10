@@ -1,6 +1,6 @@
 <?php
 /**
- * Update-Routine für alle Versionen. Aktualisiert sukzessive jede Version von der vorhandenen bis zur Neusten.
+ * Update-Routine für alle Versionen. Aktualisiert sukzessive jede Version von der Vorhandenen bis zur Neusten.
  * 
  * @author Chrissyx
  * @copyright (c) 2001 - 2009 by Chrissyx
@@ -22,17 +22,31 @@ elseif(!isset($_POST['update']))
 include_once('language_news.php');
 
 /**
+ * Update von 1.0.2 auf 1.0.2.1
+ * 
+ * @since 1.0.2.1
+ * @version 1.0.2.1
+ */
+function newsUpdate102()
+{
+ global $lang, $next;
+ echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.2.1</span>...<br />\n");
+ //Nix zu tun
+ $next = '';
+}
+
+/**
  * Update von 1.0.1 auf 1.0.2
  * Fixt Links mit Ankern, die in 1.0.1 getrennt wurden, und alle Entitäten. Bereitet Nutzung von CAPTCHA vor.
  * 
  * @since 1.0.2
- * @version 1.0.2
+ * @version 1.0.2.1
  */
 function newsUpdate101()
 {
  global $lang, $next;
  echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.2</span>...<br />\n");
- list($newsdat,, $newspwsdat,, $newscatsdat,, $smiliesdat) = @array_map('trim', array_slice(file('settings.dat.php'), 1)) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+ list($newsdat, , $newspwsdat, , $newscatsdat, , $smiliesdat) = @array_map('trim', array_slice(file('settings.dat.php'), 1)) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
  //Update settings.dat
  $temp = fopen('settings.dat.php', 'a');
  fwrite($temp, "\n");
@@ -95,7 +109,7 @@ function newsUpdate101()
  fwrite($temp, implode("\n", $news));
  flock($temp, LOCK_UN);
  fclose($temp);
- $next = '';
+ $next = '1.0.2';
 }
 
 /**
@@ -103,7 +117,7 @@ function newsUpdate101()
  * Ersetzt alle # durch Leerzeichen in den Quellen.
  * 
  * @since 1.0.1
- * @version 1.0.1
+ * @version 1.0.2
  */
 function newsUpdate10()
 {
