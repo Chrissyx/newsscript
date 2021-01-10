@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.5.2c
+Version: 1.0.6
 
 
 ENGLISH - SCROLL DOWN!
@@ -127,6 +127,8 @@ BBCode Referenz
 -[color=Farbe]Farbiger Text[/color]
 -[flash]Flash mit 425x355 YouTube Größe[/flash]
 -[flash=Breite,Höhe]Flash mit vorgegebener Breite und Höhe[/flash]
+-[iframe]iFrame mit 560x315 YouTube Größe[/iframe]
+-[iframe=Breite,Höhe]iFrame mit vorgegebener Breite und Höhe[/iframe]
 -[code]Quellcode[/code]
 -[size=Größe]Um Größe skalierter Text[/size]
 -[sup]Hochgestellter Text[/sup]
@@ -135,7 +137,7 @@ BBCode Referenz
 
 
 Credits
-© 2008 - 2010 by Chrissyx
+© 2008-2015 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
 http://www.chrissyx.com/
@@ -240,6 +242,8 @@ BBCode reference
 -[color=Color]Colored text[/color]
 -[flash]Flash with 425x355 YouTube size[/flash]
 -[flash=Width,Height]Flash with given width and height[/flash]
+-[iframe]iFrame with 560x315 YouTube size[/iframe]
+-[iframe=Width,Height]iFrame with given width and height[/iframe]
 -[code]Source code[/code]
 -[size=Size]With size scaled text[/size]
 -[sup]Superscript text[/sup]
@@ -248,7 +252,7 @@ BBCode reference
 
 
 Credits
-© 2008 - 2010 by Chrissyx
+© 2008-2015 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
 http://www.chrissyx.com/
