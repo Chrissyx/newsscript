@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.2
+ * @version 1.0.3
  */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
@@ -341,7 +341,7 @@ foreach($user as $key => $value)
    {
     document.getElementById('catname').value = cats[key][0];
     document.getElementById('catpic').value = cats[key][1];
-    document.getElementById('pic').src = (cats[key][1] == '') ? 'frage.jpg' : ((cats[key][1].indexOf('/') == -1) ? '<?='../'.$settings[5]?>' : ((cats[key][1].substr(0, 3) == '../') ? '../' : '')) + cats[key][1];
+    document.getElementById('pic').src = (cats[key][1] == '') ? 'frage.jpg' : ((cats[key][1].indexOf('/') == -1) ? '<?='../' . $settings[5]?>' : ((cats[key][1].indexOf('//') == -1) ? '../' : '')) + cats[key][1]; //&amp;&amp; cats[key][1].substr(0, 3) == '../'
     document.getElementById('delete').disabled = false;
     document.getElementById('cat').value = cats[key][0];
    }

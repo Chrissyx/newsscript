@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2009 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.2.1
+ * @version 1.0.3.5
  */
 
 //Caching
@@ -22,44 +22,68 @@ else
                   "/\[s\](.*?)\[\/s\]/si",
                   "/\[center\](.*?)\[\/center\]/si",
                   "/\[email\](.*?)\[\/email\]/si",
+                  "/\[email=(.*?)\](.*?)\[\/email\]/si",
                   "/\[img\](.*?)\[\/img\]/si",
                   "/\[img=(.*?)\](.*?)\[\/img\]/si",
                   "/\[url\](.*?)\[\/url\]/si",
                   "/\[url=(.*?)\](.*?)\[\/url\]/si",
                   "/\[color=(\#[a-fA-F0-9]{6}|[a-zA-Z]+)\](.*?)\[\/color\]/si",
+                  "/\[sup\](.*?)\[\/sup\]/si",
+                  "/\[sub\](.*?)\[\/sub\]/si",
                   "/\[code\](.*?)\[\/code\]/si",
+                  "/\[size=\-2\](.*?)\[\/size\]/si",
+                  "/\[size=\-1\](.*?)\[\/size\]/si",
+                  "/\[size=\+1\](.*?)\[\/size\]/si",
+                  "/\[size=\+2\](.*?)\[\/size\]/si",
+                  "/\[size=\+3\](.*?)\[\/size\]/si",
+                  "/\[size=\+4\](.*?)\[\/size\]/si",
                   "/\[quote\](.*?)\[\/quote\]/si",
                   "/\[flash\](.*?)\[\/flash\]/si",
                   "/\[flash=(\d+),(\d+)\](.*?)\[\/flash\]/si");
+                  //"/\[spoiler\](.*?)\[\/spoiler\]/si");
  $bbcode2 = array('<span style="font-weight:bold;">\1</span>',
                   '<span style="font-style:italic;">\1</span>',
                   '<span style="text-decoration:underline;">\1</span>',
                   '<span style="text-decoration:line-through;">\1</span>',
                   '<p style="text-align:center;">\1</p>',
                   '<a href="mailto:\1">\1</a>',
+                  '<a href="mailto:\1">\2</a>',
                   '<img src="\1" alt="" />',
                   '<img src="\1" alt="\2" title="\2" />',
                   '<a href="\1" target="_blank">\1</a>',
                   '<a href="\1" target="_blank">\2</a>',
                   '<span style="color:\1;">\2</span>',
+                  '<sup>\1</sup>',
+                  '<sub>\1</sub>',
                   '<code>\1</code>',
+                  '<span style="font-size:xx-small;">\1</span>',
+                  '<span style="font-size:x-small;">\1</span>',
+                  '<span style="font-size:large;">\1</span>',
+                  '<span style="font-size:x-large;">\1</span>',
+                  '<span style="font-size:xx-large;">\1</span>',
+                  '<span style="font-size:300%;">\1</span>',
                   '<blockquote><p style="font-style:italic;">\1</p></blockquote>',
                   '<object data="\1" type="application/x-shockwave-flash" width="425" height="355">
  <param name="allowscriptaccess" value="samedomain" />
  <param name="movie" value="\1" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
- <p>No flash installed! Please update your browser</p>
+ <p>No flash installed! Please update your browser.</p>
 </object>',
                   '<object data="\3" type="application/x-shockwave-flash" width="\1" height="\2">
  <param name="allowscriptaccess" value="samedomain" />
  <param name="movie" value="\3" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
- <p>No flash installed! Please update your browser</p>
+ <p>No flash installed! Please update your browser.</p>
 </object>');
+                  /*"<div>
+ <div style=\"font-weight:bold; padding:3px;\">' . \$lang['news']['spoiler'] . ': <input type=\"button\" value=\"Aufdecken\" onclick=\"(s = this.parentNode.parentNode.getElementsByTagName(\'div\')[1].style).display = s.display == \'none\' ? \'\' : \'none\'; (s = this.parentNode.style).backgroundColor = s.backgroundColor == \'\' ? \'#000000\' : \'\'; s.color = s.color == \'\' ? \'#FFFFFF\' : \'\'; this.value = s.color == \'\' ? \'Aufdecken\' : \'Verstecken\';\" /></div>
+ <div style=\"background-color:#FFFFFF; border:1px #000000 solid; display:none; padding:10px;\">\\1</div>
+</div>");*/
+ $bbcode3 = array('\1', '\1', '\1', '\1', '\1', '\1', '\2', '\1', '\2', '\1', '\2', '\2', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\1', '\3');
  $temp = fopen('newsscript/settings.php', 'w');
- fwrite($temp, "<?php\n//Auto-generated config!\n\$newsdat = '$newsdat';\n\$newsmax = $newsmax;\n\$newspwsdat = '$newspwsdat';\n\$newscomments = '$newscomments';\n\$newscatsdat = '$newscatsdat';\n\$newscatpics = '$newscatpics';\n\$smilies = '$smilies';\n\$smiliepics = '$smiliepics';\n\$smiliesmax = " . ($smiliesmax ? $smiliesmax : "''") . ";\n\$smiliesmaxrow = " . ($smiliesmaxrow ? $smiliesmaxrow : "''") . ";\n\$tickermax = $tickermax;\n\$redir = '$redir';\n\$captcha = " . ($captcha != '' ? 'true' : 'false') . ";\n\$forum = '$forum';\n\$bbcode1 = array(\"" . implode('", "', $bbcode1) . "\");\n\$bbcode2 = array('" . implode('\', \'', $bbcode2) . "');\n?>"); #array_map('trim', " . ((substr($smilies, -4) != '.var') ? "array_slice(file('$smilies'), 1)" : "file('$smilies')") . ")
+ fwrite($temp, "<?php\n//Auto-generated config!\n\$newsdat = '$newsdat';\n\$newsmax = $newsmax;\n\$newspwsdat = '$newspwsdat';\n\$newscomments = '$newscomments';\n\$newscatsdat = '$newscatsdat';\n\$newscatpics = '$newscatpics';\n\$smilies = '$smilies';\n\$smiliepics = '$smiliepics';\n\$smiliesmax = " . ($smiliesmax ? $smiliesmax : "''") . ";\n\$smiliesmaxrow = " . ($smiliesmaxrow ? $smiliesmaxrow : "''") . ";\n\$tickermax = $tickermax;\n\$redir = '$redir';\n\$captcha = " . ($captcha != '' ? 'true' : 'false') . ";\n\$forum = '$forum';\n\$bbcode1 = array(\"" . implode('", "', $bbcode1) . "\");\n\$bbcode2 = array('" . implode('\', \'', $bbcode2) . "');\n\$bbcode3 = array('" . implode('\', \'', $bbcode3) . "');\n?>"); #array_map('trim', " . ((substr($smilies, -4) != '.var') ? "array_slice(file('$smilies'), 1)" : "file('$smilies')") . ")
  fclose($temp);
 }
 if(file_exists('newsscript/cats.php') && (filemtime('newsscript/cats.php') > filemtime($newscatsdat))) include('newsscript/cats.php');
@@ -116,7 +140,7 @@ if($action == 'smilies')
  foreach($smilies as $key => $value)
  {
   if((++$i % $smiliesmaxrow) == 0) echo("<br />\n");
-  echo('  <a href="javascript:opener.document.getElementById(\'newsbox\').value += \' ' . strtr($key, $htmlJSDecode) . '\'; opener.document.getElementById(\'newsbox\').focus();">' . $value . "</a>\n");
+  echo('  <a href="javascript:(n = opener.document.getElementById(\'newsbox\')).value += \' ' . strtr($key, $htmlJSDecode) . '\'; n.focus();">' . $value . "</a>\n");
  }
  newsTail();
  exit();
@@ -133,6 +157,20 @@ elseif($action == 'captcha')
  imagepng($captcha);
  imagedestroy($captcha);
  exit();
+}
+
+//TBB1 threading
+elseif($action == 'threading' && $_SESSION['dispall'])
+{
+ $threads = @array_reverse(array_map('trim', file($forum . 'foren/' . $_GET['foren_id'] . '-threads.xbb'))) or die('<b>ERROR:</b> Forum nicht gefunden!');
+ echo('<select size="' . count($threads) . '" onclick="opener.document.getElementById(\'newsbox\').value += \'\n[url=' . $forum . 'index.php?mode=viewthread&amp;forum_id=' . $_GET['foren_id'] . "&amp;thread=' + this.options[this.options.selectedIndex].value + ']Link zum Thema im Forum[/url]'; window.close();\">\n");
+ foreach($threads as $thread)
+ {
+  $topic = file($forum . 'foren/' . $_GET['foren_id'] . '-' . $thread . '.xbb');
+  $topic = explode("\t", $topic[0]);
+  echo('<option value="' . $thread . '">' . $topic[1] . "</option>\n");
+ }
+ die('</select>');
 }
 
 //Admin Login
@@ -313,9 +351,9 @@ if(isset($_GET['newsid']))
 //News bearbeiten
   echo($temp . $lang['news']['headline']);
   ?>
- <input type="text" name="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
- <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="CENTER" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="QUOTE" style="width:65px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="URL" style="width:40px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="IMG" style="width:40px;" onclick="setNewsTag('[img]', '[/img]');" /> <select style="width:85px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
-  <option>COLOR</option>
+ <input type="text" name="headline" id="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:60px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:50px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+  <option><?=$lang['news']['color']?></option>
   <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
   <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
   <option value="#800000" style="background-color:#800000; color:#800000;"><?=$lang['news']['dark_red']?></option>
@@ -332,7 +370,26 @@ if(isset($_GET['newsid']))
   <option value="#00FFFF" style="background-color:#00FFFF; color:#00FFFF;"><?=$lang['news']['turquoise']?></option>
   <option value="#C0C0C0" style="background-color:#C0C0C0; color:#C0C0C0;"><?=$lang['news']['grey']?></option>
   <option value="#FFFFFF" style="background-color:#FFFFFF; color:#FFFFFF;"><?=$lang['news']['white']?></option>
- </select> <input type="button" value="FLASH" onclick="setNewsTag('[flash]', '[/flash]');" /><br />
+ </select> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[size=' + this.options[this.options.selectedIndex].value + ']', '[/size]');">
+  <option><?=$lang['news']['size']?></option>
+  <option value="-2"><?=$lang['news']['size_down2']?></option>
+  <option value="-1"><?=$lang['news']['size_down1']?></option>
+  <option value="+1"><?=$lang['news']['size_up1']?></option>
+  <option value="+2"><?=$lang['news']['size_up2']?></option>
+  <option value="+3"><?=$lang['news']['size_up3']?></option>
+  <option value="+4"><?=$lang['news']['size_up4']?></option>
+ </select><br />
+ <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <select style="width:173px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
+  <option style="font-weight:bold;"><?=$lang['news']['linkoldnews']?></option>
+<?php
+$size = ($size = count($news)) > 20 ? 21 : $size;
+for($i=1; $i<$size; $i++)
+{
+ $value = explode("\t", $news[$i]);
+ echo('  <option value="' . $value[0] . '">' . preg_replace($bbcode1, $bbcode3, $value[5]) . '</option>' . "\n");
+}
+?>
+ </select><br />
  <textarea name="newsbox" id="newsbox" rows="10" cols="60" style="margin-bottom:5px; float:left;" onclick="activeNewsbox = this.name;"><?=stripEscape(trim($_POST['newsbox']))?></textarea>
 <?php
 if($smilies)
@@ -343,7 +400,7 @@ if($smilies)
  {
   if($i >= $smiliesmax) break;
   if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
-  echo('  <a href="javascript:setNewsSmilie(\' ' . $key . '\');">' . $value . '</a>');
+  echo('  <a href="javascript:setNewsTag(\' ' . $key . '\', \'\');">' . $value . '</a>');
  }
  echo('<br /><br />
   <input type="button" value="' . $lang['news']['moresmilies'] . '" onclick="window.open(\'news.php?action=smilies\', \'_blank\', \'width=250, resizable, scrollbars, status\');" />
@@ -373,8 +430,8 @@ if($smilies)
     elseif($captcha && $_POST['captcha'] != $_SESSION['captcha']) $_POST['captcha'] = 'border-color:#FF0000; ';
     elseif($_POST['newsbox'])
     {
-     #todo: still buggy regex
-     $_POST['newsbox'] = preg_replace_callback("/^([^\]]+?:\/\/|www\.)[^ \[\.]+(\.[^ \[\.]+)+/si", create_function('$arr', "return (\$arr[2]) ? '[url]' . ((\$arr[1] == 'www.') ? 'http://' : '') . \$arr[0] . '[/url]' : \$arr[0];"), $_POST['newsbox']);
+     #todo: still buggy regex?
+     $_POST['newsbox'] = preg_replace_callback("/([^ ^\n^\r^\]]+?:\/\/|www\.)[^ \[\.]+(\.[^ ^\r^\n\[\.]+)+/si", create_function('$arr', "return (\$arr[2]) ? '[url]' . ((\$arr[1] == 'www.') ? 'http://' : '') . \$arr[0] . '[/url]' : \$arr[0];"), $_POST['newsbox']);
      $temp = fopen($newscomments . $_GET['newsid'] . '.dat', 'a');
      fwrite($temp, time() . "\t" . $_SERVER['REMOTE_ADDR'] . "\t" . $_POST['name'] . "\t" . ereg_replace("(\r)(\n)", '' , nl2br(htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES))) . "\n");
      fclose($temp);
@@ -403,8 +460,8 @@ if($smilies)
   <script type="text/javascript">
   function setNewsSmilie(smilie)
   {
-   document.getElementById('newsbox').value += smilie;
-   document.getElementById('newsbox').focus();
+   (n = document.getElementById('newsbox')).value += smilie;
+   n.focus();
   }
   </script>
 
@@ -510,9 +567,9 @@ else
   else $temp = '';
 //News erstellen
   echo($temp . $lang['news']['headline']);
-  ?> <input type="text" name="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
- <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="CENTER" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="QUOTE" style="width:65px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="URL" style="width:40px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="IMG" style="width:40px;" onclick="setNewsTag('[img]', '[/img]');" /> <select style="width:85px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
-  <option>COLOR</option>
+  ?> <input type="text" name="headline" id="headline" value="<?=stripEscape($_POST['headline'])?>" size="65" onclick="activeNewsbox = this.name;" /><br />
+ <input type="button" value="B" style="font-weight:bold; width:25px;" onclick="setNewsTag('[b]', '[/b]');" /> <input type="button" value="I" style="font-style:italic; width:25px;" onclick="setNewsTag('[i]', '[/i]');" /> <input type="button" value="U" style="text-decoration:underline; width:25px;" onclick="setNewsTag('[u]', '[/u]');" /> <input type="button" value="S" style="text-decoration:line-through; width:25px;" onclick="setNewsTag('[s]', '[/s]');" /> <input type="button" value="<?=$lang['news']['center']?>" style="width:70px;" onclick="setNewsTag('[center]', '[/center]');" /> <input type="button" value="<?=$lang['news']['quote']?>" style="width:60px;" onclick="setNewsTag('[quote]', '[/quote]');" /> <input type="button" value="<?=$lang['news']['srccode']?>" style="font-family:monospace; position:relative; top:-0.1em; width:50px;" onclick="setNewsTag('[code]', '[/code]');" /> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[color=' + this.options[this.options.selectedIndex].value + ']', '[/color]');">
+  <option><?=$lang['news']['color']?></option>
   <option value="#000000" style="background-color:#000000; color:#000000;"><?=$lang['news']['black']?></option>
   <option value="#808080" style="background-color:#808080; color:#808080;"><?=$lang['news']['dark_grey']?></option>
   <option value="#800000" style="background-color:#800000; color:#800000;"><?=$lang['news']['dark_red']?></option>
@@ -529,7 +586,45 @@ else
   <option value="#00FFFF" style="background-color:#00FFFF; color:#00FFFF;"><?=$lang['news']['turquoise']?></option>
   <option value="#C0C0C0" style="background-color:#C0C0C0; color:#C0C0C0;"><?=$lang['news']['grey']?></option>
   <option value="#FFFFFF" style="background-color:#FFFFFF; color:#FFFFFF;"><?=$lang['news']['white']?></option>
- </select> <input type="button" value="FLASH" onclick="setNewsTag('[flash]', '[/flash]');" /><br />
+ </select> <select style="width:95px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[size=' + this.options[this.options.selectedIndex].value + ']', '[/size]');">
+  <option><?=$lang['news']['size']?></option>
+  <option value="-2"><?=$lang['news']['size_down2']?></option>
+  <option value="-1"><?=$lang['news']['size_down1']?></option>
+  <option value="+1"><?=$lang['news']['size_up1']?></option>
+  <option value="+2"><?=$lang['news']['size_up2']?></option>
+  <option value="+3"><?=$lang['news']['size_up3']?></option>
+  <option value="+4"><?=$lang['news']['size_up4']?></option>
+ </select><br />
+ <input type="button" value="<?=$lang['news']['url']?>" style="width:50px;" onclick="setNewsTag('[url]', '[/url]');" /> <input type="button" value="<?=$lang['news']['img']?>" style="width:50px;" onclick="setNewsTag('[img]', '[/img]');" /> <input type="button" value="<?=$lang['news']['email']?>" style="width:60px;" onclick="setNewsTag('[email]', '[/email]');" /> <input type="button" value="<?=$lang['news']['flash']?>" style="width:55px;" onclick="setNewsTag('[flash]', '[/flash]');" /> <button type="button" style="font-size:x-small; height:21px; width:50px;" onclick="setNewsTag('[sup]', '[/sup]');"><span style="position:relative; top:-0.3em;"><?=$lang['news']['superscript']?></span></button> <button type="button" style="font-size:x-small; height:21px; width:40px;" onclick="setNewsTag('[sub]', '[/sub]');"><span style="position:relative; bottom:-0.3em;"><?=$lang['news']['subscript']?></span></button> <select style="width:173px;" onchange="if(this.options.selectedIndex != 0) setNewsTag('[url=<?=basename($redir ? $redir : $_SERVER['PHP_SELF'])?>?newsid=' + this.options[this.options.selectedIndex].value + ']', '[/url]');">
+  <option style="font-weight:bold;"><?=$lang['news']['linkoldnews']?></option>
+<?php
+$size = ($size = count($news)) > 20 ? 21 : $size;
+for($i=1; $i<$size; $i++)
+{
+ $value = explode("\t", $news[$i]);
+ echo('  <option value="' . $value[0] . '">' . preg_replace($bbcode1, $bbcode3, $value[5]) . '</option>' . "\n");
+}
+?>
+ </select><!-- <select onchange="if(this.options[this.options.selectedIndex].value != '') window.open('news.php?action=threading&amp;foren_id=' + this.options[this.options.selectedIndex].value, 'Threading', 'scrollbars, resizable');">
+  <option value="">Link zum Thema ins TBB1...</option>
+<?php
+/*
+$foren = file($forum . 'vars/foren.var');
+$kg = file($forum . 'vars/kg.var');
+$size = count($kg);
+for($i=0; $i<$size; $i++)
+{
+ $ak_kg = explode("\t", $kg[$i]);
+ echo('  <option value="" style="background-color:#333333; color:#FFFFFF;">--' . $ak_kg[1] . "</option>\n");
+ foreach($foren as $ak_forum)
+ {
+  $ak_forum = explode("\t", $ak_forum);
+  if($ak_forum[5] == $ak_kg[0]) echo('  <option value="' . $ak_forum[0] . '">' . $ak_forum[1] . "</option>\n");
+ }
+ echo("  <option value=\"\"></option>\n");
+}
+*/
+?> </select>--><br />
  <textarea name="newsbox" id="newsbox" rows="10" cols="60" style="margin-bottom:5px; float:left;" onclick="activeNewsbox = this.name;"><?=stripEscape(trim($_POST['newsbox']))?></textarea>
 <?php
 if($smilies)
@@ -540,7 +635,7 @@ if($smilies)
  {
   if($i >= $smiliesmax) break;
   if(($i++ % $smiliesmaxrow) == 0) echo("<br />\n");
-  echo('  <a href="javascript:setNewsSmilie(\' ' . strtr($key, $htmlJSDecode) . '\');">' . $value . '</a>');
+  echo('  <a href="javascript:setNewsTag(\' ' . strtr($key, $htmlJSDecode) . '\', \'\');">' . $value . '</a>');
  }
  echo('<br /><br />
   <input type="button" value="' . $lang['news']['moresmilies'] . '" onclick="window.open(\'news.php?action=smilies\', \'_blank\', \'width=250, resizable, scrollbars, status\');" />

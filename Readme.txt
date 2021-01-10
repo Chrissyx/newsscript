@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.2.1
+Version: 1.0.3.5
 
 
 ENGLISH - SCROLL DOWN!
@@ -32,8 +32,8 @@ lade die "newsticker.php" dahin hoch, wo die "news.php" schon ist.
 
 Update auf neue Version
 Lade, wie schon zur Installation auch, alle Dateien hoch und ersetze so jede Datei durch ihre neue Version.
-Rufe danach die "update.php" aus dem Ordner "newsscript" auf und folge den Anweisungen. WICHTIG: Nach dem Update
-die "update.php" wieder löschen!
+Rufe danach die "update.php" aus dem Ordner "newsscript" auf und folge den Anweisungen.
+WICHTIG: Nach dem Update die "update.php" wieder löschen!
 
 
 FAQ
@@ -118,10 +118,14 @@ BBCode Referenz
 -[img]Bild[/img]
 -[img=Bild]Beschreibung[/img]
 -[email]Verlinkte E-Mail Adresse[/email]
+-[email=E-Mail Adresse]Verlinkter Text[/email]
 -[color=Farbe]Farbiger Text[/color]
 -[flash]Flash mit 425x355 YouTube Größe[/flash]
 -[flash=Breite,Höhe]Flash mit vorgegebener Breite und Höhe[/flash]
 -[code]Quellcode[/code]
+-[size=Größe]Um Größe skalierter Text[/size]
+-[sup]Hochgestellter Text[/sup]
+-[sub]Tiefgestellter Text[/sub]
 
 
 Credits
@@ -222,10 +226,14 @@ BBCode reference
 -[img]Image[/img]
 -[img=Image]Description[/img]
 -[email]Linked e-mail address[/email]
+-[email=E-mail address]Linked text[/email]
 -[color=Color]Colored text[/color]
 -[flash]Flash with 425x355 YouTube size[/flash]
 -[flash=Width,Height]Flash with given width and height[/flash]
 -[code]Source code[/code]
+-[size=Size]With size scaled text[/size]
+-[sup]Superscript text[/sup]
+-[sub]Subscript text[/sub]
 
 
 Credits

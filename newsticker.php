@@ -7,7 +7,7 @@
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @link http://www.rssboard.org/
  * @package CHS_Newsscript
- * @version 1.0.2
+ * @version 1.0.3
  */
 file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('d.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
 $news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
@@ -39,7 +39,7 @@ switch(isset($_GET['type']) ? $_GET['type'] : '')
  {
   $value = explode("\t", $news[$i]);
   echo('  <item>
-   <title>' . $value[5] . '</title>
+   <title>' . preg_replace($bbcode1, $bbcode3, $value[5]) . '</title>
    <link>' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '</link>
    <guid isPermaLink="true">' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '</guid>
    <pubDate>' . date('r', $value[1]) . '</pubDate>

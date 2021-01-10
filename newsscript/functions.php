@@ -252,7 +252,7 @@ function saveNews()
 /**
  * Zeigt benötigte JavaScripts an.
  * 
- * @version 1.0.2
+ * @version 1.0.3.5
  */
 function showJS()
 {
@@ -266,9 +266,10 @@ var openendTags = new Object();
 
 function doSource(add)
 {
+ var srcs = document.getElementById('sources');
  if(add)
  {
-  if((srcs = document.getElementById('sources')).value.substr(0, 7) == 'http://')
+  if((prefix = srcs.value.substr(0, 4)) == 'http' || prefix == 'ftp:')
   {
    sources.push(srcs.value);
    srcs.value = '';
@@ -282,12 +283,6 @@ function doSource(add)
 function addSource()
 {
  document.getElementById('srcarray').value = sources.join('\t');
-}
-
-function setNewsSmilie(smilie)
-{
- document.getElementById(activeNewsbox).value += smilie;
- document.getElementById(activeNewsbox).focus();
 }
 
 function toggleFullStory()
@@ -367,11 +362,11 @@ function setNewsTag(openingTag, closingTag)
  * 
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.2.1
+ * @version 1.0.3.1
  */
 function getNewsVersion()
 {
- return '1.0.2.1';
+ return '1.0.3.5';
 }
 
 /**

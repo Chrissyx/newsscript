@@ -5,19 +5,24 @@ body
  color:#000000;
 }
 
-input, textarea
+button, input, textarea, select
 {
  border:2px solid #000000;
-}
-
-input:hover, textarea:hover
-{
- border:2px dotted #000000;
 }
 
 img, input[type=radio], input[type=checkbox]
 {
  border:none;
+}
+
+input[type=file]
+{
+ background-color:#FFFFFF; /* IE8 fix */
+}
+
+button:hover, input:hover, textarea:hover, select:hover
+{
+ border:2px dotted #000000;
 }
 
 a:link
