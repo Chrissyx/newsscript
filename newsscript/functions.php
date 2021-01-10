@@ -362,11 +362,11 @@ function setNewsTag(openingTag, closingTag)
  * 
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.5.1
+ * @version 1.0.5.2
  */
 function getNewsVersion()
 {
- return '1.0.5.1';
+ return '1.0.5.2';
 }
 
 /**

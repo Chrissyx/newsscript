@@ -6,7 +6,7 @@
  * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.5.1
+ * @version 1.0.5.2
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php'))) include_once('newsscript/settings.php');
@@ -70,7 +70,7 @@ else
  <param name="movie" value="\1" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
- <p>No flash installed! Please update your browser.</p>
+ <p>No flash installed! Please <a href="http://get.adobe.com/flashplayer/" target="_blank">update your browser</a>.</p>
 </object>',
                   '<object data="\3" type="application/x-shockwave-flash" width="\1" height="\2">
  <param name="allowFullScreen" value="true" />
@@ -78,7 +78,7 @@ else
  <param name="movie" value="\3" />
  <param name="quality" value="autohigh" />
  <param name="wmode" value="transparent" />
- <p>No flash installed! Please update your browser.</p>
+ <p>No flash installed! Please <a href="http://get.adobe.com/flashplayer/" target="_blank">update your browser</a>.</p>
 </object>',
                   /*"<div>
  <div style=\"font-weight:bold; padding:3px;\">' . \$lang['news']['spoiler'] . ': <input type=\"button\" value=\"Aufdecken\" onclick=\"(s = this.parentNode.parentNode.getElementsByTagName(\'div\')[1].style).display = s.display == \'none\' ? \'\' : \'none\'; (s = this.parentNode.style).backgroundColor = s.backgroundColor == \'\' ? \'#000000\' : \'\'; s.color = s.color == \'\' ? \'#FFFFFF\' : \'\'; this.value = s.color == \'\' ? \'Aufdecken\' : \'Verstecken\';\" /></div>
@@ -277,7 +277,7 @@ echo('  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis
 #<a class="addthis_button" style="float:right;" addthis:url="' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%s" addthis:title="%s"></a><br style="clear:left;" />
 $newsTemplate = '  <div %1$s>
    <strong style="float:left; font-size:medium;">%2$s</strong>%3$s<br style="clear:left;" />
-   <span style="font-size:small;">' . $lang['news']['postedby'] . ' %4$s &ndash; %5$s &ndash; %6$s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%7$s">%8$s</a></span>
+   <span style="font-size:small;">' . $lang['news']['postedby'] . ' <strong>%4$s</strong> &ndash; %5$s &ndash; %6$s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%7$s">%8$s</a></span>
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
    %9$s
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
@@ -441,7 +441,7 @@ if($smilies)
    {
     $temp = '   <span style="color:#FF0000; font-weight:bold;">&raquo; ' . $lang['news']['fillout'] . '</span><br /><br />';
     if(!($_POST['name'] = htmlspecialchars(stripslashes($_POST['name']), ENT_QUOTES))) $_POST['name'] .= '" style="border-color:#FF0000;';
-    elseif($captcha && $_POST['captcha'] != $_SESSION['captcha']) $_POST['captcha'] = 'border-color:#FF0000; ';
+    elseif($captcha && $_POST['captcha'] != $lang['news']['captcha_word'] /*$_SESSION['captcha']*/) $_POST['captcha'] = 'border-color:#FF0000; ';
     elseif($_POST['newsbox'])
     {
      #todo: still buggy regex?
@@ -511,7 +511,7 @@ if($smilies)
    <div id="box" style="float:left;"> 
     <?=$lang['news']['name']?> <input type="text" name="name" value="<?=!$_POST['name'] ? (!$_SERVER['newsname'] ? $_SESSION['shoutName'] : $_SERVER['newsname']) : $_POST['name']?>" size="30" /><br />
     <textarea name="newsbox" id="newsbox" rows="5" cols="30"><?=htmlspecialchars(stripslashes(trim($_POST['newsbox'])), ENT_QUOTES)?></textarea><br />
-<?=$captcha ? '    <input type="text" name="captcha" style="' . $_POST['captcha'] . 'vertical-align:middle;" /> &larr; <img src="news.php?action=captcha" alt="CAPTCHA" style="vertical-align:middle;"><br />' . "\n" : null?>
+<?=$captcha ? '    <input type="text" name="captcha" style="' . $_POST['captcha'] . 'vertical-align:middle; width:110px;" /> &larr; ' . sprintf($lang['news']['captcha_text'], $lang['news']['captcha_word']) . '<img src="news.php?action=captcha" alt="CAPTCHA" style="display:none; vertical-align:middle;" /><br />' . "\n" : null?>
     <input type="submit" value="<?=$lang['news']['docomment']?>" style="font-weight:bold;" /> <input type="reset" value="<?=$lang['news']['reset']?>" />
    </div>
 <?php

@@ -22,17 +22,31 @@ elseif(!isset($_POST['update']))
 include_once('language_news.php');
 
 /**
+ * Update von 1.0.5.1 auf 1.0.5.2
+ * 
+ * @since 1.0.5.2
+ * @version 1.0.5.2
+ */
+function newsUpdate1051()
+{
+ global $lang, $next;
+ echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.5.2</span>...<br />\n");
+ //Nix zu tun
+ $next = '';
+}
+
+/**
  * Update von 1.0.5 auf 1.0.5.1
  * 
  * @since 1.0.5.1
- * @version 1.0.5.1
+ * @version 1.0.5.2
  */
 function newsUpdate105()
 {
  global $lang, $next;
  echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.5.1</span>...<br />\n");
  //Nix zu tun
- $next = '';
+ $next = '1.0.5.1';
 }
 
 /**

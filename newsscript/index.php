@@ -3,10 +3,10 @@
  * Adminmodul zum Installieren und Verwalten des Newsscripts.
  * 
  * @author Chrissyx
- * @copyright (c) 2001 - 2009 by Chrissyx
+ * @copyright (c) 2001 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.5
+ * @version 1.0.5.2
  */
 if(!is_dir('../newsscript/')) die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
 elseif(!file_exists('../news.php')) die('<b>ERROR:</b> Konnte &quot;news.php&quot; nicht finden!');
@@ -564,7 +564,7 @@ foreach(glob('*.ini') as $value) echo('    <option>' . $value . "</option>\n");
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
    <p>CHS - Newsscript<br />
       <?=$lang['help']['version'] . ' ' . getNewsVersion()?><br />
-      &copy; 2008, 2009 by Chrissyx<br />
+      &copy; 2008 - 2010 by Chrissyx<br />
       <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a></p>
   </div>
   <?php
