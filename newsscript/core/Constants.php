@@ -2,13 +2,10 @@
 namespace com\chrissyx\newsscript;
 
 /**
- * Runs CHS Newsscript admin panel.
+ * Defines various needed constants.
  *
  * @author Chrissyx <chris@chrissyx.com>
  * @package CHSNewsscript
  */
-require('core.php');
-
-$_GET['action'] = 'adminIndex';
-Core::getInstance()->run();
+const VERSION = '2.0-SNAPSHOT';
 ?>

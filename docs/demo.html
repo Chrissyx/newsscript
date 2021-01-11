@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bananarama</title>
+    <meta charset="utf-8">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="application/javascript"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" type="application/javascript"></script>
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        body
+        {
+            padding-top: 70px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container"> <!-- TODO Klasse zu container-fluid ändern, wenn das Menü über die gesamte Breite verteilt werden soll -->
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-bar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <b>Menü</b>
+                </button>
+                <a class="navbar-brand" href="#">CHS Newsscript</a>
+            </div>
+            <!-- Collect for toggling -->
+            <div class="collapse navbar-collapse" id="navigation-bar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Neuigkeiten <span class="badge">42</span></a></li>
+                    <!--<li><a href="#">Allgemeine Einstellungen</a></li>-->
+                    <!--<li><a href="#">Benutzer</a></li>-->
+                    <!--<li class="active"><a href="#">Kategorien</a></li>-->
+                    <!--<li><a href="#">Smilies</a></li>-->
+                    <!--<li><a href="#">Sprachen</a></li>-->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Redaktion <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="glyphicon glyphicon-list"></span> Übersicht</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-pencil"></span> Schreiben</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Einstellungen <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Allgemein</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Benutzer</a></li>
+                            <li class="active"><a href="#">Kategorien</a></li>
+                            <li><a href="#">Smilies</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Sprachen</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-info-sign"></span> Hilfe & Infos</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-off"></span> Abmelden</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Kategorien verwalten</h2>
+                <p class="alert alert-info">
+                    Wähle rechts in der Liste eine Kategorie aus, um sie zu editieren oder löschen.<br>
+                    Fülle die Felder so aus, um eine neue Kategorie anzulegen. Ein Bild ist optional, alle sollte aber einheitliche Größen haben.<br>
+                    Klicke auf "Reset", um die Auswahl einer Kategorie rückgängig zu machen.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Left column -->
+            <div class="col-md-3">
+                <h3>Kategorie ändern</h3>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="editCategory" id="editCategoryIntern" value="Intern" checked>
+                        Intern
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="editCategory" id="editCategoryUpdates" value="Updates">
+                        Updates
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="editCategory" id="editCategoryCnC" value="CnC">
+                        C&amp;C
+                    </label>
+                </div>
+            </div>
+            <!-- Right column -->
+            <div class="col-md-9">
+                <h3>Kategorie</h3>
+                <form class="form-horizontal" role="form">
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="categoryName" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="categoryName" placeholder="Name">
+                        </div>
+                    </div>
+                    <!-- Image Path -->
+                    <div class="form-group">
+                        <label for="categoryImage" class="col-sm-2 control-label">Bildpfad</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="categoryImage" placeholder="Bild">
+                        </div>
+                    </div>
+                    <!-- Upload Image -->
+                    <div class="form-group">
+                        <label for="categoryImageUpload" class="col-sm-2 control-label">Bild hochladen</label>
+                        <div class="col-sm-10">
+                            <input type="file" id="categoryImageUpload">
+                            <p class="help-block">Gib einen Pfad an oder lade hier ein Bild hoch.</p>
+                        </div>
+                    </div>
+                    <!-- Customize Image -->
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            <input type="checkbox" name="categoryImageCustomize"> Anpassen
+                        </label>
+                        <div class="col-sm-10 form-inline">
+                            <input type="text" class="form-control" name="categoryImageCustomizeWidth" style="width: 50px;" value="64">
+                            ×
+                            <input type="text" class="form-control" name="categoryImageCustomizeHeight" style="width: 50px;" value="64">
+                        </div>
+                    </div>
+                    <!-- Submit / Reset -->
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="reset" class="btn btn-default">Reset</button>
+                            <a href="#" class="btn btn-danger pull-right">Löschen</a>
+                        </div>
+                    </div>
+                </form>
+                <p class="alert alert-warning">Wenn Du eine Kategorie löscht, verlieren alle betroffende News diese ebenfalls!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+    "name": "chrissyx/newsscript",
+    "description": "CHS Newsscript",
+    "version": "2.0-dev",
+    "type": "project",
+    "keywords" : [
+        "news", "articles", "blog", "journalist", "ticker", "rss", "feed"
+    ],
+    "homepage": "http://www.chrissyx.com/scripts.php",
+    "license": "CC-BY-NC-SA-3.0",
+    "authors": [
+        {
+            "name": "Chrissyx",
+            "email": "chris@chrissyx.com",
+            "homepage": "http://www.chrissyx.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "chris@chrissyx.com",
+        "forum": "http://www.chrissyx-forum.de.vu",
+        "irc": "irc://irc.euIRC.net/chrissyx",
+        "source": "https://www.tritanium-scripts.com/svn/ach"
+    },
+    "require": {
+        "ext-gd": "*",
+        "ext-PDO": "*",
+        "php": ">=5.4",
+        "smarty/smarty": "3.1.21"
+    },
+    "conflict": {
+        "smarty/smarty": "3.1.22 - 3.1.24"
+    },
+    "suggest": {
+        "ext-hash": "Used hash extension for PHP <5.5",
+        "ext-mbstring": "Multibyte string extension for proper Unicode usage",
+        "ext-sqlite3": "File-based database used as default"
+    },
+    "autoload": {
+        "psr-4": {
+            "com\\chrissyx\\newsscript\\": "newsscript/modules/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "vendor-dir": "newsscript/vendor"
+    }
+}

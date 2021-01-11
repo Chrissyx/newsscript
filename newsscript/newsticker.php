@@ -2,13 +2,15 @@
 namespace com\chrissyx\newsscript;
 
 /**
- * Runs CHS Newsscript admin panel.
+ * Displays newsticker.
  *
  * @author Chrissyx <chris@chrissyx.com>
  * @package CHSNewsscript
  */
-require('core.php');
+require_once('core.php');
 
-$_GET['action'] = 'adminIndex';
-Core::getInstance()->run();
+runInCwd(function()
+{
+    #Newsticker::getInstance()->publicCall();
+});
 ?>
