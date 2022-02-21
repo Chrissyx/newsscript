@@ -3,24 +3,23 @@
  * Benötigte Funktionen und initiale Anweisungen.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2015 by Chrissyx
- * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @copyright (c) 2001-2022 by Chrissyx
+ * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
  */
 //$action laden
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
 
 //Session laden, IP sichern
-session_start();
+@session_start();
 if(!isset($_SESSION['session_ip']))
     $_SESSION['session_ip'] = $_SERVER['REMOTE_ADDR'];
 else
     if($_SESSION['session_ip'] != $_SERVER['REMOTE_ADDR'])
         die('Nicht erlaubt, diese Session zu verwenden!');
 
-//Aufbauzeit [PHP4]
-$_SESSION['microtime'] = explode(' ', microtime());
-$_SESSION['microtime'] = $_SESSION['microtime'][1] + $_SESSION['microtime'][0];
+//Aufbauzeit
+$_SESSION['microtime'] = microtime(true);
 
 //Funktionen
 /**
@@ -267,7 +266,7 @@ function showJS()
 ?>
 
 <script type="text/javascript">
-var sources = new Array('<?php echo(implode('\', \'', !isset($_POST['update']) || $_POST['preview'] ? $_POST['srcarray'] : array())); ?>');
+var sources = new Array('<?php echo(implode('\', \'', !isset($_POST['update']) || isset($_POST['preview']) && !empty($_POST['preview']) ? $_POST['srcarray'] : array())); ?>');
 var activeNewsbox = 'newsbox';
 var openendTags = new Object();
 
@@ -371,11 +370,11 @@ function setNewsTag(openingTag, closingTag)
  *
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.6
+ * @version 1.0.7
  */
 function getNewsVersion()
 {
-    return '1.0.6';
+    return '1.0.7';
 }
 
 /**
@@ -388,7 +387,10 @@ function getNewsVersion()
  */
 function stripEscape($string)
 {
-    return count($strings = func_get_args()) > 1 ? array_map(create_function('$string', 'return htmlspecialchars(stripslashes($string), ENT_QUOTES);'), $strings) : htmlspecialchars(stripslashes($string), ENT_QUOTES);
+    return count($strings = func_get_args()) > 1 ? array_map(function($string)
+    {
+        return htmlspecialchars(stripslashes($string), ENT_QUOTES);
+    }, $strings) : htmlspecialchars(stripslashes($string), ENT_QUOTES);
 }
 
 /**

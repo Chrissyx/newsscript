@@ -3,7 +3,7 @@
 ########################################
 
 
-Version: 1.0.6
+Version: 1.0.7
 
 
 ENGLISH - SCROLL DOWN!
@@ -15,11 +15,11 @@ für "Weiterlesen", Quellenangaben und ein Newsticker für RSS Newsfeeds, interne 
 auf anderen Webseiten. Alles stark einstellbar, von der Anzahl der gezeigten News pro Seite, über Anzahl der
 Smilies (auch pro Reihe) bis hin zu den Speicherorten der internen Systemdateien. Einfache Installation mit
 interaktiver Hilfe, inkl. Übersetzungen für Deutsch und Englisch. Durchgehend valides XHTML und dank
-Cache-Funktionen sehr schnell. Benötigt PHP ab V4.3 und KEINE Datenbank.
+Cache-Funktionen sehr schnell. Benötigt PHP ab V5.3 und KEINE Datenbank.
 
 
 Vorraussetzungen
--PHP ab 4.3
+-PHP ab 5.3
 -chmod fähiger Webspace
 
 
@@ -137,15 +137,15 @@ BBCode Referenz
 
 
 Credits
-© 2008-2015 by Chrissyx
+© 2008-2022 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
-http://www.chrissyx.com/
+https://www.chrissyx.com/
 
 -----------------------------------------------------------------------------------------------------------------------
 
 Requirements
--PHP 4.3 or higher
+-PHP 5.3 or higher
 -chmod-able webspace
 
 
@@ -252,7 +252,7 @@ BBCode reference
 
 
 Credits
-© 2008-2015 by Chrissyx
+© 2008-2022 by Chrissyx
 Powered by V4 Technology
 http://www.chrissyx.de(.vu)/
-http://www.chrissyx.com/
+https://www.chrissyx.com/

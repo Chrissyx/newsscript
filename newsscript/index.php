@@ -3,10 +3,10 @@
  * Adminmodul zum Installieren und Verwalten des Newsscripts.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2015 by Chrissyx
- * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @copyright (c) 2001-2022 by Chrissyx
+ * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.6
+ * @version 1.0.7
  */
 if(!is_dir('../newsscript/'))
     die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
@@ -84,7 +84,10 @@ switch($action)
   <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;">
 ');
     //Wow, dieses krank-leetige Kontrukt wird benötigt, damit der Nutzer am Ende keine Entitäten in Textfeldern vorfindet, und trotzdem valide zu bleiben. Was proggt man nicht alles für maximalen Komfort und Idiotensicherheit...
-    $htmlJSDecode = array_combine(array_keys($temp = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")), array_map(create_function('$string', 'return \'\u00\' . bin2hex($string);'), array_values($temp)));
+    $htmlJSDecode = array_combine(array_keys($temp = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")), array_map(function($string)
+    {
+        return '\u00' . bin2hex($string);
+    }, array_values($temp)));
     switch(isset($_GET['page']) ? $_GET['page'] : '')
     {
 
@@ -604,18 +607,18 @@ switch($action)
 ?>
   <h4><?php echo($lang['help']['title']); ?></h4>
   <div style="padding-right:5px; float:left;">
-   <p><?php echo($lang['help']['check'] . ' ' . (@file_get_contents('http://www.chrissyx.com/update.php?nsversion=' . getNewsVersion()) == 'true' ? $lang['help']['newer'] : $lang['help']['latest'])); ?></p>
+   <p><?php echo($lang['help']['check'] . ' ' . (@file_get_contents('https://www.chrissyx.com/update.php?nsversion=' . getNewsVersion()) == 'true' ? $lang['help']['newer'] : $lang['help']['latest'])); ?></p>
    <p><?php echo($lang['help']['hint1']); ?><br />
-      <a href="http://www.chrissyx.com/scripts.php" target="_blank">http://www.chrissyx.com/scripts.php</a></p>
+      <a href="https://www.chrissyx.com/scripts.php" target="_blank">https://www.chrissyx.com/scripts.php</a></p>
    <p><?php echo($lang['help']['hint2']); ?><br />
       <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a></p>
-   <p><a href="http://validator.w3.org/check?uri=referer" target="_blank"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" style="vertical-align:middle;" /></a> &ndash; <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="CSS ist valide!" style="vertical-align:middle;" /></a> &ndash; <a href="http://www.validome.org/referer" target="_blank"><img src="http://www.validome.org/images/set2/valid_xhtml_1_0.gif" alt="Valid XHTML 1.0" style="vertical-align:middle;" /></a><?php echo((file_exists('../newsticker.php') ? ' &ndash; <a href="http://feedvalidator.org/check.cgi?url=http://' . $_SERVER['SERVER_NAME'] . substr(dirname($_SERVER['PHP_SELF']), 0, strrpos(dirname($_SERVER['PHP_SELF']), '/')) . '/newsticker.php?type=rss" target="_blank"><img src="valid-rss.png" alt="[Valid RSS]" title="Validate my RSS feed" style="vertical-align:middle;" /></a>' : '')); ?></p>
+   <p><a href="https://validator.w3.org/check?uri=referer" target="_blank"><img src="https://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" style="vertical-align:middle;" /></a> &ndash; <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank"><img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="CSS ist valide!" style="vertical-align:middle;" /></a><?php echo((file_exists('../newsticker.php') ? ' &ndash; <a href="https://feedvalidator.org/check.cgi?url=http://' . $_SERVER['SERVER_NAME'] . substr(dirname($_SERVER['PHP_SELF']), 0, strrpos(dirname($_SERVER['PHP_SELF']), '/')) . '/newsticker.php?type=rss" target="_blank"><img src="valid-rss.png" alt="[Valid RSS]" title="Validate my RSS feed" style="vertical-align:middle;" /></a>' : '')); ?></p>
   </div>
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
    <p>CHS - Newsscript<br />
       <?php echo($lang['help']['version'] . ' ' . getNewsVersion()); ?><br />
-      &copy; 2008&ndash;2015 by Chrissyx<br />
-      <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a></p>
+      &copy; 2008&ndash;2022 by Chrissyx<br />
+      <a href="https://www.chrissyx.com/" target="_blank">https://www.chrissyx.com/</a></p>
   </div>
 <?php
         break;

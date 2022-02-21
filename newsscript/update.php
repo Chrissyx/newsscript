@@ -3,8 +3,8 @@
  * Update-Routine für alle Versionen. Aktualisiert sukzessive jede Version von der Vorhandenen bis zur Neusten.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2015 by Chrissyx
- * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @copyright (c) 2001-2022 by Chrissyx
+ * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
  */
 require('functions.php');
@@ -24,17 +24,30 @@ elseif(!isset($_POST['update']))
 include_once('language_news.php');
 
 /**
+ * Update von 1.0.6 auf 1.0.7
+ *
+ * @since 1.0.7
+ * @version 1.0.7
+ */
+function newsUpdate106()
+{
+    global $lang, $next;
+    echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.7</span>...<br />\n");
+    //Nix zu tun
+    $next = '';
+}
+/**
  * Update von 1.0.5.2 auf 1.0.6
  *
  * @since 1.0.6
- * @version 1.0.6
+ * @version 1.0.7
  */
 function newsUpdate1052()
 {
     global $lang, $next;
     echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.6</span>...<br />\n");
     //Nix zu tun
-    $next = '';
+    $next = '1.0.6';
 }
 
 /**

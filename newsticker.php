@@ -3,11 +3,11 @@
  * Newsticker für interne, externe und RSS Anbindung.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2009 by Chrissyx
+ * @copyright (c) 2001-2022 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @link http://www.rssboard.org/
  * @package CHS_Newsscript
- * @version 1.0.4.1
+ * @version 1.0.7
  */
 file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $bbcode1, $bbcode2, $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('/(.*)/', '\1', 'd.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
 $news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
@@ -45,8 +45,8 @@ switch(isset($_GET['type']) ? $_GET['type'] : '')
    <guid isPermaLink="true">' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '</guid>
    <pubDate>' . date('r', $value[1]) . '</pubDate>
    <dc:creator>' . $value[3] . '</dc:creator>
-   <category>' . $cats[$value[4]][0] . '</category>
-   <description>' . ($cats[$value[4]][1] ? '&lt;img src=&quot;' . $cats[$value[4]][1] . '&quot; alt=&quot;' . $cats[$value[4]][0] . '&quot; style=&quot;float:right;&quot;&gt;'  : '') . htmlspecialchars(preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[7], $smilies) : $value[7])) . '</description>
+   <category>' . (!empty($value[4]) ? $cats[$value[4]][0] : '') . '</category>
+   <description>' . (!empty($value[4]) && $cats[$value[4]][1] ? '&lt;img src=&quot;' . $cats[$value[4]][1] . '&quot; alt=&quot;' . $cats[$value[4]][0] . '&quot; style=&quot;float:right;&quot;&gt;'  : '') . htmlspecialchars(preg_replace($bbcode1, $bbcode2, is_array($smilies) ? strtr($value[7], $smilies) : $value[7])) . '</description>
    <comments>' . ($redir ? $redir : $link . 'news.php') . '?newsid=' . $value[0] . '#box</comments>
    <slash:comments>' . (file_exists($newscomments . $value[0] . '.dat') ? count(file($newscomments . $value[0] . '.dat')) : '0') . '</slash:comments>
   </item>
