@@ -10,13 +10,9 @@
 //$action laden
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
 
-//Session laden, IP sichern
-@session_start();
-if(!isset($_SESSION['session_ip']))
-    $_SESSION['session_ip'] = $_SERVER['REMOTE_ADDR'];
-else
-    if($_SESSION['session_ip'] != $_SERVER['REMOTE_ADDR'])
-        die('Nicht erlaubt, diese Session zu verwenden!');
+//Session laden
+if(!isset($_SESSION))
+    session_start();
 
 //Aufbauzeit
 $_SESSION['microtime'] = microtime(true);
@@ -75,9 +71,7 @@ function newsHead($title, $keywords, $description, $charset='ISO-8859-1', $lang=
  */
 function newsTail()
 {
-    $temp = explode(' ', microtime());
-    $temp = ($temp[1] + $temp[0]) - $_SESSION['microtime'];
-    echo('<div class="center" style="clear:both; width:99%;">' . newsFont(1) . 'Seitenaufbauzeit: ' . round($temp, 4) . ' Sekunden</span></div>
+    echo('<div class="center" style="clear:both; width:99%;">' . newsFont(1) . 'Seitenaufbauzeit: ' . round(microtime(true) - $_SESSION['microtime'], 4) . ' Sekunden</span></div>
  </body>
 </html>');
 }

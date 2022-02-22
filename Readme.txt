@@ -100,7 +100,7 @@ newsscriptmain: Für alle Newseinträge inkl. Einzelansicht
 newsscriptfooter: Für die Seitennavigation unter den News
 newsscriptcomments: Für den kompletten Kommentarbereich
 Diese Klassen kannst Du dann bei Bedarf im <head>...</head> Bereich oder in deiner eigenen CSS Datei einbinden.
-Mehr zum Thema CSS findest Du hier: http://de.selfhtml.org/css/formate/einbinden.htm
+Mehr zum Thema CSS findest Du hier: https://wiki.selfhtml.org/wiki/CSS/Tutorials/Einstieg/Stylesheets_einbinden
 
 -Beim Hochladen eines Bilders kommt die Meldung "Fatal error: Call to undefined function imagecreatetruecolor()"?!?
 Für das automatische Skalieren eines Kategoriebildes muss die GD Bibliothek als PHP Erweiterung vorhanden sein.
@@ -108,7 +108,7 @@ Wenn Du keine Möglichkeit hast, diese in der php.ini zu aktivieren, musst Du die
 anpassen.
 
 -Meine Frage wurde nicht beantwortet!
-Dann besuch mein Forum unter http://www.chrissyx-forum.de.vu/ oder schreib mir eine E-Mail: chris@chrissyx.com
+Dann besuch mein Forum unter https://www.chrissyx.com/forum/ oder schreib mir eine E-Mail: chris@chrissyx.com
 
 
 BBCode Referenz
@@ -125,8 +125,6 @@ BBCode Referenz
 -[email]Verlinkte E-Mail Adresse[/email]
 -[email=E-Mail Adresse]Verlinkter Text[/email]
 -[color=Farbe]Farbiger Text[/color]
--[flash]Flash mit 425x355 YouTube Größe[/flash]
--[flash=Breite,Höhe]Flash mit vorgegebener Breite und Höhe[/flash]
 -[iframe]iFrame mit 560x315 YouTube Größe[/iframe]
 -[iframe=Breite,Höhe]iFrame mit vorgegebener Breite und Höhe[/iframe]
 -[code]Quellcode[/code]
@@ -215,15 +213,15 @@ newsscriptmain: For all news entries incl. single news viewing
 newsscriptfooter: For the page navigation under the news listing
 newsscriptcomments: For the whole comments area
 You can define those classes in the <head>...</head> section or include them in your own CSS file. For more
-information about CSS, see here: http://en.wikibooks.org/wiki/CSS_Programming
+information about CSS, see here: https://en.wikibooks.org/wiki/Cascading_Style_Sheets
 
 -I'm getting a message "Fatal error: Call to undefined function imagecreatetruecolor()" while uploading a pic?!?
 Automatic scaling of a category image needs the GD library loaded as PHP extension. If you don't have any access
 to the php.ini file to activate it, you have to adjust the image size manually before uploading.
 
 -My question isn't answered here!
-Sorry, no more FAQ entries for now. Please visit my board at http://www.chrissyx.com/forum/ for more help.
-Or write me an e-mail: chris@chrissyx.com
+Sorry, no more FAQ entries for now. Please visit my board at https://www.chrissyx.com/forum/ for more help.
+Or write me an email: chris@chrissyx.com
 
 
 BBCode reference
@@ -237,11 +235,9 @@ BBCode reference
 -[url=Link]Linked text[/url]
 -[img]Image[/img]
 -[img=Image]Description[/img]
--[email]Linked e-mail address[/email]
--[email=E-mail address]Linked text[/email]
+-[email]Linked email address[/email]
+-[email=Email address]Linked text[/email]
 -[color=Color]Colored text[/color]
--[flash]Flash with 425x355 YouTube size[/flash]
--[flash=Width,Height]Flash with given width and height[/flash]
 -[iframe]iFrame with 560x315 YouTube size[/iframe]
 -[iframe=Width,Height]iFrame with given width and height[/iframe]
 -[code]Source code[/code]

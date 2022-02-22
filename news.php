@@ -142,7 +142,8 @@ else
 
 //$action laden
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
-session_start();
+if(!isset($_SESSION))
+    session_start();
 
 //Mehr Smilies
 if($action == 'smilies')
@@ -214,7 +215,10 @@ elseif($action == 'admin')
             }
             else //News oder Script
             {
-                $_POST['edit'] == 'script' ? $redir = 'newsscript/index.php' : $_SESSION['dispall'] = true;
+                if($_POST['edit'] == 'script')
+                    $redir = 'newsscript/index.php';
+                else
+                    $_SESSION['dispall'] = true;
                 unset($_POST['edit']);
                 $_SESSION['newspw'] = md5($_POST['newspw']);
                 if(isset($value[4]) && $value[4] == $_SESSION['newspw']) //Neues PW checken
