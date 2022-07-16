@@ -802,7 +802,7 @@ else
 ');
         for($i=0; $i<ceil($size/$newsmax); $i++)
             echo('   <option value="' . $i . '"' . ($i == $_GET['page'] ? ' selected="selected"' : '') . '>' . $lang['news']['page'] . ' ' . ($i+1) . "</option>\n");
-        echo('  </select> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . ($_GET['page']+1) . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) . '&amp;catid=' . $_GET['catid'] . '">&raquo;</a><br />
+        echo('  </select> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '?page=' . (intval($_GET['page'])+1) . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['next'] . ' &rsaquo;</a> <a href="' . $_SERVER['PHP_SELF'] . '?page=' . floor($size/$newsmax) . '&amp;catid=' . $_GET['catid'] . '">&raquo;</a><br />
   ' . ($_GET['catid'] ? sprintf($lang['news']['showingpart'], ($start+1), (($end > $size) ? $size : $end), $size, $cats[$_GET['catid']][0], '<a href="' . $_SERVER['PHP_SELF'] . '">') . '</a>' : sprintf($lang['news']['showing'], ($start+1), (($end > $size) ? $size : $end), $size)) . "\n </div><br />\n ");
     }
 }

@@ -691,7 +691,7 @@ switch($action)
   <p><code>&lt;!-- CHS - Newsscript --&gt;&lt;?php include(\'news.php\'); ?&gt;&lt;!-- /CHS - Newsscript --&gt;</code></p>
   <p>' . $lang['install']['note2'] . '</p>
   <p><code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include(\'newsticker.php\'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code></p>
-  <p>' . sprintf($lang['install']['note3'], '<a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a>') . '</p>
+  <p>' . sprintf($lang['install']['note3'], '<a href="https://www.chrissyx.com/forum/" target="_blank">https://www.chrissyx.com/forum/</a>') . '</p>
   <p><a href="../news.php">' . $lang['install']['goto1'] . '</a> &ndash; <a href="' . $_SERVER['PHP_SELF'] . '"><span class="b">' . $lang['install']['goto2'] . '</span></a> &ndash; <a href="' . ($_POST['redir'] ? $_POST['redir'] : 'http://' . $_SERVER['SERVER_NAME'] . '/') . '">' . $lang['install']['goto3'] . "</a></p>\n  ");
     }
     else
