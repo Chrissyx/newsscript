@@ -267,6 +267,50 @@ function newsUpdate10()
     $next = '1.0.1';
 }
 
+/**
+ * Optionales Unicode Update der aktuellsten Version.
+ *
+ * @since 1.0.7
+ * @version 1.0.7
+ */
+function unicodeUpdate()
+{
+    if(version_compare(PHP_VERSION, '5.6.0') >= 0 && function_exists('mb_check_encoding'))
+    {
+        global $lang;
+        echo('  ' . $lang['news']['title'] . ' <span class="b">' . getNewsVersion() . " &rarr; UTF-8</span>...<br />\n");
+        list($newsdat, , , $newscomments, $newscatsdat, , $smilies) = @array_map('trim', array_slice(file('settings.dat.php'), 1)) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+        //Update news
+        $news = array_map('trim', file('../' . $newsdat)) or die($lang['news']['nonews']);
+        $news = array_map('checkConvertUtf8', $news); //Convert each single news having possible mixed encodings after PHP updates
+        $news[0] = trim($news[0]);
+        $temp = fopen('../' . $newsdat, 'w');
+        flock($temp, LOCK_EX);
+        fwrite($temp, implode("\n", $news));
+        flock($temp, LOCK_UN);
+        fclose($temp);
+        //Update comments
+        foreach(glob('../' . $newscomments . '*.dat') as $curComment)
+            file_put_contents($curComment, checkConvertUtf8(file_get_contents($curComment)), LOCK_EX);
+        //Update categories
+        file_put_contents('../' . $newscatsdat, checkConvertUtf8(file_get_contents('../' . $newscatsdat)), LOCK_EX);
+        //Update smilies
+        if($smilies != '' && substr($smilies, -4) != '.var')
+            file_put_contents('../' . $smilies, checkConvertUtf8(file_get_contents('../' . $smilies)), LOCK_EX);
+    }
+}
+
+/**
+ * Checks given input and converts to UTF-8 if needed.
+ *
+ * @param string $string Input string to check and/or convert
+ * @return string Checked and/or converted string
+ */
+function checkConvertUtf8($string)
+{
+    return mb_check_encoding($string, 'UTF-8') ? $string : utf8_encode($string);
+}
+
 newsHead('CHS - Newsscript: ' . $lang['news']['update'], 'Newsscript, CHS, ' . $lang['news']['update'] . ', Chrissyx', $lang['news']['title'] . ' des Newsscript von CHS', $lang['news']['charset'], $lang['news']['code']);
 $next = file_exists('version.dat.php') ? @end(file('version.dat.php')) : '1.0';
 if(isset($_POST['update']) && $next != getNewsVersion())
@@ -276,6 +320,7 @@ if(isset($_POST['update']) && $next != getNewsVersion())
     $temp = fopen('version.dat.php', 'w');
     fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . getNewsVersion());
     fclose($temp);
+    unicodeUpdate();
     //Cache leeren
     if(file_exists('cats.php'))
         unlink('cats.php');

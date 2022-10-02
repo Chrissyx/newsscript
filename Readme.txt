@@ -137,7 +137,7 @@ BBCode Referenz
 Credits
 © 2008-2022 by Chrissyx
 Powered by V4 Technology
-http://www.chrissyx.de(.vu)/
+https://www.chrissyx.de/
 https://www.chrissyx.com/
 
 -----------------------------------------------------------------------------------------------------------------------
@@ -250,5 +250,5 @@ BBCode reference
 Credits
 © 2008-2022 by Chrissyx
 Powered by V4 Technology
-http://www.chrissyx.de(.vu)/
+https://www.chrissyx.de/
 https://www.chrissyx.com/
