@@ -142,6 +142,15 @@ https://www.chrissyx.com/
 
 -----------------------------------------------------------------------------------------------------------------------
 
+Introduction
+File-based, fast, multilingual newsscript with BBCode, smilies, commenting, newsticker and dedicated admin panel incl.
+user, category, smiley administration and small statistic. Additional features are "Read on", list of references and
+newsticker supporting RSS feeds, internal listing and external embedding on other websites. Everything is configurable,
+starting with number of news per page, number of smilies (even for each row!) up to storage locations for the internal
+system files. Simple and easy installation with interactive help incl. translations for German and English. Continuous
+valid XHTML and due to caching really fast. Requires PHP 5.3 or higher and NO database.
+
+
 Requirements
 -PHP 5.3 or higher
 -chmod-able webspace
@@ -176,7 +185,7 @@ all available sources.
 
 -Is it possible to translate the news script to another language?
 Of course, copy an INI file and name it to the official language code corresponding to the desired language.
-E.g. "fr.ini" for french or "nl.ini" for dutch. Start translating the strings between the quotation marks and check
+E.g. "fr.ini" for French or "nl.ini" for Dutch. Start translating the strings between the quotation marks and check
 the hints at the beginning of the file. By having a complete translation, upload it to the "newsscript" folder and
 choose it from the language menu in the administration. Also please send it to me for providing it for other user! :)
 

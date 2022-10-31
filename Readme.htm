@@ -125,6 +125,7 @@
 
   <h4>Content</h4>
   <ul>
+   <li><a href="#en_intro">Introduction</a></li>
    <li><a href="#en_reqs">Requirements</a></li>
    <li><a href="#en_install">Installation</a></li>
    <li><a href="#en_update">Update to new version</a></li>
@@ -132,6 +133,9 @@
    <li><a href="#en_bbcode">BBCode reference</a></li>
    <li><a href="#en_credits">Credits</a></li>
   </ul><br />
+
+  <h4 id="en_intro">Introduction</h4>
+  <p>File-based, fast, multilingual newsscript with BBCode, smilies, commenting, newsticker and dedicated admin panel incl. user, category, smiley administration and small statistic. Additional features are &quot;Read on&quot;, list of references and newsticker supporting RSS feeds, internal listing and external embedding on other websites. Everything is configurable, starting with number of news per page, number of smilies (even for each row!) up to storage locations for the internal system files. Simple and easy installation with interactive help incl. translations for German and English. Continuous valid XHTML and due to caching really fast. Requires PHP 5.3 or higher and NO database.</p><br />
 
   <h4 id="en_reqs">Requirements</h4>
   <ul>
@@ -155,7 +159,7 @@
    <li style="margin-bottom:10px;">How are these sources working?<br />
        Type in the link and add it. It's now saved and will disappear from the field. On the same way, you can remove the last added source with the link next to it. Click on &quot;Preview&quot; and then on the dropdown list with the arrow to check all available sources.</li>
    <li style="margin-bottom:10px;">Is it possible to translate the news script to another language?<br />
-       Of course, copy an INI file and name it to the official language code corresponding to the desired language. E.g. &quot;fr.ini&quot; for french or &quot;nl.ini&quot; for dutch. Start translating the strings between the quotation marks and check the hints at the beginning of the file. By having a complete translation, upload it to the &quot;newsscript&quot; folder and choose it from the language menu in the administration. Also please send it to me for providing it for other user! :)</li>
+       Of course, copy an INI file and name it to the official language code corresponding to the desired language. E.g. &quot;fr.ini&quot; for French or &quot;nl.ini&quot; for Dutch. Start translating the strings between the quotation marks and check the hints at the beginning of the file. By having a complete translation, upload it to the &quot;newsscript&quot; folder and choose it from the language menu in the administration. Also please send it to me for providing it for other user! :)</li>
    <li style="margin-bottom:10px;">What about the news ticker?<br />
        Just a quick overview for now: Use this code for internal listing of headlines on your homepage:<br />
        <code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include('newsticker.php'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code><br />
