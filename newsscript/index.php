@@ -6,7 +6,7 @@
  * @copyright (c) 2001-2022 by Chrissyx
  * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.7
+ * @version 1.0.7.1
  */
 if(!is_dir('../newsscript/'))
     die('<b>ERROR:</b> Konnte Verzeichnis &quot;newsscript&quot; nicht finden!');
@@ -28,21 +28,11 @@ if(file_exists('settings.dat.php'))
     {
         $settings = array_map('trim', array_slice(explode("\n", file_get_contents('settings.dat.php')), 1));
         $user = @array_map('trim', array_slice(file('../' . $settings[2]), 1)) or die('<b>ERROR:</b> Benutzer nicht gefunden!');
-        $value = getUser($_SESSION['newsname']) or die('<b>ERROR:</b> Admin nicht gefunden!');
+        $value = getUser($user, $_SESSION['newsname']) or die('<b>ERROR:</b> Admin nicht gefunden!');
         if($_SESSION['dispall'] || $value[2] != $_SESSION['newsadmin'] || $value[1] != $_SESSION['newspw'])
             die('<b>ERROR:</b> Keine Adminrechte!');
         $action = 'admin';
     }
-}
-else
-{/*
-    if(decoct(fileperms($temp = basename($_SERVER['PHP_SELF']))) != '100775')
-        chmod($temp, 0775) or die('<b>ERROR:</b> Konnte für &quot;' . $temp . '&quot; keine Rechte setzen!');
-    elseif(decoct(fileperms('../news.php')) != '100775')
-        chmod('../news.php', 0775) or die('<b>ERROR:</b> Konnte für &quot;news.php&quot; keine Rechte setzen!');
-    elseif(decoct(fileperms('../newsscript/')) != '40775')
-        chmod('../newsscript/', 0775) or die('<b>ERROR:</b> Konnte für den Ordner &quot;newsscript&quot; keine Rechte setzen!');
-    clearstatcache();*/
 }
 
 if(!file_exists('language_index.php'))
@@ -83,7 +73,7 @@ switch($action)
   </div>
   <div style="border:1px solid #000000; padding:5px; margin-left:1%; float:left;">
 ');
-    //Wow, dieses krank-leetige Kontrukt wird benötigt, damit der Nutzer am Ende keine Entitäten in Textfeldern vorfindet, und trotzdem valide zu bleiben. Was proggt man nicht alles für maximalen Komfort und Idiotensicherheit...
+    //Wow, dieses krank-leetige Kontrukt wird benÃ¶tigt, damit der Nutzer am Ende keine EntitÃ¤ten in Textfeldern vorfindet, und trotzdem valide zu bleiben. Was proggt man nicht alles fÃ¼r maximalen Komfort und Idiotensicherheit...
     $htmlJSDecode = array_combine(array_keys($temp = array_flip(get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#039;' => "'")), array_map(function($string)
     {
         return '\u00' . bin2hex($string);
@@ -125,7 +115,7 @@ switch($action)
                     rename('../' . $settings[4], '../' . $_POST['newscatsdat']) or $_POST['newscatsdat'] = $settings[4];
                 if($_POST['newscatpics'] != $settings[5])
                     rename('../' . $settings[5], '../' . $_POST['newscatpics']) or $_POST['newscatpics'] = $settings[5]; #todo: verschieben in existierenden ordner?
-                //Drei Fälle: Keine smilies, smilies.var oder smilies.dat - Jeder Fall kann zu einen anderen werden.
+                //Drei FÃ¤lle: Keine smilies, smilies.var oder smilies.dat - Jeder Fall kann zu einen anderen werden.
                 if($_POST['newssmilies'] != $settings[6])
                 {
                     if($_POST['newssmilies'] && (substr($_POST['newssmilies'], -4) != '.var')) //Neu oder Update .dat
@@ -209,7 +199,7 @@ switch($action)
                 $_POST['email'] .= '" style="border-color:#FF0000;';
             elseif($_POST['user'] && $_POST['name']) //Vorhandener User
             {
-                $key = unifyUser($_POST['user']);
+                $key = unifyUser($user, $_POST['user']);
                 if(isset($_POST['delete']))
                     unset($user[$key]);
                 else
@@ -217,11 +207,11 @@ switch($action)
                     $value = explode("\t", $user[$key]);
                     $user[$key] = $_POST['name'] . "\t" . $value[1] . "\t" . (isset($_POST['isadmin']) && $_POST['isadmin'] == 'on' ? '1' :'0') . "\t" . $_POST['email'] . (isset($value[4]) ? "\t" . $value[4] : '');
                 }
-                saveUser('../' . $settings[2]);
+                saveUser('../' . $settings[2], $user);
                 unset($_POST['name'], $_POST['email']);
                 $temp = '   <p class="green">&raquo; ' . $lang['user']['edit'] . "</p>\n";
             }
-            elseif($_POST['name'] && (unifyUser($_POST['name']) === false)) //Neuer User
+            elseif($_POST['name'] && (unifyUser($user, $_POST['name']) === false)) //Neuer User
             {
                 for($i=0,$newpw=''; $i<10; $i++)
                     $newpw .= chr(mt_rand(33, 126));
@@ -241,7 +231,7 @@ switch($action)
         $temp2 = '   var user = new Array(';
         foreach($user as $key => $value)
         {
-            $value = explode("\t", $value); //Entitäten zu Unicode-hex, siehe oben
+            $value = explode("\t", $value); //EntitÃ¤ten zu Unicode-hex, siehe oben
             $temp2 .= 'new Array(\'' . strtr($value[0], $htmlJSDecode) . '\', ' . $value[2] . ', \'' . $value[3] . '\'), ';
         }
         echo($temp2 . "'Windows 98SE rulez');\n");
@@ -315,7 +305,7 @@ switch($action)
     <tr><td>' . $lang['cats']['resize'];
                             unset($_POST['resize'], $_POST['width'], $_POST['height']);
                         }
-                        $_POST['catpic'] = /*current(array_slice(explode('/', $settings[5]), -2)) . '/' .*/ $_FILES['uploadpic']['name'];
+                        $_POST['catpic'] = $_FILES['uploadpic']['name'];
                     }
                     else
                     {
@@ -326,7 +316,7 @@ switch($action)
                     case 4: //Kein Upload
                     if($_POST['cat'] && $_POST['catname']) //Vorhandene Kategorie
                     {
-                        $key = unifyCat($_POST['cat']);
+                        $key = unifyCat($cats, $_POST['cat']);
                         $value = explode("\t", $cats[$key]);
                         if(isset($_POST['delete']))
                         {
@@ -346,7 +336,7 @@ switch($action)
                         unset($_POST['catname'], $_POST['catpic']);
                         $temp = '   <p class="green">&raquo; ' . $lang['cats']['edit'] . "</p>\n";
                     }
-                    elseif($_POST['catname'] && !unifyCat($_POST['catname'])) //Neue Kategorie
+                    elseif($_POST['catname'] && !unifyCat($cats, $_POST['catname'])) //Neue Kategorie
                     {
                         $cats[] = $cats[0]++ . "\t" . $_POST['catname'] . "\t" . $_POST['catpic'];
                         $temp = fopen('../' . $settings[4], 'w');
@@ -383,7 +373,7 @@ switch($action)
         $temp2 = '   var cats = new Array(';
         foreach($cats as $key => $value)
         {
-            $value = explode("\t", $value); //Entitäten zu Unicode-hex, siehe oben
+            $value = explode("\t", $value); //EntitÃ¤ten zu Unicode-hex, siehe oben
             $temp2 .= 'new Array(\'' . strtr($value[1], $htmlJSDecode) . '\', \'' . (isset($value[2]) ? $value[2] : '') . '\'), ';
         }
         echo($temp2 . "'Windows 98SE rulez');\n");
@@ -475,7 +465,7 @@ switch($action)
                     case 4: //Kein Upload
                     if($_POST['smilie'] && $_POST['synonym']) //Vorhandener Smilie
                     {
-                        $key = unifySmilie($_POST['smilie']);
+                        $key = unifySmilie($smilies, $_POST['smilie']);
                         $value = explode("\t", $smilies[$key]);
                         if(isset($_POST['delete']))
                         {
@@ -494,7 +484,7 @@ switch($action)
                         unset($_POST['synonym'], $_POST['address']);
                         $temp = '   <p class="green">&raquo; ' . $lang['smilies']['edit'] . "</p>\n";
                     }
-                    elseif($_POST['synonym'] && !unifySmilie($_POST['synonym'])) //Neuer Smilie
+                    elseif($_POST['synonym'] && !unifySmilie($smilies, $_POST['synonym'])) //Neuer Smilie
                     {
                         $smilies[] = $smilies[0]++ . "\t" . $_POST['synonym'] . "\t" . $_POST['address'];
                         $temp = fopen('../' . $settings[6], 'w');
@@ -577,7 +567,7 @@ switch($action)
 <?php
         break;
 
-# Administration: Sprache änden #
+# Administration: Sprache Ã¤nden #
         case 'lang':
         include('language_lang.php');
         if(isset($_POST['inifile']))
@@ -603,7 +593,7 @@ switch($action)
 # Administration: Hilfe & Infos #
         case 'help':
         include('language_help.php');
-        ini_set('default_socket_timeout', 3); //Timeout für Updatecheck #stream_context_create() ab PHP5
+        ini_set('default_socket_timeout', 3); //Timeout fÃ¼r Updatecheck #stream_context_create() ab PHP5
 ?>
   <h4><?php echo($lang['help']['title']); ?></h4>
   <div style="padding-right:5px; float:left;">

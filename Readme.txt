@@ -3,37 +3,37 @@
 ########################################
 
 
-Version: 1.0.7
+Version: 1.0.7.1
 
 
 ENGLISH - SCROLL DOWN!
 
 Vorwort
 Datei-basiertes, schnelles, mehrsprachiges Newsscript mit BBCode, Smilies, Kommentarfunktion, Newsticker und
-eigener Adminoberfläche inkl. Nutzer-, Kategorien-, Smilieverwaltung und kleiner Statistik. Weitere Features
-für "Weiterlesen", Quellenangaben und ein Newsticker für RSS Newsfeeds, interne Anzeige und externe Einbindung
-auf anderen Webseiten. Alles stark einstellbar, von der Anzahl der gezeigten News pro Seite, über Anzahl der
+eigener AdminoberflÃ¤che inkl. Nutzer-, Kategorien-, Smilieverwaltung und kleiner Statistik. Weitere Features
+fÃ¼r "Weiterlesen", Quellenangaben und ein Newsticker fÃ¼r RSS Newsfeeds, interne Anzeige und externe Einbindung
+auf anderen Webseiten. Alles stark einstellbar, von der Anzahl der gezeigten News pro Seite, Ã¼ber Anzahl der
 Smilies (auch pro Reihe) bis hin zu den Speicherorten der internen Systemdateien. Einfache Installation mit
-interaktiver Hilfe, inkl. Übersetzungen für Deutsch und Englisch. Durchgehend valides XHTML und dank
-Cache-Funktionen sehr schnell. Benötigt PHP ab V5.3 und KEINE Datenbank.
+interaktiver Hilfe, inkl. Ãœbersetzungen fÃ¼r Deutsch und Englisch. Durchgehend valides XHTML und dank
+Cache-Funktionen sehr schnell. BenÃ¶tigt PHP ab V5.3 und KEINE Datenbank.
 
 
 Vorraussetzungen
 -PHP ab 5.3
--chmod fähiger Webspace
+-chmod fÃ¤higer Webspace
 
 
 Installation
 Die Installation ist gewohnt einfach: Lade in dem Ordner, wo deine Webseite ist (auf welcher das Newsscript zum
 Einsatz kommen soll), die "news.php" und den Ordner "newsscript" samt Inhalt hoch. Rufe danach die "index.php"
-aus dem Ordner "newsscript" auf und folge dann den Anweisungen. Wenn Du auch den Newsticker nutzen möchtest,
+aus dem Ordner "newsscript" auf und folge dann den Anweisungen. Wenn Du auch den Newsticker nutzen mÃ¶chtest,
 lade die "newsticker.php" dahin hoch, wo die "news.php" schon ist.
 
 
 Update auf neue Version
 Lade, wie schon zur Installation auch, alle Dateien hoch und ersetze so jede Datei durch ihre neue Version.
 Rufe danach die "update.php" aus dem Ordner "newsscript" auf und folge den Anweisungen.
-WICHTIG: Nach dem Update die "update.php" wieder löschen!
+WICHTIG: Nach dem Update die "update.php" wieder lÃ¶schen!
 
 
 FAQ
@@ -42,69 +42,69 @@ Rufe, wie schon bei der Installation auch, die "index.php" im "newsscript"-Ordne
 
 -Ich habe mein Passwort vergessen!
 Begib dich ganz normal zum Login, dort kannst Du dir auch ein neues Passwort zu schicken lassen. Das alte bleibt
-weiterhin gültig, bis Du dich mit dem neuen eingeloggt hast.
+weiterhin gÃ¼ltig, bis Du dich mit dem neuen eingeloggt hast.
 
 -Wie funktioniert das mit den Quellen?
-Gib den Link zur Seite ein und füge ihn hinzu, danach ist er gespeichert und wird nicht mehr im Feld angezeigt.
-Genau so kannst Du die jeweils letzte Quelle wieder löschen mit dem Link daneben. Klicke auf "Vorschau", um
-alle vorhandenen Quellen einzusehen, und dann auf das Dropdown-Menü mit dem Pfeil.
+Gib den Link zur Seite ein und fÃ¼ge ihn hinzu, danach ist er gespeichert und wird nicht mehr im Feld angezeigt.
+Genau so kannst Du die jeweils letzte Quelle wieder lÃ¶schen mit dem Link daneben. Klicke auf "Vorschau", um
+alle vorhandenen Quellen einzusehen, und dann auf das Dropdown-MenÃ¼ mit dem Pfeil.
 
--Kann ich das Newsscript auch in andere Sprachen übersetzen?
-Aber sicher: Kopiere dir eine INI Datei und benenne sie in das offizielle Sprachkürzel der jeweiligen Sprache um.
-Z.B. "fr.ini" für Französisch oder "nl.ini" für Niederländisch. Übersetzte dann die Texte in den Anführungszeichen
-und achte dabei auf die Hinweise am Anfang der Datei. Wenn Du eine vollständige Übersetzung hast, lade sie in den
-"newsscript"-Ordner und wähle sie im Sprachmenü der Administration aus. Bitte schick sie mir auch, so dass ich
-anderen diese ebenfalls zur Verfügung stellen kann! :)
+-Kann ich das Newsscript auch in andere Sprachen Ã¼bersetzen?
+Aber sicher: Kopiere dir eine INI Datei und benenne sie in das offizielle SprachkÃ¼rzel der jeweiligen Sprache um.
+Z.B. "fr.ini" fÃ¼r FranzÃ¶sisch oder "nl.ini" fÃ¼r NiederlÃ¤ndisch. Ãœbersetzte dann die Texte in den AnfÃ¼hrungszeichen
+und achte dabei auf die Hinweise am Anfang der Datei. Wenn Du eine vollstÃ¤ndige Ãœbersetzung hast, lade sie in den
+"newsscript"-Ordner und wÃ¤hle sie im SprachmenÃ¼ der Administration aus. Bitte schick sie mir auch, so dass ich
+anderen diese ebenfalls zur VerfÃ¼gung stellen kann! :)
 
 -Was kann alles der Newsticker?
-Er bietet eine Auflistung der letzten X News für deine Seite selbst, eine RSS Newsfeed Anbindung und sogar die
-Möglichkeit, deine Newstitel auf anderen Webseiten einzubinden. Für die interne Einbindung, füge diesen Code
-an der gewünschten Stelle in den Quelltext deiner Seite ein:
+Er bietet eine Auflistung der letzten X News fÃ¼r deine Seite selbst, eine RSS Newsfeed Anbindung und sogar die
+MÃ¶glichkeit, deine Newstitel auf anderen Webseiten einzubinden. FÃ¼r die interne Einbindung, fÃ¼ge diesen Code
+an der gewÃ¼nschten Stelle in den Quelltext deiner Seite ein:
 <!-- CHS - Newsscript - Ticker --><?php include('newsticker.php'); ?><!-- /CHS - Newsscript - Ticker -->
-Für die RSS Anbindung solltest Du deinen Besuchern einen Link mit einer passenden Grafik zur Verfügung stellen.
-Der Link ergibt sich natürlich aus dem Ort, wo Du den Ticker bzw. das Script betreibst. Auf jeden Fall endet
-er mit "/newsticker.php?type=rss", z.B. "http://www.meineseite.tld/newsticker.php?type=rss". Es bietet sich an,
+FÃ¼r die RSS Anbindung solltest Du deinen Besuchern einen Link mit einer passenden Grafik zur VerfÃ¼gung stellen.
+Der Link ergibt sich natÃ¼rlich aus dem Ort, wo Du den Ticker bzw. das Script betreibst. Auf jeden Fall endet
+er mit "/newsticker.php?type=rss", z.B. "https://www.meineseite.tld/newsticker.php?type=rss". Es bietet sich an,
 den Link unmittelbar neben der internen Ausgabe des Newstickers zu platzieren.
-Die Einbindung der letzten News auf anderen Webseiten erfolgt ähnlich, d.h. anstatt "type=rss" einfach
-"type=extern" anhängen. Lautet der Link also z.B. "http://www.meineseite.tld/newsticker.php?type=extern", so
+Die Einbindung der letzten News auf anderen Webseiten erfolgt Ã¤hnlich, d.h. anstatt "type=rss" einfach
+"type=extern" anhÃ¤ngen. Lautet der Link also z.B. "https://www.meineseite.tld/newsticker.php?type=extern", so
 muss man
-<script type="text/javascript" src="http://www.meineseite.tld/newsticker.php?type=extern"></script>
-in den Quellcode seiner Seite einbinden für eine Anzeige deiner letzten News. Willst Du diesen Service anbieten,
-so musst Du den Code auf deiner Seite präsentieren und natürlich den Link wie oben beschrieben vorher anpassen.
-Die Anzahl der gezeigten News hängt im Wesentlichen von der Einstellung ab, die Du während der Installation triffst.
+<script type="text/javascript" src="https://www.meineseite.tld/newsticker.php?type=extern"></script>
+in den Quellcode seiner Seite einbinden fÃ¼r eine Anzeige deiner letzten News. Willst Du diesen Service anbieten,
+so musst Du den Code auf deiner Seite prÃ¤sentieren und natÃ¼rlich den Link wie oben beschrieben vorher anpassen.
+Die Anzahl der gezeigten News hÃ¤ngt im Wesentlichen von der Einstellung ab, die Du wÃ¤hrend der Installation triffst.
 Allerdings kann man im externen Modus und beim RSS Feed diese nochmals individualisieren, d.h. wenn Du z.B. die
-letzten 5 News bei deinen internen Ticker ausgeben lässt, so werden es auch 5 beim RSS Newsfeed und der externen
-Ausgabe sein. Um nun eine höhere Anzahl zu ermöglichen, kann man einfach die Anzahl per "&anz=X" angeben, in dem
-man es an den vorhandenen Link hängt. Z.B. für 10 News im RSS Feed:
-http://www.meineseite.tld/newsticker.php?type=rss&anz=10
+letzten 5 News bei deinen internen Ticker ausgeben lÃ¤sst, so werden es auch 5 beim RSS Newsfeed und der externen
+Ausgabe sein. Um nun eine hÃ¶here Anzahl zu ermÃ¶glichen, kann man einfach die Anzahl per "&anz=X" angeben, in dem
+man es an den vorhandenen Link hÃ¤ngt. Z.B. fÃ¼r 10 News im RSS Feed:
+https://www.meineseite.tld/newsticker.php?type=rss&anz=10
 Oder 7 News bei der externen Einbindung:
-<script type="text/javascript" src="http://www.meineseite.tld/newsticker.php?type=extern&anz=7"></script>
+<script type="text/javascript" src="https://www.meineseite.tld/newsticker.php?type=extern&anz=7"></script>
 Auch das sollte man an geeigneter Stelle den Interessierten mitteilen.
 
 -Ich erhalte beim Aufruf die Meldung "ERROR: Datei/Ordner nicht gefunden!"?!?
 Lies dir die Installationsanleitung hier genaustens durch! Achte darauf, dass Ordnerpfade immer mit "/" enden.
 
 -Ich erhalte beim Aufruf die Meldung "ERROR: Konnte keine Rechte setzen!"?!?
-Setze mit deinem FTP Programm per chmod Befehl die Rechte auf "775" für die/den angegebene/n Datei/Ordner.
+Setze mit deinem FTP Programm per chmod Befehl die Rechte auf "775" fÃ¼r die/den angegebene/n Datei/Ordner.
 
 -Es kommt beim Aufruf eine "Warning: session_start(): Cannot send session cache limiter" Warnung?!?
-Füge ganz am Anfang deiner Seite (also noch vor "<html>" bzw. "<!DOCTYPE..."), auf welcher Du das Newsscript
+FÃ¼ge ganz am Anfang deiner Seite (also noch vor "<html>" bzw. "<!DOCTYPE..."), auf welcher Du das Newsscript
 eingesetzt hast, das ein:
 <?php session_start(); ?>
 
 -Kann ich das Design vom Newsscript anpassen?
 Das Newsscript selber sollte sich schon weitestgehend deinem Seitendesign anpassen. Wenn Du aber weitere Feinheiten
-an der Darstellung der News vornehmen möchtest, stehen dir seit Version 1.0.1 vordefinierte CSS Klassen zur
-Verfügung, deren Inhalt Du selber bestimmen kannst:
-newsscriptmain: Für alle Newseinträge inkl. Einzelansicht
-newsscriptfooter: Für die Seitennavigation unter den News
-newsscriptcomments: Für den kompletten Kommentarbereich
+an der Darstellung der News vornehmen mÃ¶chtest, stehen dir seit Version 1.0.1 vordefinierte CSS Klassen zur
+VerfÃ¼gung, deren Inhalt Du selber bestimmen kannst:
+newsscriptmain: FÃ¼r alle NewseintrÃ¤ge inkl. Einzelansicht
+newsscriptfooter: FÃ¼r die Seitennavigation unter den News
+newsscriptcomments: FÃ¼r den kompletten Kommentarbereich
 Diese Klassen kannst Du dann bei Bedarf im <head>...</head> Bereich oder in deiner eigenen CSS Datei einbinden.
 Mehr zum Thema CSS findest Du hier: https://wiki.selfhtml.org/wiki/CSS/Tutorials/Einstieg/Stylesheets_einbinden
 
 -Beim Hochladen eines Bilders kommt die Meldung "Fatal error: Call to undefined function imagecreatetruecolor()"?!?
-Für das automatische Skalieren eines Kategoriebildes muss die GD Bibliothek als PHP Erweiterung vorhanden sein.
-Wenn Du keine Möglichkeit hast, diese in der php.ini zu aktivieren, musst Du die Bildgröße vor dem Upload von Hand
+FÃ¼r das automatische Skalieren eines Kategoriebildes muss die GD Bibliothek als PHP Erweiterung vorhanden sein.
+Wenn Du keine MÃ¶glichkeit hast, diese in der php.ini zu aktivieren, musst Du die BildgrÃ¶ÃŸe vor dem Upload von Hand
 anpassen.
 
 -Meine Frage wurde nicht beantwortet!
@@ -125,17 +125,17 @@ BBCode Referenz
 -[email]Verlinkte E-Mail Adresse[/email]
 -[email=E-Mail Adresse]Verlinkter Text[/email]
 -[color=Farbe]Farbiger Text[/color]
--[iframe]iFrame mit 560x315 YouTube Größe[/iframe]
--[iframe=Breite,Höhe]iFrame mit vorgegebener Breite und Höhe[/iframe]
+-[iframe]iFrame mit 560x315 YouTube GrÃ¶ÃŸe[/iframe]
+-[iframe=Breite,HÃ¶he]iFrame mit vorgegebener Breite und HÃ¶he[/iframe]
 -[code]Quellcode[/code]
--[size=Größe]Um Größe skalierter Text[/size]
+-[size=GrÃ¶ÃŸe]Um GrÃ¶ÃŸe skalierter Text[/size]
 -[sup]Hochgestellter Text[/sup]
 -[sub]Tiefgestellter Text[/sub]
 -[list][*]Listeneintrag[/list]
 
 
 Credits
-© 2008-2022 by Chrissyx
+Â© 2008-2022 by Chrissyx
 Powered by V4 Technology
 https://www.chrissyx.de/
 https://www.chrissyx.com/
@@ -193,14 +193,14 @@ choose it from the language menu in the administration. Also please send it to m
 Just a quick overview for now: Use this code for internal listing of headlines on your homepage:
 <!-- CHS - Newsscript - Ticker --><?php include('newsticker.php'); ?><!-- /CHS - Newsscript - Ticker -->
 This example link will provide a RSS Newsfeed:
-http://www.mysite.tld/newsticker.php?type=rss
+https://www.mysite.tld/newsticker.php?type=rss
 This example code will provide the latest headlines for an external website:
-<script type="text/javascript" src="http://www.mysite.tld/newsticker.php?type=extern"></script>
+<script type="text/javascript" src="https://www.mysite.tld/newsticker.php?type=extern"></script>
 To change the number of displayed news apart from the setting you've entered during installation, add "&anz=X" to
 each link, e.g. 10 entries for the RSS Feed:
-http://www.mysite.tld/newsticker.php?type=rss&anz=10
+https://www.mysite.tld/newsticker.php?type=rss&anz=10
 Or last 7 headlines for another website displaying your news:
-<script type="text/javascript" src="http://www.mysite.tld/newsticker.php?type=extern&anz=7"></script>
+<script type="text/javascript" src="https://www.mysite.tld/newsticker.php?type=extern&anz=7"></script>
 You should provide your visitors these informations somewhere, thought.
 Hope you got a clue about the features anyway. ;)
 
@@ -257,7 +257,7 @@ BBCode reference
 
 
 Credits
-© 2008-2022 by Chrissyx
+Â© 2008-2022 by Chrissyx
 Powered by V4 Technology
 https://www.chrissyx.de/
 https://www.chrissyx.com/

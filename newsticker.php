@@ -1,19 +1,19 @@
 <?php
 /**
- * Newsticker für interne, externe und RSS Anbindung.
+ * Newsticker fÃ¼r interne, externe und RSS Anbindung.
  *
  * @author Chrissyx
  * @copyright (c) 2001-2022 by Chrissyx
- * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
- * @link http://www.rssboard.org/
+ * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
+ * @link https://www.rssboard.org/
  * @package CHS_Newsscript
- * @version 1.0.7
+ * @version 1.0.7.1
  */
 file_exists('newsscript/settings.php') ? include('newsscript/settings.php') : list($newsdat, , , $newscomments, , , $smilies, , , , $tickermax, $redir, , $bbcode1, $bbcode2, $lang['news']['DATEFORMAT']) = @array_map('trim', array_merge(array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1), array('/(.*)/', '\1', 'd.m.Y'))) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
 $news = array_map('trim', file($newsdat)) or die('<b>ERROR:</b> News nicht gefunden!');
 $size = count($news = array_slice($news, 1));
 $size = intval(isset($_GET['anz']) && $_GET['anz'] > $size ? $size : (!isset($_GET['anz']) ? ($tickermax > $size ? $size : $tickermax) : $_GET['anz']));
-$link = 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/');
+$link = 'https://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/');
 if(file_exists('newsscript/smilies.php'))
     include('newsscript/smilies.php');
 include('newsscript/language_news.php');
@@ -28,11 +28,11 @@ switch(isset($_GET['type']) ? $_GET['type'] : '')
  <channel>
   <title>' . $_SERVER['SERVER_NAME'] . ' RSS Newsfeed</title>
   <link>' . ($redir ? $redir : $link) . '</link>
-  <description>' . $lang['news']['newsfrom'] .' http://' . $_SERVER['SERVER_NAME'] . '/</description>
+  <description>' . $lang['news']['newsfrom'] .' https://' . $_SERVER['SERVER_NAME'] . '/</description>
   <language>' . $lang['news']['code'] .'</language>
   <lastBuildDate>' . date('r', current(sscanf(current($news), "%*d\t%d"))) . '</lastBuildDate>
   <pubDate>' . date('r', current(sscanf(end($news), "%*d\t%d"))) . '</pubDate>
-  <docs>http://www.rssboard.org/rss-specification</docs>
+  <docs>https://www.rssboard.org/rss-specification</docs>
   <generator>CHS - Newsscript</generator>
   <atom:link href="' . $link . 'newsticker.php?type=rss" rel="self" type="application/rss+xml" />
 ');

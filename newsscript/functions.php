@@ -1,6 +1,6 @@
 <?php
 /**
- * Benötigte Funktionen und initiale Anweisungen.
+ * BenÃ¶tigte Funktionen und initiale Anweisungen.
  *
  * @author Chrissyx
  * @copyright (c) 2001-2022 by Chrissyx
@@ -19,21 +19,21 @@ $_SESSION['microtime'] = microtime(true);
 
 //Funktionen
 /**
- * Generiert den XHTML Head für jede Seite und sendet den passenden Content-Type, wenn der Browser XML unterstützt.
+ * Generiert den XHTML Head fÃ¼r jede Seite und sendet den passenden Content-Type, wenn der Browser XML unterstÃ¼tzt.
  *
  * @param string $title Der Titel des Dokuments
- * @param string $keywords Metatag für Schlüsselwörter
- * @param string $description Metatag für Beschreibung
+ * @param string $keywords Metatag fÃ¼r SchlÃ¼sselwÃ¶rter
+ * @param string $description Metatag fÃ¼r Beschreibung
  * @param string $charset Verwendeter Zeichensatz bzw. Kodierung
- * @param string $lang Sprachkürzel
- * @param string $htmlzusatz Zusätzliche Angaben zum <html> Tag, mit Leerzeichen beginnen!
+ * @param string $lang SprachkÃ¼rzel
+ * @param string $htmlzusatz ZusÃ¤tzliche Angaben zum <html> Tag, mit Leerzeichen beginnen!
  * @param string $stylesheet Die zu benutzende CSS Datei
  * @param string $sonstiges Weitere optionale XHTML Tags im Head
- * @param string $bodyzusatz Zusätzliche optionale Angaben zum <body> Tag, mit Leerzeichen beginnen!
+ * @param string $bodyzusatz ZusÃ¤tzliche optionale Angaben zum <body> Tag, mit Leerzeichen beginnen!
  * @see newsTail()
  * @version 1.0.6
  */
-function newsHead($title, $keywords, $description, $charset='ISO-8859-1', $lang='de', $htmlzusatz='', $stylesheet='style.css', $sonstiges=null, $bodyzusatz='')
+function newsHead($title, $keywords, $description, $charset='UTF-8', $lang='de', $htmlzusatz='', $stylesheet='style.css', $sonstiges=null, $bodyzusatz='')
 {
     if(stristr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml'))
         header('Content-Type: application/xhtml+xml');
@@ -77,10 +77,10 @@ function newsTail()
 }
 
 /**
- * Gibt das CSS-Äquivalent zur HTML Schriftgröße zurück. <b>Nicht vergessen: </span>!</b>
+ * Gibt das CSS-Ã„quivalent zur HTML SchriftgrÃ¶ÃŸe zurÃ¼ck. <b>Nicht vergessen: </span>!</b>
  *
- * @param int $wert HTML Schriftgröße von 1 bis 7 oder eigener Wert.
- * @return string span-Element mit gewählter Schriftgröße
+ * @param int $wert HTML SchriftgrÃ¶ÃŸe von 1 bis 7 oder eigener Wert.
+ * @return string span-Element mit gewÃ¤hlter SchriftgrÃ¶ÃŸe
  * @version 1.0.2
  */
 function newsFont($wert)
@@ -126,15 +126,15 @@ function newsFont($wert)
 }
 
 /**
- * Überprüft, ob ein Benutzer mit dem Namen $name schon existiert.
+ * ÃœberprÃ¼ft, ob ein Benutzer mit dem Namen $name schon existiert.
  *
+ * @param array $user Alle Benutzer
  * @param string $name Name des zu suchenden Nutzers
  * @return int|bool Position im $user-Array im Erfolgsfall, ansonsten false
  * @version 1.0
  */
-function unifyUser($name)
+function unifyUser(&$user, $name)
 {
-    global $user;
     foreach($user as $key => $value)
     {
         $value = explode("\t", $value);
@@ -145,15 +145,15 @@ function unifyUser($name)
 }
 
 /**
- * Gibt alle Daten zu einem Benutzer $name zurück.
+ * Gibt alle Daten zu einem Benutzer $name zurÃ¼ck.
  *
+ * @param array $user Alle Benutzer
  * @param string $name Name des Nutzers
  * @return mixed Array mit Daten, ansonsten false
  * @version 1.0
  */
-function getUser($name)
+function getUser(&$user, $name)
 {
-    global $user;
     foreach($user as $value)
     {
         $value = explode("\t", $value);
@@ -167,26 +167,26 @@ function getUser($name)
  * Speichert das aktuelle $user-Array in $file ab.
  *
  * @param string $file Datei, in die gespeichert werden soll
+ * @param array $user Alle Benutzer
  * @version 1.0
  */
-function saveUser($file)
+function saveUser($file, $user)
 {
-    global $user;
     $temp = fopen($file, 'w');
     fwrite($temp, "<?php die('<b>ERROR:</b> Keine Rechte!'); ?>\n" . implode("\n", $user));
     fclose($temp);
 }
 
 /**
- * Überprüft, ob eine Kategorie mit dem Namen $name schon existiert.
+ * ÃœberprÃ¼ft, ob eine Kategorie mit dem Namen $name schon existiert.
  *
+ * @param array $cats Die Kategorien
  * @param string $name Name der zu suchenden Kategorie
  * @return int|bool Position im $cats-Array im Erfolgsfall, ansonsten false
  * @version 1.0.2
  */
-function unifyCat($name)
+function unifyCat(&$cats, $name)
 {
-    global $cats;
     foreach(array_slice($cats, 1) as $key => $value)
     {
         $value = explode("\t", $value);
@@ -197,15 +197,15 @@ function unifyCat($name)
 }
 
 /**
- * Überprüft, ob ein Smilie mit dem Synonym $synonym schon existiert.
+ * ÃœberprÃ¼ft, ob ein Smilie mit dem Synonym $synonym schon existiert.
  *
+ * @param array $smilies Alle Smileys
  * @param string $synonym Synonym des zu suchenden Smilie
  * @return int|bool Position im $smilies-Array im Erfolgsfall, ansonsten false
  * @version 1.0.2
  */
-function unifySmilie($synonym)
+function unifySmilie(&$smilies, $synonym)
 {
-    global $smilies;
     foreach(array_slice($smilies, 1) as $key => $value)
     {
         $value = explode("\t", $value);
@@ -237,11 +237,12 @@ function parseLanguage($inifile)
 /**
  * Speichert die derzeitigen News in $newsdat.
  *
+ * @param string $newsdat Speicherort
+ * @param array $news NewseintrÃ¤ge
  * @version 1.0
  */
-function saveNews()
+function saveNews($newsdat, $news)
 {
-    global $newsdat, $news;
     $temp = fopen($newsdat, 'w');
     flock($temp, LOCK_EX);
     fwrite($temp, implode("\n", $news));
@@ -250,13 +251,13 @@ function saveNews()
 }
 
 /**
- * Zeigt benötigte JavaScripts an.
+ * Zeigt benÃ¶tigte JavaScripts an.
  *
+ * @param array $lang Ãœbersetzungen
  * @version 1.0.5.1
  */
-function showJS()
+function showJS(&$lang)
 {
-    global $lang;
 ?>
 
 <script type="text/javascript">
@@ -274,9 +275,11 @@ function doSource(add)
    sources.push(srcs.value);
    srcs.value = '';
   }
-  else alert('<?php echo($lang['news']['startsrc']); ?>');
+  else
+   alert('<?php echo($lang['news']['startsrc']); ?>');
  }
- else alert(sources.length > 1 ? '<?php echo($lang['news']['source']); ?> "' + sources.pop() + '" <?php echo($lang['news']['delsrc']); ?>' : '<?php echo($lang['news']['nosrc']); ?>');
+ else
+  alert(sources.length > 1 ? '<?php echo($lang['news']['source']); ?> "' + sources.pop() + '" <?php echo($lang['news']['delsrc']); ?>' : '<?php echo($lang['news']['nosrc']); ?>');
  srcs.focus();
 }
 
@@ -320,7 +323,8 @@ function setNewsTag(openingTag, closingTag)
   var end = newsBox.selectionEnd;
   var selectedText = newsBox.value.substring(start, end);
   newsBox.value = newsBox.value.substr(0, start) + openingTag + selectedText + closingTag + newsBox.value.substr(end);
-  if(selectedText.length == 0) newsBox.selectionStart = newsBox.selectionEnd = start + openingTag.length;
+  if(selectedText.length == 0)
+   newsBox.selectionStart = newsBox.selectionEnd = start + openingTag.length;
   else
   {
    newsBox.selectionStart = start + openingTag.length;
@@ -346,33 +350,20 @@ function setNewsTag(openingTag, closingTag)
 <?php
 }
 
-/*function moveFolder($oldname, $newname, $ext='*')
-{
-    if(rename($oldname, $newname))
-        return true;
-    else
-    {
-        mkdir($newname, 0775);
-        foreach(glob($oldname . '*.' . $ext) as $value)
-            rename($value, $newname . $value);
-        rmdir($oldname);
-    }
-}*/
-
 /**
- * Gibt die aktuelle Version des Newsscript zurück.
+ * Gibt die aktuelle Version des Newsscript zurÃ¼ck.
  *
  * @return string Versionsnummer
  * @since 1.0.1
- * @version 1.0.7
+ * @version 1.0.7.1
  */
 function getNewsVersion()
 {
-    return '1.0.7';
+    return '1.0.7.1';
 }
 
 /**
- * Entfernt Rückstriche und wandelt die einfachen HTML Sonderzeichen in Entitäten um.
+ * Entfernt RÃ¼ckstriche und wandelt die einfachen HTML Sonderzeichen in EntitÃ¤ten um.
  *
  * @param string $string,... Die Zeichenkette(n)
  * @return mixed Einzelne oder Array mit bearbeiteter Zeichenkette
@@ -395,7 +386,7 @@ function stripEscape($string)
  * @param string $image Speicherort des Originalbilds
  * @param string $thumb Speicherort des Thumbnails
  * @param int $width Breite des Thumbnails
- * @param int $height Höhe des Thumbnails
+ * @param int $height HÃ¶he des Thumbnails
  * @param mixed $imageOld getimagesize() von $image
  * @return bool Ob ein Thumbnail erstellt wurde
  * @see thumb()

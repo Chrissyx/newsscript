@@ -1,6 +1,6 @@
 <?php
 /**
- * Update-Routine f¸r alle Versionen. Aktualisiert sukzessive jede Version von der Vorhandenen bis zur Neusten.
+ * Update-Routine f√ºr alle Versionen. Aktualisiert sukzessive jede Version von der Vorhandenen bis zur Neusten.
  *
  * @author Chrissyx
  * @copyright (c) 2001-2022 by Chrissyx
@@ -24,18 +24,33 @@ elseif(!isset($_POST['update']))
 include_once('language_news.php');
 
 /**
+ * Update von 1.0.7 auf 1.0.7.1
+ *
+ * @since 1.0.7.1
+ * @version 1.0.7.1
+ */
+function newsUpdate107()
+{
+    global $lang, $next;
+    echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.7.1</span>...<br />\n");
+    //Nix zu tun
+    $next = '';
+}
+
+/**
  * Update von 1.0.6 auf 1.0.7
  *
  * @since 1.0.7
- * @version 1.0.7
+ * @version 1.0.7.1
  */
 function newsUpdate106()
 {
     global $lang, $next;
     echo('  ' . $lang['news']['title'] . ' <span class="b">' . $next . " &rarr; 1.0.7</span>...<br />\n");
     //Nix zu tun
-    $next = '';
+    $next = '1.0.7';
 }
+
 /**
  * Update von 1.0.5.2 auf 1.0.6
  *
@@ -164,7 +179,7 @@ function newsUpdate102()
 
 /**
  * Update von 1.0.1 auf 1.0.2
- * Fixt Links mit Ankern, die in 1.0.1 getrennt wurden, und alle Entit‰ten. Bereitet Nutzung von CAPTCHA vor.
+ * Fixt Links mit Ankern, die in 1.0.1 getrennt wurden, und alle Entit√§ten. Bereitet Nutzung von CAPTCHA vor.
  *
  * @since 1.0.2
  * @version 1.0.2.1

@@ -18,7 +18,7 @@
  </head>
  <body>
   <h1>Chrissyx Homepage Scripts - Newsscript</h1>
-  <h2>Version: 1.0.7</h2>
+  <h2>Version: 1.0.7.1</h2>
   <h3><a href="#ENGLISH">ENGLISH - CLICK HERE!</a></h3>
 
   <h4>Inhalt</h4>
@@ -61,13 +61,13 @@
    <li style="margin-bottom:10px;">Was kann alles der Newsticker?<br />
        Er bietet eine Auflistung der letzten X News f&uuml;r deine Seite selbst, eine RSS Newsfeed Anbindung und sogar die M&ouml;glichkeit, deine Newstitel auf anderen Webseiten einzubinden. F&uuml;r die interne Einbindung, f&uuml;ge diesen Code an der gew&uuml;nschten Stelle in den Quelltext deiner Seite ein:<br />
        <code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include('newsticker.php'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code><br />
-       F&uuml;r die RSS Anbindung solltest Du deinen Besuchern einen Link mit einer passenden Grafik zur Verf&uuml;gung stellen. Der Link ergibt sich nat&uuml;rlich aus dem Ort, wo Du den Ticker bzw. das Script betreibst. Auf jeden Fall endet er mit &quot;/newsticker.php?type=rss&quot;, z.B. &quot;http://www.meineseite.tld/newsticker.php?type=rss&quot;. Es bietet sich an, den Link unmittelbar neben der internen Ausgabe des Newstickers zu platzieren.<br />
-       Die Einbindung der letzten News auf anderen Webseiten erfolgt &auml;hnlich, d.h. anstatt &quot;type=rss&quot; einfach &quot;type=extern&quot; anh&auml;ngen. Lautet der Link also z.B. &quot;http://www.meineseite.tld/newsticker.php?type=extern&quot;, so muss man<br />
-       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.meineseite.tld/newsticker.php?type=extern&quot;&gt;&lt;/script&gt;</code><br />
+       F&uuml;r die RSS Anbindung solltest Du deinen Besuchern einen Link mit einer passenden Grafik zur Verf&uuml;gung stellen. Der Link ergibt sich nat&uuml;rlich aus dem Ort, wo Du den Ticker bzw. das Script betreibst. Auf jeden Fall endet er mit &quot;/newsticker.php?type=rss&quot;, z.B. &quot;https://www.meineseite.tld/newsticker.php?type=rss&quot;. Es bietet sich an, den Link unmittelbar neben der internen Ausgabe des Newstickers zu platzieren.<br />
+       Die Einbindung der letzten News auf anderen Webseiten erfolgt &auml;hnlich, d.h. anstatt &quot;type=rss&quot; einfach &quot;type=extern&quot; anh&auml;ngen. Lautet der Link also z.B. &quot;https://www.meineseite.tld/newsticker.php?type=extern&quot;, so muss man<br />
+       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://www.meineseite.tld/newsticker.php?type=extern&quot;&gt;&lt;/script&gt;</code><br />
        in den Quellcode seiner Seite einbinden f&uuml;r eine Anzeige deiner letzten News. Willst Du diesen Service anbieten, so musst Du den Code auf deiner Seite pr&auml;sentieren und nat&uuml;rlich den Link wie oben beschrieben vorher anpassen. Die Anzahl der gezeigten News h&auml;ngt im Wesentlichen von der Einstellung ab, die Du w&auml;hrend der Installation triffst. Allerdings kann man im externen Modus und beim RSS Feed diese nochmals individualisieren, d.h. wenn Du z.B. die letzten 5 News bei deinen internen Ticker ausgeben l&auml;sst, so werden es auch 5 beim RSS Newsfeed und der externen Ausgabe sein. Um nun eine h&ouml;here Anzahl zu erm&ouml;glichen, kann man einfach die Anzahl per &quot;&amp;anz=X&quot; angeben, in dem man es an den vorhandenen Link h&auml;ngt. Z.B. f&uuml;r 10 News im RSS Feed:<br />
-       http://www.meineseite.tld/newsticker.php?type=rss&amp;anz=10<br />
+       https://www.meineseite.tld/newsticker.php?type=rss&amp;anz=10<br />
        Oder 7 News bei der externen Einbindung:<br />
-       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.meineseite.tld/newsticker.php?type=extern&amp;anz=7&quot;&gt;&lt;/script&gt;</code><br />
+       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://www.meineseite.tld/newsticker.php?type=extern&amp;anz=7&quot;&gt;&lt;/script&gt;</code><br />
        Auch das sollte man an geeigneter Stelle den Interessierten mitteilen.</li>
    <li style="margin-bottom:10px;">Ich erhalte beim Aufruf die Meldung &quot;ERROR: Datei/Ordner nicht gefunden!&quot;?!?<br />
        Lies dir die Installationsanleitung hier genaustens durch! Achte darauf, dass Ordnerpfade immer mit &quot;/&quot; enden.</li>
@@ -164,13 +164,13 @@
        Just a quick overview for now: Use this code for internal listing of headlines on your homepage:<br />
        <code>&lt;!-- CHS - Newsscript - Ticker --&gt;&lt;?php include('newsticker.php'); ?&gt;&lt;!-- /CHS - Newsscript - Ticker --&gt;</code><br />
        This example link will provide a RSS Newsfeed:<br />
-       http://www.mysite.tld/newsticker.php?type=rss<br />
+       https://www.mysite.tld/newsticker.php?type=rss<br />
        This example code will provide the latest headlines for an external website:<br />
-       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.mysite.tld/newsticker.php?type=extern&quot;&gt;&lt;/script&gt;</code><br />
+       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://www.mysite.tld/newsticker.php?type=extern&quot;&gt;&lt;/script&gt;</code><br />
        To change the number of displayed news apart from the setting you've entered during installation, add &quot;&amp;anz=X&quot; to each link, e.g. 10 entries for the RSS Feed:<br />
-       http://www.mysite.tld/newsticker.php?type=rss&amp;anz=10<br />
+       https://www.mysite.tld/newsticker.php?type=rss&amp;anz=10<br />
        Or last 7 headlines for another website displaying your news:<br />
-       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.mysite.tld/newsticker.php?type=extern&amp;anz=7&quot;&gt;&lt;/script&gt;</code><br />
+       <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://www.mysite.tld/newsticker.php?type=extern&amp;anz=7&quot;&gt;&lt;/script&gt;</code><br />
        You should provide your visitors these informations somewhere, thought.<br />
        Hope you got a clue about the features anyway. ;)</li>
    <li style="margin-bottom:10px;">I'm getting a message like &quot;ERROR: Datei/Ordner nicht gefunden!&quot;?!?<br />

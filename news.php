@@ -1,19 +1,19 @@
 <?php
 /**
- * Newsmodul zum Anzeigen und Verwalten der News. Verarbeitet auch Login und Passwörter.
+ * Newsmodul zum Anzeigen und Verwalten der News. Verarbeitet auch Login und PasswÃ¶rter.
  *
  * @author Chrissyx
  * @copyright (c) 2001-2022 by Chrissyx
  * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.7
+ * @version 1.0.7.1
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php')))
     include_once('newsscript/settings.php');
 else
 {
-    //Config: News, Anzahl, Passwörter, Kommntare, Kategorien, Bilder Ordner, Smilies, Smilie Ordner, Smilies Anzahl, Smilies Anzahl Reihe, Newsticker Anzahl, Redir nach Login, CAPTCHA
+    //Config: News, Anzahl, PasswÃ¶rter, Kommntare, Kategorien, Bilder Ordner, Smilies, Smilie Ordner, Smilies Anzahl, Smilies Anzahl Reihe, Newsticker Anzahl, Redir nach Login, CAPTCHA
     list($newsdat, $newsmax, $newspwsdat, $newscomments, $newscatsdat, $newscatpics, $smilies, $smiliepics, $smiliesmax, $smiliesmaxrow, $tickermax, $redir, $captcha) = @array_map('trim', array_slice(explode("\n", file_get_contents('newsscript/settings.dat.php')), 1)) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
     list($newsmax, $smiliesmax, $smiliesmaxrow, $tickermax) = array_map('intval', array($newsmax, $smiliesmax, $smiliesmaxrow, $tickermax));
     if(($forum = substr($smilies, -4) == '.var' ? implode('/', array_slice(explode('/', $smilies), 0, -2)) : '') != '')
@@ -123,7 +123,7 @@ elseif($smilies)
     else
     {
         //Smilies: ID, Synonym, Bild
-        $smilies = array_map('trim', (substr($smilies, -4) != '.var' ? array_slice(file($smilies), 1) : file($smilies)));
+        $smilies = array_map('trim', (substr($smilies, -4) != '.var' ? array_slice(file($smilies), 1) : array_map('utf8_encode', file($smilies))));
         $towrite = "<?php\n//Auto-generated config!\n\$smilies = array();\n";
         foreach($smilies as $value)
         {
@@ -196,7 +196,7 @@ elseif($action == 'admin')
     include('newsscript/language_login.php');
     $_SESSION['dispall'] = false;
     $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['login']['nouser']);
-    if(isset($_POST['name']) && ($key = unifyUser($_POST['name'] = stripEscape($_POST['name']))) !== false) //Nutzer holen
+    if(isset($_POST['name']) && ($key = unifyUser($user, $_POST['name'] = stripEscape($_POST['name']))) !== false) //Nutzer holen
     {
         unset($_POST['name']);
         $value = explode("\t", $user[$key]);
@@ -209,7 +209,7 @@ elseif($action == 'admin')
                     $newpw .= chr(mt_rand(33, 126));
                 $value[4] = md5($newpw);
                 $user[$key] = implode("\t", $value);
-                saveUser($newspwsdat);
+                saveUser($newspwsdat, $user);
                 if(!@mail($value[3], $_SERVER['SERVER_NAME'] . ' Newsscript: ' . $lang['login']['subject'], sprintf($lang['login']['mail'], $_SESSION['newsname'], $_SERVER['REMOTE_ADDR'], $newpw), 'From: newsscript@' . $_SERVER['SERVER_NAME'] . "\n" . 'Reply-To: ' . $value[3] . "\n" . 'X-Mailer: PHP/' . phpversion() . "\n" . 'Content-Type: text/plain; charset=' . $lang['login']['charset']))
                     $_POST['edit'] = 'nopw';
             }
@@ -226,7 +226,7 @@ elseif($action == 'admin')
                     $value[1] = $_SESSION['newspw'];
                     unset($value[4]);
                     $user[$key] = implode("\t", $value);
-                    saveUser($newspwsdat);
+                    saveUser($newspwsdat, $user);
                 }
                 if($value[1] == $_SESSION['newspw']) //Passwort checken
                 {
@@ -316,7 +316,7 @@ if(isset($_GET['newsid']))
     {
         include('newsscript/functions.php');
         $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['news']['nouser']);
-        if(($user = getUser($_SESSION['newsname'])) == false)
+        if(($user = getUser($user, $_SESSION['newsname'])) == false)
             die($lang['news']['unknown']);
         elseif($user[1] != $_SESSION['newspw'])
             die($lang['news']['wrongpass']);
@@ -332,11 +332,11 @@ if(isset($_GET['newsid']))
             $value = explode("\t", trim($news[$key]));
             if(!isset($value[8]))
                 $value[8] = '';
-//News löschen
+//News lÃ¶schen
             if($action == 'delete')
             {
                 unset($news[$key]);
-                saveNews();
+                saveNews($newsdat, $news);
                 if(file_exists($newscomments . $_GET['newsid'] . '.dat'))
                     unlink($newscomments . $_GET['newsid'] . '.dat');
                 echo('<div style="width:99%; text-align:center;"><p style="color:#008000; font-size:large;">' . $lang['news']['deletenews'] . "</p>\n<p><a href=\"" . $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['backtopage'] . "</a></p></div><br />\n");
@@ -355,7 +355,7 @@ if(isset($_GET['newsid']))
                     $_POST['preview'] = true;
                 }
                 $_POST['srcarray'] = explode("\t", $_POST['srcarray']);
-                showJS();
+                showJS($lang);
 ?>
 <form name="newsform" id="newsform" action="<?php echo($_SERVER['PHP_SELF']); ?>?newsid=<?php echo($value[0]); ?>&amp;page=<?php echo($_GET['page']); ?>&amp;catid=<?php echo($_GET['catid']); ?>&amp;action=edit" method="post" onsubmit="addSource();">
 <div style="background-color:#99CCFF; font-family:Arial,sans-serif; width:99%; border:1px solid #000000; padding:5px;">
@@ -366,7 +366,7 @@ if(isset($_GET['newsid']))
                 if(isset($_POST['preview']) && $_POST['preview'])
                     echo(sprintf($newsTemplate,
                         'style="border:medium double #000000; padding:5px;"', //Style
-                        preg_replace($bbcode1, $bbcode2, strtr(stripEscape($_POST['headline']), $smilies)), //Überschrift
+                        preg_replace($bbcode1, $bbcode2, strtr(stripEscape($_POST['headline']), $smilies)), //Ãœberschrift
                         !empty($_POST['cat']) && $cats[$_POST['cat']][1] ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="float:right; margin-left:5px;" />' : '', //Katbild
                         $value[3], //Autor
                         date($lang['news']['DATEFORMAT'], $value[1]), //Datum
@@ -387,7 +387,7 @@ if(isset($_GET['newsid']))
                     {
                         #id - timestamp - ip - usrid?name? - catid - headline - quellen - text - weiterlesen
                         $news[$key] = $value[0] . "\t" . $value[1] . "\t" . $value[2] . "\t" . $value[3] . "\t" . (!empty($_POST['cat']) ? $_POST['cat'] : '') . "\t" . stripEscape($_POST['headline']) . "\t" . str_replace('&', '&amp;', implode(' ', array_slice($_POST['srcarray'], 1))) . "\t" . str_replace(array("\r", "\n"), '' , nl2br(stripEscape(trim($_POST['newsbox']) . "\t" . trim($_POST['newsbox2']))));
-                        saveNews();
+                        saveNews($newsdat, $news);
                         $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newsup'] . '</span> <a href="' . $_SERVER['PHP_SELF'] . '?newsid=' . $value[0] . '&amp;page=' . $_GET['page'] . '&amp;catid=' . $_GET['catid'] . '">' . $lang['news']['back'] . '</a><br /><br />';
                     }
                 }
@@ -508,7 +508,7 @@ if(isset($_GET['newsid']))
                         $temp = '   <span style="color:#008000;">&raquo; ' . $lang['news']['thxcomment'] . '</span><br /><br />';
                     }
                 }
-//Kommentar löschen
+//Kommentar lÃ¶schen
                 elseif($action == 'delcomment')
                 {
                     $towrite = array_map('trim', file($newscomments . $_GET['newsid'] . '.dat')) or die($lang['news']['nocomment']);
@@ -538,7 +538,7 @@ if(isset($_GET['newsid']))
 <?php
                 echo(sprintf($newsTemplate,
                     'class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;"', //Style
-                    preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Überschrift
+                    preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Ãœberschrift
                     !empty($value[4]) && $cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="margin-left:5px; float:right;" />' : '', //Katbild
                     $value[3], //Autor
                     date($lang['news']['DATEFORMAT'], $value[1]), //Datum
@@ -608,13 +608,13 @@ else
     {
         include_once('newsscript/functions.php');
         $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['news']['nouser']);
-        if(($user = getUser($_SESSION['newsname'])) == false)
+        if(($user = getUser($user, $_SESSION['newsname'])) == false)
             die($lang['news']['unknown']);
         elseif($user[1] != $_SESSION['newspw'])
             die($lang['news']['wrongpass']);
         else
             $_POST['srcarray'] = isset($_POST['srcarray']) ? explode("\t", $_POST['srcarray']) : array('');
-        showJS();
+        showJS($lang);
 ?>
 <form name="newsform" id="newsform" action="<?php echo($_SERVER['PHP_SELF']); ?>" method="post" onsubmit="addSource();">
 <div style="background-color:#99CCFF; font-family:Arial,sans-serif; width:99%; border:1px solid #000000; padding:5px;">
@@ -625,7 +625,7 @@ else
         if(isset($_POST['preview']))
             echo(sprintf($newsTemplate,
                 'style="border:medium double #000000; padding:5px;"', //Style
-                preg_replace($bbcode1, $bbcode2, strtr(stripEscape($_POST['headline']), $smilies)), //Überschrift
+                preg_replace($bbcode1, $bbcode2, strtr(stripEscape($_POST['headline']), $smilies)), //Ãœberschrift
                 isset($_POST['cat']) && $cats[$_POST['cat']][1] ? ' <img src="' . $cats[$_POST['cat']][1] . '" alt="' . $cats[$_POST['cat']][0] . '" style="margin-left:5px; float:right;" />' : '', //Katbild
                 $_SESSION['newsname'], //Autor
                 date($lang['news']['DATEFORMAT']), //Datum
@@ -647,7 +647,7 @@ else
                 array_unshift($news, ++$news[0]);
                 #id - timestamp - ip - usrid?name? - catid - headline - quellen - text - weiterlesen
                 $news[1] = /*(@current(sscanf($news[0], "%d\t[.*]"))+1)*/ ($news[0]-1) . "\t" . time() . "\t" . $_SERVER['REMOTE_ADDR'] . "\t" . $_SESSION['newsname'] . "\t" . (isset($_POST['cat']) ? $_POST['cat'] : '') . "\t" . stripEscape($_POST['headline']) . "\t" . str_replace('&', '&amp;', implode(' ', array_slice($_POST['srcarray'], 1))) . "\t" . str_replace(array("\r", "\n"), '' , nl2br(stripEscape(trim($_POST['newsbox']) . "\t" . trim($_POST['newsbox2']))));
-                saveNews();
+                saveNews($newsdat, $news);
                 unset($_POST['cat'], $_POST['headline'], $_POST['srcarray'], $_POST['newsbox'], $_POST['newsbox2']);
                 $temp = '   <span style="color:#008000; font-weight:bold;">&raquo; ' . $lang['news']['newspost'] . '</span><br /><br />';
             }
@@ -783,7 +783,7 @@ else
             $value = explode("\t", $news[$i]);
             echo(sprintf($newsTemplate,
                 'class="newsscriptmain" style="width:99%; border:1px solid #000000; padding:5px;"', //Style
-                preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Überschrift
+                preg_replace($bbcode1, $bbcode2, strtr($value[5], $smilies)), //Ãœberschrift
                 !empty($value[4]) && $cats[$value[4]][1] ? '<img src="' . $cats[$value[4]][1] . '" alt="' . $cats[$value[4]][0] . '" style="float:right; margin-left:5px;" />' : '', //Katbild
                 $value[3], //Autor
                 date($lang['news']['DATEFORMAT'], $value[1]), //Datum
