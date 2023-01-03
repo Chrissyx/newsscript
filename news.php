@@ -775,7 +775,7 @@ else
         {
             return strpos($cur, "\t" . intval($_GET['catid']) . "\t", 1) > 0 ? true : false;
         })) : array_slice($news, 1));
-        $_GET['page'] = !isset($_GET['page']) ? '' : ($_GET['page'] < 0 ? 0 : (($_GET['page']*$newsmax >= $size) ? abs($_GET['page']-1) : $_GET['page']));
+        $_GET['page'] = !isset($_GET['page']) || !is_numeric($_GET['page']) ? '' : ($_GET['page'] < 0 ? 0 : (($_GET['page']*$newsmax >= $size) ? abs($_GET['page']-1) : $_GET['page']));
         $start = empty($_GET['page']) ? 0 : $_GET['page']*$newsmax;
         $end = (($size-$start) > $newsmax) ? $start+$newsmax : $size;
         for($i=$start; $i<$end; $i++)

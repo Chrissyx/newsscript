@@ -1,6 +1,6 @@
 # Chrissyx Homepage Scripts - Newsscript
 
-[![version](https://img.shields.io/badge/version-1.0.7.1-blue)](https://www.chrissyx.com/scripts.php#Newsscript)
+[![version](https://img.shields.io/badge/version-1.0.7.2-blue)](https://www.chrissyx.com/scripts.php#Newsscript)
 
 ## Introduction
 File-based, fast, multilingual newsscript with BBCode, smilies, commenting, newsticker and dedicated admin panel incl. user, category, smiley administration and small statistic. Additional features are "Read on", list of references and newsticker supporting RSS feeds, internal listing and external embedding on other websites. Everything is configurable, starting with number of news per page, number of smilies (even for each row!) up to storage locations for the internal system files. Simple and easy installation with interactive help incl. translations for German and English. Continuous valid XHTML and due to caching really fast. Requires PHP 5.3 or higher and NO database.
