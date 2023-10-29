@@ -91,7 +91,7 @@ Upload, just like the installation, all files by replacing every file with its n
 - [list][*]List entry[/list]
 
 ## Credits
-© 2008-2022 by Chrissyx  
+© 2008-2023 by Chrissyx  
 Powered by V4 Technology  
 https://www.chrissyx.de/  
 https://www.chrissyx.com/  

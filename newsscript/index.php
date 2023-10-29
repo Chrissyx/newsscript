@@ -601,13 +601,13 @@ switch($action)
    <p><?php echo($lang['help']['hint1']); ?><br />
       <a href="https://www.chrissyx.com/scripts.php" target="_blank">https://www.chrissyx.com/scripts.php</a></p>
    <p><?php echo($lang['help']['hint2']); ?><br />
-      <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a></p>
+      <a href="https://www.chrissyx.com/forum/" target="_blank">https://www.chrissyx.com/forum/</a></p>
    <p><a href="https://validator.w3.org/check?uri=referer" target="_blank"><img src="https://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" style="vertical-align:middle;" /></a> &ndash; <a href="https://jigsaw.w3.org/css-validator/check/referer" target="_blank"><img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="CSS ist valide!" style="vertical-align:middle;" /></a><?php echo((file_exists('../newsticker.php') ? ' &ndash; <a href="https://feedvalidator.org/check.cgi?url=http://' . $_SERVER['SERVER_NAME'] . substr(dirname($_SERVER['PHP_SELF']), 0, strrpos(dirname($_SERVER['PHP_SELF']), '/')) . '/newsticker.php?type=rss" target="_blank"><img src="valid-rss.png" alt="[Valid RSS]" title="Validate my RSS feed" style="vertical-align:middle;" /></a>' : '')); ?></p>
   </div>
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
    <p>CHS - Newsscript<br />
       <?php echo($lang['help']['version'] . ' ' . getNewsVersion()); ?><br />
-      &copy; 2008&ndash;2022 by Chrissyx<br />
+      &copy; 2008&ndash;2023 by Chrissyx<br />
       <a href="https://www.chrissyx.com/" target="_blank">https://www.chrissyx.com/</a></p>
   </div>
 <?php

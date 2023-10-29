@@ -3,7 +3,7 @@
  * Update-Routine für alle Versionen. Aktualisiert sukzessive jede Version von der Vorhandenen bis zur Neusten.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2022 by Chrissyx
+ * @copyright (c) 2001-2023 by Chrissyx
  * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
  */

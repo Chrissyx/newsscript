@@ -807,4 +807,4 @@ else
     }
 }
 #PLEASE DON'T REMOVE THIS!
-?><div style="width:99%; text-align:center; font-size:xx-small;">Powered by CHS - Newsscript<br />&copy; 2008&ndash;2022 by Chrissyx</div>
+?><div style="width:99%; text-align:center; font-size:xx-small;">Powered by CHS - Newsscript<br />&copy; 2008&ndash;2023 by Chrissyx</div>
