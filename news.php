@@ -3,10 +3,10 @@
  * Newsmodul zum Anzeigen und Verwalten der News. Verarbeitet auch Login und Passwörter.
  *
  * @author Chrissyx
- * @copyright (c) 2001-2022 by Chrissyx
+ * @copyright (c) 2001-2023 by Chrissyx
  * @license https://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Newsscript
- * @version 1.0.7.1
+ * @version 1.0.7.2
  */
 //Caching
 if(file_exists('newsscript/settings.php') && (filemtime('newsscript/settings.php') > filemtime('newsscript/settings.dat.php')))
@@ -293,17 +293,17 @@ elseif($action == 'newsout')
 
 //News lesen ----------------------------------------------------------------------------------------------------------------------------------------
 include_once('newsscript/language_news.php');
-echo('  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pub=' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '"></script>' . "\n"); //Fire up AddThis, set publisher to domain name
-//An attribute-based configuration for each AddThis button is not possible due to validation problems
-#<a class="addthis_button" style="float:right;" addthis:url="' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%s" addthis:title="%s"></a><br style="clear:left;" />
+echo('  <script type="text/javascript" src="https://static.addtoany.com/menu/page.js">var a2a_config = a2a_config || {};</script>' . "\n"); //Fire up AddToAny
+//An attribute-based configuration for each AddToAny button is not possible due to validation problems
+#<a class="a2a_dd" style="float:right;" data-a2a-url="' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%s" data-a2a-title="%s"></a><br style="clear:left;" />
 $newsTemplate = '  <div %1$s>
    <strong style="float:left; font-size:medium;">%2$s</strong>%3$s<br style="clear:left;" />
    <span style="font-size:small;">' . $lang['news']['postedby'] . ' <strong>%4$s</strong> &ndash; %5$s &ndash; %6$s ' . $lang['news']['oclock'] . ' &ndash; ' . $lang['news']['cat'] . ' <a href="' . ($redir ? $redir : $_SERVER['PHP_SELF']) . '%7$s">%8$s</a></span>
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
    %9$s
    <hr noshade="noshade" style="height:0; border-width:0 0 1px 0;" />
-   %10$s<span style="float:left; font-size:small;">' . $lang['news']['sources'] . ' %11$s</span> <a id="news-%12$s" style="float:right;"></a><br style="clear:left;" />
-   <script type="text/javascript">addthis.button(\'#news-%12$s\', {}, {url: "' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%12$s", title: "%13$s"});</script>
+   %10$s<span style="float:left; font-size:small;">' . $lang['news']['sources'] . ' %11$s</span> <a class="a2a_dd" href="https://www.addtoany.com/share" style="float:right;"><img src="https://static.addtoany.com/buttons/share_save_171_16.png" style="width:171px; height:16px; border:none;" alt="Share"></a><br style="clear:left;" />
+   <script type="text/javascript">a2a_config.linkname=\'%13$s\'; a2a_config.linkurl=\'' . ($redir ? $redir : 'http://' . str_replace('//', '/', $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF']) . '/') . basename($_SERVER['PHP_SELF'])) . '?newsid=%12$s\'; a2a.init(\'page\');</script>
   </div><br />
 ';
 $news = array_map('trim', file($newsdat)) or die($lang['news']['nonews']); #fgets()?
