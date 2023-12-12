@@ -122,8 +122,9 @@ elseif($smilies)
         include('newsscript/smilies.php');
     else
     {
+        include_once('newsscript/functions.php');
         //Smilies: ID, Synonym, Bild
-        $smilies = array_map('trim', (substr($smilies, -4) != '.var' ? array_slice(file($smilies), 1) : array_map('utf8_encode', file($smilies))));
+        $smilies = array_map('trim', (substr($smilies, -4) != '.var' ? array_slice(file($smilies), 1) : array_map('utf8Encode', file($smilies))));
         $towrite = "<?php\n//Auto-generated config!\n\$smilies = array();\n";
         foreach($smilies as $value)
         {
@@ -148,7 +149,7 @@ if(!isset($_SESSION))
 //Mehr Smilies
 if($action == 'smilies')
 {
-    include('newsscript/functions.php');
+    include_once('newsscript/functions.php');
     newsHead('CHS - Newsscript: Mehr Smilies', 'Newsscript, CHS, Mehr Smilies, Chrissyx', 'Mehr Smilies des Newsscript von CHS');
     $i=0;
     foreach($smilies as $key => $value)
@@ -192,7 +193,7 @@ elseif($action == 'threading' && $_SESSION['dispall'])
 //Admin Login
 elseif($action == 'admin')
 {
-    include('newsscript/functions.php');
+    include_once('newsscript/functions.php');
     include('newsscript/language_login.php');
     $_SESSION['dispall'] = false;
     $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['login']['nouser']);
@@ -314,7 +315,7 @@ if(isset($_GET['newsid']))
     //Rechte checken
     if(in_array($action, array('delete', 'delcomment', 'edit')))
     {
-        include('newsscript/functions.php');
+        include_once('newsscript/functions.php');
         $user = @array_map('trim', array_slice(file($newspwsdat), 1)) or die($lang['news']['nouser']);
         if(($user = getUser($user, $_SESSION['newsname'])) == false)
             die($lang['news']['unknown']);

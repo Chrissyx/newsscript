@@ -412,7 +412,7 @@ function newsCreateThumbnail($image, $thumb, $width, $height, $imageOld)
         break;
 
         case IMAGETYPE_PNG:
-        imagecopyresampled($imageNew, imagecreatefrompng($image), 0, 0, 0, 0, $width, $height, $imageOld[0], $imageOld[1]);
+        imagecopyresampled($imageNew, @imagecreatefrompng($image), 0, 0, 0, 0, $width, $height, $imageOld[0], $imageOld[1]);
         imagepng($imageNew, $thumb);
         break;
 
@@ -422,5 +422,16 @@ function newsCreateThumbnail($image, $thumb, $width, $height, $imageOld)
     }
     imagedestroy($imageNew);
     return true;
+}
+
+/**
+ * Ersatz für PHPs {@link utf8_encode()} um von ISO-8859-1 Kodierung nach UTF-8 umzuwandeln.
+ *
+ * @param string $string ISO-8859-1 enkodierte Zeichenkette
+ * @return string UTF-8 enkodiertes Gegenstück
+ */
+function utf8Encode(string $string): string
+{
+    return @utf8_encode($string);
 }
 ?>

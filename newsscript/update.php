@@ -337,7 +337,7 @@ function unicodeUpdate()
  */
 function checkConvertUtf8($string)
 {
-    return mb_check_encoding($string, 'UTF-8') ? $string : utf8_encode($string);
+    return mb_check_encoding($string, 'UTF-8') ? $string : utf8Encode($string);
 }
 
 newsHead('CHS - Newsscript: ' . $lang['news']['update'], 'Newsscript, CHS, ' . $lang['news']['update'] . ', Chrissyx', $lang['news']['title'] . ' des Newsscript von CHS', $lang['news']['charset'], $lang['news']['code']);

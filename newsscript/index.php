@@ -606,7 +606,7 @@ switch($action)
   </div>
   <div style="border:medium double #000000; margin-left:10px; padding:5px; float:left;">
    <p>CHS - Newsscript<br />
-      <?php echo($lang['help']['version'] . ' ' . getNewsVersion()); ?><br />
+      <?php echo($lang['help']['version'] . ' ' . getNewsVersion() . newsFont(1)); ?> / PHP: <?php echo(phpversion()); ?></span><br />
       &copy; 2008&ndash;2023 by Chrissyx<br />
       <a href="https://www.chrissyx.com/" target="_blank">https://www.chrissyx.com/</a></p>
   </div>
