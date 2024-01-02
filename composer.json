@@ -6,13 +6,13 @@
     "keywords" : [
         "news", "articles", "blog", "journalist", "ticker", "rss", "feed"
     ],
-    "homepage": "http://www.chrissyx.com/scripts.php",
+    "homepage": "https://www.chrissyx.com/scripts.php",
     "license": "CC-BY-NC-SA-3.0",
     "authors": [
         {
             "name": "Chrissyx",
             "email": "chris@chrissyx.com",
-            "homepage": "http://www.chrissyx.com",
+            "homepage": "https://www.chrissyx.com",
             "role": "Developer"
         }
     ],
